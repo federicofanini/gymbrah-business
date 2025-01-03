@@ -11,8 +11,8 @@ import {
 export const BLUR_FADE_DELAY = 0.15;
 
 export const siteConfig = {
-  name: "AI Agent SDK",
-  description: "Create AI Agents with just a few lines of code.",
+  name: "GymBrah",
+  description: "GymBrah is ",
   cta: "Get Started",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   keywords: [
@@ -22,16 +22,15 @@ export const siteConfig = {
     "Workflow Automation",
   ],
   links: {
-    email: "support@aiagentsdk.com",
-    twitter: "https://twitter.com/aiagentsdk",
-    discord: "https://discord.gg/aiagentsdk",
-    github: "https://github.com/aiagentsdk",
-    instagram: "https://instagram.com/aiagentsdk",
+    email: "support@gymbrah.com",
+    twitter: "https://twitter.com/gymbrah",
+    discord: "https://discord.gg/gymbrah",
+    github: "https://github.com/gymbrah",
+    instagram: "https://instagram.com/gymbrah",
   },
   hero: {
-    title: "AI Agent SDK",
-    description:
-      "Create powerful AI agent workflows with just a few lines of code, enabling complex task automation and decision-making processes.",
+    title: "GymBrah",
+    description: "GymBrah is a platform for creating AI agents.",
     cta: "Get Started",
     ctaDescription: "Available for all major programming languages",
   },
