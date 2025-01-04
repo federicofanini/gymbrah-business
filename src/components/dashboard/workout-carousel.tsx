@@ -78,7 +78,7 @@ export function WorkoutCarousel() {
                         className="flex items-center justify-between rounded-md border p-2"
                       >
                         <div className="flex items-center gap-2">
-                          <Dumbbell className="h-4 w-4 text-blue-500" />
+                          <Dumbbell className="h-4 w-4" />
                           <span>{exercise.name}</span>
                         </div>
                         <span className="text-sm text-muted-foreground">
@@ -96,7 +96,7 @@ export function WorkoutCarousel() {
                       onClick={() => console.log("Choose workout")}
                       className="w-full"
                     >
-                      <Play className="h-4 w-4 text-green-500 mr-1" />
+                      <Play className="h-4 w-4 mr-1" />
                       Start Workout
                     </Button>
                     <Button

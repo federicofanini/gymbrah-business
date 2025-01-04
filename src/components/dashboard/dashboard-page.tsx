@@ -13,8 +13,6 @@ export default function DashboardPage() {
       </div>
       <div className="grid grid-cols-1 gap-4 md:flex">
         <WorkoutCarousel />
-        <AchievementsList />
-        <WorkoutPlan />
       </div>
     </>
   );

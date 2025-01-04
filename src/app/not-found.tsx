@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import OutlinedButton from "@/components/ui/outlined-button";
 
 export default function NotFound() {

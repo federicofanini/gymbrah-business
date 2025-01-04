@@ -8,92 +8,30 @@ import {
   PieChart,
   Map,
   Bot,
+  Dumbbell,
+  Apple,
+  BicepsFlexed,
 } from "lucide-react";
 
 export const sidebarItems = {
   navMain: [
     {
-      title: "Playground",
+      title: "Blackboard",
       url: "/dashboard",
-      icon: SquareTerminal,
+      icon: BicepsFlexed,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Profile",
+          url: "/dashboard/profile",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Workouts",
+          url: "/dashboard/workouts",
         },
         {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Achievements",
+          url: "/dashboard/achievements",
         },
       ],
     },

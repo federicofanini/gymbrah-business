@@ -49,7 +49,7 @@ export function ProfileSummary() {
         <div className="grid gap-2">
           <div className="flex justify-between items-center rounded-md bg-muted p-2 text-sm">
             <div className="flex items-center gap-1.5">
-              <Trophy className="h-3.5 w-3.5 text-yellow-500" />
+              <Trophy className="h-3.5 w-3.5" />
               <span className="font-medium">Non-Smoker</span>
             </div>
             <Badge variant="secondary" className="text-xs">
@@ -60,7 +60,7 @@ export function ProfileSummary() {
           <div className="grid grid-cols-4 gap-2">
             <div className="flex flex-col gap-0.5 rounded-md border p-2">
               <div className="flex items-center gap-1">
-                <Ruler className="h-3.5 w-3.5 text-blue-500" />
+                <Ruler className="h-3.5 w-3.5" />
                 <span className="text-xs text-muted-foreground">Height</span>
               </div>
               <div className="text-sm font-medium">{profile.height}cm</div>
@@ -68,7 +68,7 @@ export function ProfileSummary() {
 
             <div className="flex flex-col gap-0.5 rounded-md border p-2">
               <div className="flex items-center gap-1">
-                <Weight className="h-3.5 w-3.5 text-green-500" />
+                <Weight className="h-3.5 w-3.5" />
                 <span className="text-xs text-muted-foreground">Weight</span>
               </div>
               <div className="text-sm font-medium">{profile.weight}kg</div>
@@ -76,23 +76,23 @@ export function ProfileSummary() {
 
             <div className="flex flex-col gap-0.5 rounded-md border p-2">
               <div className="flex items-center gap-1">
-                <Wine className="h-3.5 w-3.5 text-purple-500" />
+                <Wine className="h-3.5 w-3.5" />
                 <span className="text-xs text-muted-foreground">Alcohol</span>
               </div>
-              <div className="text-sm font-medium">{profile.alcohol} 🍻</div>
+              <div className="text-sm font-medium">{profile.alcohol}</div>
             </div>
 
             <div className="flex flex-col gap-0.5 rounded-md border p-2">
               <div className="flex items-center gap-1">
-                <Cookie className="h-3.5 w-3.5 text-orange-500" />
+                <Cookie className="h-3.5 w-3.5" />
                 <span className="text-xs text-muted-foreground">Sugar</span>
               </div>
-              <div className="text-sm font-medium">{profile.sugar} 🍬</div>
+              <div className="text-sm font-medium">{profile.sugar}</div>
             </div>
           </div>
 
           <div className="flex items-center gap-1.5 rounded-md border p-2">
-            <Moon className="h-3.5 w-3.5 text-indigo-500" />
+            <Moon className="h-3.5 w-3.5" />
             <div className="text-xs text-muted-foreground">Sleep:</div>
             <div className="text-sm font-medium">{profile.sleep}</div>
           </div>
