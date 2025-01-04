@@ -5,10 +5,23 @@ import { Star } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const formatStars = (count: number | null) => {
+export const formatStars = (count: number | null) => {
   if (!count) return null;
   return count >= 1000 ? `${(count / 1000).toFixed(1)}k` : count;
 };
+
+export async function getGithubStars() {
+  try {
+    const response = await fetch(
+      "https://api.github.com/repos/federicofanini/gymbrah.com"
+    );
+    const data = await response.json();
+    return data.stargazers_count;
+  } catch (error) {
+    console.error("Error fetching GitHub stars:", error);
+    return null;
+  }
+}
 
 export function GithubStars() {
   const [stars, setStars] = useState<number | null>(null);
@@ -16,16 +29,9 @@ export function GithubStars() {
 
   useEffect(() => {
     async function fetchStars() {
-      try {
-        const response = await fetch(
-          "https://api.github.com/repos/federicofanini/gymbrah.com"
-        );
-        const data = await response.json();
-        setStars(data.stargazers_count);
-        setIsLoaded(true);
-      } catch (error) {
-        console.error("Error fetching GitHub stars:", error);
-      }
+      const count = await getGithubStars();
+      setStars(count);
+      setIsLoaded(true);
     }
 
     fetchStars();

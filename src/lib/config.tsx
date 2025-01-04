@@ -1,9 +1,15 @@
 import { Icons } from "@/components/icons";
 import {
+  AudioLines,
   BrainIcon,
   CodeIcon,
+  Dumbbell,
   GlobeIcon,
+  Handshake,
+  Loader,
   PlugIcon,
+  SmilePlus,
+  Timer,
   UsersIcon,
   ZapIcon,
 } from "lucide-react";
@@ -47,40 +53,40 @@ export const siteConfig = {
   },
   features: [
     {
-      name: "Simple Agent Workflows",
+      name: "Fitness Tracking",
       description:
-        "Easily create and manage AI agent workflows with intuitive APIs.",
-      icon: <BrainIcon className="h-6 w-6" />,
+        "Track your workouts, set goals, and monitor your progress across multiple metrics — whether it’s strength, endurance, or overall fitness. ",
+      icon: <AudioLines className="h-6 w-6" />,
     },
     {
-      name: "Multi-Agent Systems",
+      name: "Progress Insights",
       description:
-        "Build complex systems with multiple AI agents working together.",
-      icon: <UsersIcon className="h-6 w-6" />,
+        "Set personalized fitness goals and get insights into your performance. Celebrate milestones in your fitness journey to stay motivated and on track.",
+      icon: <Loader className="h-6 w-6" />,
     },
     {
-      name: "Tool Integration",
+      name: "Customizable Workouts",
       description:
-        "Seamlessly integrate external tools and APIs into your agent workflows.",
-      icon: <PlugIcon className="h-6 w-6" />,
+        "Create your own workouts, follow predefined fitness plans, or customize routines to fit your needs. Adapts to your personal fitness level and evolves with your goals.",
+      icon: <Dumbbell className="h-6 w-6" />,
     },
     {
-      name: "Cross-Language Support",
+      name: "Real-Time Accountability",
       description:
-        "Available in all major programming languages for maximum flexibility.",
-      icon: <GlobeIcon className="h-6 w-6" />,
+        "Stay accountable to your fitness goals with regular updates, reminders, and progress tracking. Gymbrah ensures you’re always moving forward with encouragement at every step.",
+      icon: <Timer className="h-6 w-6" />,
     },
     {
-      name: "Customizable Agents",
+      name: "Community Support",
       description:
-        "Design and customize agents to fit your specific use case and requirements.",
-      icon: <CodeIcon className="h-6 w-6" />,
+        "Connect with like-minded individuals in the Gymbrah community. Share your progress, cheer on others, and get inspired to push harder as you grow alongside a supportive network.",
+      icon: <Handshake className="h-6 w-6" />,
     },
     {
-      name: "Efficient Execution",
+      name: "Community Driven",
       description:
-        "Optimize agent performance with built-in efficiency and scalability features.",
-      icon: <ZapIcon className="h-6 w-6" />,
+        "Gymbrah is built with transparency in mind. As a fully open-source project, you can contribute, improve, and share your experience with the growing Gymbrah community.",
+      icon: <SmilePlus className="h-6 w-6" />,
     },
   ],
   pricing: [

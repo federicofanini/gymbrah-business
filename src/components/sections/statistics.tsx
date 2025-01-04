@@ -4,26 +4,56 @@ import { Icons } from "@/components/icons";
 import { Section } from "@/components/section";
 import { BorderText } from "@/components/ui/border-number";
 import Link from "next/link";
-
-const stats = [
-  {
-    title: "10K+",
-    subtitle: "Stars on GitHub",
-    icon: <Icons.github className="h-5 w-5" />,
-  },
-  {
-    title: "50K+",
-    subtitle: "Discord Members",
-    icon: <Icons.discord className="h-5 w-5" />,
-  },
-  {
-    title: "1M+",
-    subtitle: "Downloads",
-    icon: <Icons.npm className="h-5 w-5" />,
-  },
-];
+import { Users } from "lucide-react";
+import { formatStars } from "./github-stars";
+import { getGithubStars } from "./github-stars";
+import { getUserCount } from "@/actions/user-count";
+import { useEffect, useState } from "react";
 
 export function Statistics() {
+  const [stars, setStars] = useState<number | null>(null);
+  const [userCount, setUserCount] = useState<number>(1);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const starsCount = await getGithubStars();
+      setStars(starsCount);
+
+      const result = await getUserCount();
+      if (
+        result &&
+        "success" in result &&
+        result.success &&
+        typeof result.data === "number"
+      ) {
+        setUserCount(result.data);
+      }
+    }
+
+    fetchStats();
+  }, []);
+
+  const stats = [
+    {
+      title: formatStars(stars)?.toString() ?? "-",
+      subtitle: "Stars on GitHub",
+      icon: <Icons.github className="h-5 w-5" />,
+      link: "https://github.com/federicofanini/gymbrah.com",
+    },
+    {
+      title: "0",
+      subtitle: "Discord Members",
+      icon: <Icons.discord className="h-5 w-5" />,
+      link: "https://discord.gg/",
+    },
+    {
+      title: userCount.toString(),
+      subtitle: "Users",
+      icon: <Users className="h-5 w-5" />,
+      link: "/",
+    },
+  ];
+
   return (
     <Section id="statistics" title="Statistics">
       <div
@@ -36,7 +66,8 @@ export function Statistics() {
         <div className="grid grid-cols-1 sm:grid-cols-3">
           {stats.map((stat, idx) => (
             <Link
-              href="#"
+              href={stat.link}
+              target="_blank"
               key={idx}
               className="flex flex-col items-center justify-center py-8 px-4 border-b sm:border-b-0 last:border-b-0 sm:border-r sm:last:border-r-0 [&:nth-child(-n+2)]:border-t-0 sm:[&:nth-child(-n+3)]:border-t-0 relative group overflow-hidden"
             >

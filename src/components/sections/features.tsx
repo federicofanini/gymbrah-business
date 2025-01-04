@@ -1,12 +1,12 @@
 import { Section } from "@/components/section";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+// import Link from "next/link";
 
 export function Features() {
   const services = siteConfig.features;
   return (
-    <Section id="features" title="Features">
+    <Section id="features" title="What you get">
       <div className="border-x border-t">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {services.map(({ name, description, icon: Icon }, index) => (
@@ -20,7 +20,7 @@ export function Features() {
               )}
             >
               <div className="flex flex-col gap-y-2 items-center">
-                <div className="bg-gradient-to-b from-primary to-primary/80 p-2 rounded-lg text-white transition-colors group-hover:from-secondary group-hover:to-secondary/80">
+                <div className="p-2 rounded-lg text-white transition-colors group-hover:from-secondary group-hover:to-secondary/80">
                   {Icon}
                 </div>
                 <h2 className="text-xl font-medium text-card-foreground text-center text-balance">
@@ -30,12 +30,12 @@ export function Features() {
               <p className="text-sm text-muted-foreground text-balance text-center max-w-md mx-auto">
                 {description}
               </p>
-              <Link
+              {/* <Link
                 href="#"
                 className="text-sm text-primary hover:underline underline-offset-4 transition-colors hover:text-secondary-foreground"
               >
                 Learn more &gt;
-              </Link>
+              </Link> */}
             </div>
           ))}
         </div>
