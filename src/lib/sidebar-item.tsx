@@ -11,6 +11,8 @@ import {
   Dumbbell,
   Apple,
   BicepsFlexed,
+  Feather,
+  Github,
 } from "lucide-react";
 
 export const sidebarItems = {
@@ -38,14 +40,14 @@ export const sidebarItems = {
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoy,
-    },
-    {
       title: "Feedback",
       url: "#",
-      icon: Send,
+      icon: Feather,
+    },
+    {
+      title: "Contribute",
+      url: "#",
+      icon: Github,
     },
   ],
   projects: [
