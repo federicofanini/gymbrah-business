@@ -1,7 +1,7 @@
 "use server";
 
 import { createSafeActionClient } from "next-safe-action";
-import type { ActionResponse } from "./types";
+import type { ActionResponse } from "./types/action-response";
 import { createClient } from "@/utils/supabase/server";
 
 export const getUserCount = createSafeActionClient().action(

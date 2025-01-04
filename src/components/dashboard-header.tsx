@@ -30,18 +30,18 @@ export function DashboardHeader() {
         <Breadcrumb>
           <BreadcrumbList>
             {segments.map((segment, index) => (
-              <>
-                <BreadcrumbItem key={segment.href}>
-                  {index === segments.length - 1 ? (
-                    <BreadcrumbPage>{segment.label}</BreadcrumbPage>
-                  ) : (
+              <BreadcrumbItem key={`${segment.href}-${index}`}>
+                {index === segments.length - 1 ? (
+                  <BreadcrumbPage>{segment.label}</BreadcrumbPage>
+                ) : (
+                  <>
                     <BreadcrumbLink href={segment.href}>
                       {segment.label}
                     </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-                {index < segments.length - 1 && <BreadcrumbSeparator />}
-              </>
+                    <BreadcrumbSeparator />
+                  </>
+                )}
+              </BreadcrumbItem>
             ))}
           </BreadcrumbList>
         </Breadcrumb>

@@ -26,6 +26,7 @@ model user {
   telegram     String?
   bsky         String?
   contactEmail String?
+  username     String? @unique
 
   paid        Boolean @default(false)
   customer_id String?

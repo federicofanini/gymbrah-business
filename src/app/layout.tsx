@@ -7,6 +7,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import { Provider as Analytics } from "@/utils/events/client";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = constructMetadata({
   title: `${siteConfig.name} | ${siteConfig.description}`,
@@ -44,6 +45,7 @@ export default function RootLayout({
           {children}
           <TailwindIndicator />
         </ThemeProvider>
+        <Toaster />
         <Analytics />
       </body>
     </html>
