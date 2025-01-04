@@ -10,24 +10,17 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { lazy, Suspense, useEffect, useState } from "react";
 import OutlinedButton from "../ui/outlined-button";
+import Image from "next/image";
 
 const ease = [0.16, 1, 0.3, 1];
 
 function HeroPill() {
   return (
-    <motion.a
-      href="/blog/introducing-dev-ai"
-      className="flex w-auto items-center space-x-2 rounded-full bg-primary/20 px-2 py-1 ring-1 ring-accent whitespace-pre"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease }}
+    <Link
+      href="#"
+      className="flex items-center space-x-2 border border-secondary rounded-full px-4 py-1"
     >
-      <div className="w-fit rounded-full bg-accent px-2 py-0.5 text-left text-xs font-medium text-primary sm:text-sm">
-        🛠️ New
-      </div>
-      <p className="text-xs font-medium text-primary sm:text-sm">
-        Introducing AI Agent SDK
-      </p>
+      <p className="text-xs font-mono text-primary">Introducing GymBrah</p>
       <svg
         width="12"
         height="12"
@@ -41,7 +34,7 @@ function HeroPill() {
           fill="hsl(var(--primary))"
         />
       </svg>
-    </motion.a>
+    </Link>
   );
 }
 
@@ -103,7 +96,7 @@ function HeroCTA() {
         </Link>
       </motion.div>
       <motion.p
-        className="mt-3 text-xs text-muted-foreground text-left font-mono"
+        className="mt-8 text-xs text-muted-foreground text-left font-mono"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.0, duration: 0.8 }}
@@ -150,21 +143,14 @@ export function Hero() {
           <HeroCTA />
         </div>
         {!isMobile && (
-          <div className="relative lg:h-full lg:col-span-1">
-            <Suspense>
-              {showSpline && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 1 }}
-                >
-                  <LazySpline
-                    scene="https://prod.spline.design/mZBrYNcnoESGlTUG/scene.splinecode"
-                    className="absolute inset-0 w-full h-full origin-top-left flex items-center justify-center"
-                  />
-                </motion.div>
-              )}
-            </Suspense>
+          <div className="relative lg:col-span-1 flex items-end justify-end">
+            <Image
+              src="/hero.png"
+              alt="Hero Image"
+              width={500}
+              height={500}
+              className="h-[350px] w-auto object-cover"
+            />
           </div>
         )}
       </div>

@@ -145,7 +145,7 @@ export const siteConfig = {
       { text: "Contact", url: "#" },
     ],
     bottomText: "All rights reserved.",
-    brandText: "AGENT SDK",
+    brandText: "GYMBRAH",
   },
 
   testimonials: [

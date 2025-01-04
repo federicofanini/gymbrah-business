@@ -41,3 +41,10 @@ model kg {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model waitlist {
+  id         String   @id @default(uuid())
+  email      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

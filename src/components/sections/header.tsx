@@ -10,6 +10,7 @@ import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import OutlinedButton from "../ui/outlined-button";
+import Image from "next/image";
 
 export function Header() {
   return (
@@ -20,12 +21,17 @@ export function Header() {
           title="brand-logo"
           className="relative mr-6 flex items-center space-x-2"
         >
-          <Icons.logo className="w-auto" />
-          <span className="font-semibold text-lg">{siteConfig.name}</span>
+          <Image
+            src="/logo.svg"
+            alt="GymBrah"
+            width={50}
+            height={50}
+            className="h-[40px] w-auto"
+          />
         </Link>
         <div className="hidden lg:block">
           <Link href="/" className="text-xs text-secondary underline">
-            <OutlinedButton variant="secondary" className="text-xs h-8">
+            <OutlinedButton variant="secondary" className="text-xs h-6">
               {siteConfig.cta}
             </OutlinedButton>
           </Link>
