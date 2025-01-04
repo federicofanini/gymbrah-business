@@ -5,6 +5,7 @@ import { cn, constructMetadata } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
+import { Provider as Analytics } from "@/utils/events/client";
 import "./globals.css";
 
 export const metadata: Metadata = constructMetadata({
@@ -43,6 +44,7 @@ export default function RootLayout({
           {children}
           <TailwindIndicator />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
