@@ -8,10 +8,36 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id         String   @id @default(cuid())
-  email      String   @unique
-  full_name  String
+model user {
+  id           String  @id @unique @default(uuid())
+  email        String  @unique
+  full_name    String
+  avatar_url   String?
+  bio          String?
+  location     String?
+  website      String?
+  twitter      String?
+  linkedin     String?
+  github       String?
+  instagram    String?
+  youtube      String?
+  tiktok       String?
+  discord      String?
+  telegram     String?
+  bsky         String?
+  contactEmail String?
+
+  paid        Boolean @default(false)
+  customer_id String?
+  plan_id     String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model kg {
+  id         String   @id @default(uuid())
+  value      Float
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

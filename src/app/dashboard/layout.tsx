@@ -26,7 +26,7 @@ export default async function DashboardLayout({
   }
 
   const { data: userData, error: userError } = await supabase
-    .from("User")
+    .from("user")
     .select("full_name")
     .eq("email", data.user.email)
     .single();

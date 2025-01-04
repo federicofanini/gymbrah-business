@@ -1,6 +1,5 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest } from "next/server";
-
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -20,16 +19,22 @@ export async function GET(request: NextRequest) {
     if (!error && data.user) {
       try {
         // Check if user already exists
-        const { data: existingUser } = await supabase
-          .from("User")
+        const { data: existingUser, error: checkError } = await supabase
+          .from("user")
           .select()
-          .eq("id", data.user.id)
+          .eq("email", data.user.email)
           .single();
 
+        if (checkError && checkError.code !== "PGRST116") {
+          console.error("Error checking user:", checkError);
+          return Response.redirect(new URL("/error", request.url));
+        }
+
+        // Skip if user already exists
         if (!existingUser) {
           const now = new Date().toISOString();
           // Create initial user record using Supabase
-          const { error: insertError } = await supabase.from("User").insert([
+          const { error: insertError } = await supabase.from("user").insert([
             {
               id: data.user.id,
               email: data.user.email,
@@ -41,19 +46,19 @@ export async function GET(request: NextRequest) {
 
           if (insertError) {
             console.error("Error creating user:", insertError);
-            return redirect("/error");
+            return Response.redirect(new URL("/error", request.url));
           }
         }
 
         // redirect user to onboarding to complete profile
-        return redirect("/onboarding");
+        return Response.redirect(new URL("/onboarding", request.url));
       } catch (err) {
         console.error("Error creating user:", err);
-        return redirect("/error");
+        return Response.redirect(new URL("/error", request.url));
       }
     }
   }
 
   // redirect the user to an error page with some instructions
-  return redirect("/error");
+  return Response.redirect(new URL("/error", request.url));
 }

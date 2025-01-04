@@ -17,7 +17,7 @@ export async function createUserProfile(formData: { fullName: string }) {
 
     // First check if user exists
     const { data: existingUser, error: fetchError } = await supabase
-      .from("User")
+      .from("user")
       .select()
       .eq("email", user.email)
       .single();
@@ -34,7 +34,7 @@ export async function createUserProfile(formData: { fullName: string }) {
     if (existingUser) {
       // Update existing user
       const { data, error } = await supabase
-        .from("User")
+        .from("user")
         .update({ full_name: formData.fullName })
         .eq("email", user.email)
         .select()
@@ -77,7 +77,7 @@ export async function getUserFullName() {
     }
 
     const { data, error } = await supabase
-      .from("User")
+      .from("user")
       .select("full_name")
       .eq("email", user.email)
       .single();
