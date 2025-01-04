@@ -131,18 +131,14 @@ export const siteConfig = {
   ],
   footer: {
     socialLinks: [
-      {
-        icon: <Icons.github className="h-5 w-5" />,
-        url: "#",
-      },
-      {
-        icon: <Icons.twitter className="h-5 w-5" />,
-        url: "#",
-      },
+      // {
+      //   icon: <Icons.twitter className="h-5 w-5" />,
+      //   url: "#",
+      // },
     ],
     links: [
-      { text: "Pricing", url: "#" },
-      { text: "Contact", url: "#" },
+      { text: "Terms", url: "/terms" },
+      { text: "Privacy", url: "/privacy" },
     ],
     bottomText: "All rights reserved.",
     brandText: "GYMBRAH",

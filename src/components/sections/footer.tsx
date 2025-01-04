@@ -4,6 +4,7 @@ import { siteConfig } from "@/lib/config";
 import Image from "next/image";
 import Link from "next/link";
 import { SubscribeInput } from "../ui/subscribe-input";
+import { GithubStars } from "./github-stars";
 
 export function Footer() {
   return (
@@ -14,7 +15,7 @@ export function Footer() {
         </div>
 
         <div className="flex gap-x-2">
-          {siteConfig.footer.socialLinks.map((link, index) => (
+          {/* {siteConfig.footer.socialLinks.map((link, index) => (
             <Link
               key={index}
               href={link.url}
@@ -22,7 +23,8 @@ export function Footer() {
             >
               {link.icon}
             </Link>
-          ))}
+          ))} */}
+          <GithubStars />
         </div>
       </div>
       <div className="flex flex-col justify-between gap-y-5 md:flex-row md:items-center">
