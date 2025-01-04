@@ -12,16 +12,48 @@ export async function GET(request: NextRequest) {
   if (token_hash && type) {
     const supabase = await createClient();
 
-    const { error } = await supabase.auth.verifyOtp({
+    const { data, error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     });
-    if (!error) {
-      // redirect user to specified redirect URL or root of app
-      redirect("/dashboard");
+
+    if (!error && data.user) {
+      try {
+        // Check if user already exists
+        const { data: existingUser } = await supabase
+          .from("User")
+          .select()
+          .eq("id", data.user.id)
+          .single();
+
+        if (!existingUser) {
+          const now = new Date().toISOString();
+          // Create initial user record using Supabase
+          const { error: insertError } = await supabase.from("User").insert([
+            {
+              id: data.user.id,
+              email: data.user.email,
+              full_name: "", // Will be filled during onboarding
+              created_at: now,
+              updated_at: now,
+            },
+          ]);
+
+          if (insertError) {
+            console.error("Error creating user:", insertError);
+            return redirect("/error");
+          }
+        }
+
+        // redirect user to onboarding to complete profile
+        return redirect("/onboarding");
+      } catch (err) {
+        console.error("Error creating user:", err);
+        return redirect("/error");
+      }
     }
   }
 
   // redirect the user to an error page with some instructions
-  redirect("/error");
+  return redirect("/error");
 }
