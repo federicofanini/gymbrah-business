@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@openpanel/nextjs':
+        specifier: ^1.0.7
+        version: 1.0.7(next@15.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@prisma/client':
         specifier: ^6.1.0
         version: 6.1.0(prisma@6.1.0)
@@ -410,6 +413,19 @@ packages:
   '@nodelib/fs.walk@1.2.8':
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
+
+  '@openpanel/nextjs@1.0.7':
+    resolution: {integrity: sha512-XygTPiVlxUkcnZ3DYYwnWiogDgCL1hFK5G8nxokdrFKKuM0XQ+9mFElW/+dKgnVfmV2QiP1aAscudHAlRSUQhg==}
+    peerDependencies:
+      next: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@openpanel/sdk@1.0.0':
+    resolution: {integrity: sha512-FNmmfjdXoC/VHEjA+WkrQ4lyM5lxEmV7xDd57uj4E+lIS0sU3DLG2mV/dpS8AscnZbUvuMn3kPhiLCqYzuv/gg==}
+
+  '@openpanel/web@1.0.1':
+    resolution: {integrity: sha512-cVZ7Kr9SicczJ/RDIfEtZs8+1iGDzwkabVA/j3NqSl8VSucsC8m1+LVbjmCDzCJNnK4yVn6tEcc9PJRi2rtllw==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -3114,6 +3130,19 @@ snapshots:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
+
+  '@openpanel/nextjs@1.0.7(next@15.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@openpanel/web': 1.0.1
+      next: 15.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@openpanel/sdk@1.0.0': {}
+
+  '@openpanel/web@1.0.1':
+    dependencies:
+      '@openpanel/sdk': 1.0.0
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
