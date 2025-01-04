@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { lazy, Suspense, useEffect, useState } from "react";
+import OutlinedButton from "../ui/outlined-button";
 
 const ease = [0.16, 1, 0.3, 1];
 
@@ -97,19 +98,12 @@ function HeroCTA() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.8, ease }}
       >
-        <Link
-          href="/download"
-          className={cn(
-            buttonVariants({ variant: "default" }),
-            "w-full sm:w-auto text-background flex gap-2 rounded-lg"
-          )}
-        >
-          <Icons.logo className="h-6 w-6" />
-          {siteConfig.hero.cta}
+        <Link href="/" className="text-sm text-secondary underline">
+          <OutlinedButton>{siteConfig.hero.cta}</OutlinedButton>
         </Link>
       </motion.div>
       <motion.p
-        className="mt-3 text-sm text-muted-foreground text-left"
+        className="mt-3 text-xs text-muted-foreground text-left font-mono"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.0, duration: 0.8 }}

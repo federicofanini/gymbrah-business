@@ -12,14 +12,24 @@ export const BLUR_FADE_DELAY = 0.15;
 
 export const siteConfig = {
   name: "GymBrah",
-  description: "GymBrah is ",
-  cta: "Get Started",
+  description: "Build better tiny habits to get fit and healthy.",
+  cta: "Sign in",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   keywords: [
-    "AI Agent SDK",
-    "Multi-Agent Systems",
-    "Tool Integration",
-    "Workflow Automation",
+    "tiny habits",
+    "fitness",
+    "health",
+    "habits",
+    "AI",
+    "health coach",
+    "AI health coach",
+    "AI fitness coach",
+    "AI health coach",
+    "AI fitness coach",
+    "gym",
+    "exercise",
+    "workout",
+    "health",
   ],
   links: {
     email: "support@gymbrah.com",
@@ -29,10 +39,11 @@ export const siteConfig = {
     instagram: "https://instagram.com/gymbrah",
   },
   hero: {
-    title: "GymBrah",
-    description: "GymBrah is a platform for creating AI agents.",
-    cta: "Get Started",
-    ctaDescription: "Available for all major programming languages",
+    title: "Build tiny habits",
+    description:
+      "Every achievement counts. Track your fitness journey, keep yourself accountable, and stay motivated every step of the way.",
+    cta: "Ready to level up?",
+    ctaDescription: "Claim $49 lifetime deal, free during beta.",
   },
   features: [
     {
