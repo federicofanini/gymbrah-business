@@ -5,8 +5,12 @@ import {
   MoreHorizontal,
   Share,
   Trash2,
-  ChevronRight,
+  Frame,
+  PieChart,
+  Map,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import {
   DropdownMenu,
@@ -31,20 +35,20 @@ export function NavProjects({
   projects: {
     name: string;
     url: string;
-    icon: string; // Changed from LucideIcon to string
+    icon: string;
   }[];
 }) {
   const { isMobile } = useSidebar();
+  const pathname = usePathname();
 
   // Map icon string names to components
   const getIconComponent = (iconName: string) => {
     const icons = {
-      Frame: ChevronRight,
-      PieChart: ChevronRight,
-      Map: ChevronRight,
-      // Add other icon mappings as needed
+      Frame,
+      PieChart,
+      Map,
     };
-    return icons[iconName as keyof typeof icons] || ChevronRight;
+    return icons[iconName as keyof typeof icons] || Frame;
   };
 
   return (
@@ -53,13 +57,22 @@ export function NavProjects({
       <SidebarMenu>
         {projects.map((item) => {
           const IconComponent = getIconComponent(item.icon);
+          const isActive = pathname === item.url;
+
           return (
             <SidebarMenuItem key={item.name}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
-                  <IconComponent />
+              <SidebarMenuButton
+                asChild
+                className={
+                  isActive
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : ""
+                }
+              >
+                <Link href={item.url}>
+                  <IconComponent className="h-4 w-4" />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

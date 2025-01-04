@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { ChevronRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 import {
   SidebarGroup,
@@ -11,39 +12,37 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import { sidebarItems } from "@/lib/sidebar-item";
+
 export function NavSecondary({
-  items,
   ...props
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: string; // Changed from LucideIcon to string
-  }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  // Map icon string names to components
-  const getIconComponent = (iconName: string) => {
-    const icons = {
-      LifeBuoy: ChevronRight,
-      Send: ChevronRight,
-      // Add other icon mappings as needed
-    };
-    return icons[iconName as keyof typeof icons] || ChevronRight;
-  };
+}: React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const pathname = usePathname();
 
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => {
-            const IconComponent = getIconComponent(item.icon);
+          {sidebarItems.navSecondary.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = pathname === item.url;
+
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild size="sm">
-                  <a href={item.url}>
-                    <IconComponent />
+                <SidebarMenuButton
+                  asChild
+                  size="sm"
+                  tooltip={item.title}
+                  className={
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : ""
+                  }
+                >
+                  <Link href={item.url}>
+                    <IconComponent className="h-4 w-4" />
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );

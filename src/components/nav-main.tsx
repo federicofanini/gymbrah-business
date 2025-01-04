@@ -1,6 +1,8 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 import {
   Collapsible,
@@ -19,46 +21,42 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon: string; // Changed from LucideIcon to string
-    isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
-  }[];
-}) {
-  // Map icon string names to components
-  const getIconComponent = (iconName: string) => {
-    const icons = {
-      SquareTerminal: ChevronRight, // Replace with actual icon imports
-      Bot: ChevronRight,
-      BookOpen: ChevronRight,
-      Settings2: ChevronRight,
-      // Add other icon mappings as needed
-    };
-    return icons[iconName as keyof typeof icons] || ChevronRight;
-  };
+import { sidebarItems } from "@/lib/sidebar-item";
+
+export function NavMain() {
+  const pathname = usePathname();
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => {
-          const IconComponent = getIconComponent(item.icon);
+        {sidebarItems.navMain.map((item) => {
+          const IconComponent = item.icon;
+          const isMainItemActive = pathname === item.url;
+          const isSubItemActive = item.items?.some(
+            (subItem) => pathname === subItem.url
+          );
+
           return (
-            <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={isMainItemActive || isSubItemActive}
+            >
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={item.title}>
-                  <a href={item.url}>
-                    <IconComponent />
+                <SidebarMenuButton
+                  asChild
+                  tooltip={item.title}
+                  className={
+                    isMainItemActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : ""
+                  }
+                >
+                  <Link href={item.url}>
+                    <IconComponent className="h-4 w-4" />
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
                 {item.items?.length ? (
                   <>
@@ -70,15 +68,25 @@ export function NavMain({
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <SidebarMenuSub>
-                        {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild>
-                              <a href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </a>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
+                        {item.items?.map((subItem) => {
+                          const isActive = pathname === subItem.url;
+                          return (
+                            <SidebarMenuSubItem key={subItem.title}>
+                              <SidebarMenuSubButton
+                                asChild
+                                className={
+                                  isActive
+                                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                    : ""
+                                }
+                              >
+                                <Link href={subItem.url}>
+                                  <span>{subItem.title}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        })}
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </>
