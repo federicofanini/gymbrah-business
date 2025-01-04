@@ -14,7 +14,7 @@ export function Footer() {
         </div>
 
         <div className="flex gap-x-2">
-          {siteConfig.footer.socialLinks.map((link, index) => (
+          {/* {siteConfig.footer.socialLinks.map((link, index) => (
             <a
               key={index}
               href={link.url}
@@ -22,7 +22,7 @@ export function Footer() {
             >
               {link.icon}
             </a>
-          ))}
+          ))} */}
         </div>
       </div>
       <div className="flex flex-col justify-between gap-y-5 md:flex-row md:items-center">
