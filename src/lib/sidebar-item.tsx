@@ -13,6 +13,7 @@ import {
   BicepsFlexed,
   Feather,
   Github,
+  User,
 } from "lucide-react";
 
 export const sidebarItems = {
@@ -24,16 +25,24 @@ export const sidebarItems = {
       isActive: true,
       items: [
         {
-          title: "Profile",
-          url: "/dashboard/profile",
-        },
-        {
           title: "Workouts",
           url: "/dashboard/workouts",
         },
         {
           title: "Achievements",
           url: "/dashboard/achievements",
+        },
+      ],
+    },
+    {
+      title: "About you",
+      url: "/dashboard",
+      icon: User,
+      isActive: true,
+      items: [
+        {
+          title: "Profile",
+          url: "/dashboard/profile",
         },
       ],
     },
