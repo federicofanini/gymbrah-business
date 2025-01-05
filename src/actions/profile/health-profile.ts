@@ -3,7 +3,7 @@
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
-import type { ActionResponse } from "./types/action-response";
+import type { ActionResponse } from "../types/action-response";
 
 const schema = z.object({
   height: z.string().transform((val) => parseFloat(val) || null),

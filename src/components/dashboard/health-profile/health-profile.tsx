@@ -24,7 +24,7 @@ import { useState, useEffect } from "react";
 import {
   updateHealthProfile,
   getHealthProfile,
-} from "@/actions/health-profile";
+} from "@/actions/profile/health-profile";
 import { toast } from "sonner";
 import { type ActionResponse } from "@/actions/types/action-response";
 

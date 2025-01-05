@@ -14,7 +14,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getHealthProfile } from "@/actions/health-profile";
+import { getHealthProfile } from "@/actions/profile/health-profile";
 
 interface ProfileData {
   height: number | null;

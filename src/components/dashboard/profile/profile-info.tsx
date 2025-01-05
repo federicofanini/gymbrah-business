@@ -10,7 +10,7 @@ import {
   updateProfileInfo,
   getUserInfo,
   checkUsernameAvailability,
-} from "@/actions/profile-info";
+} from "@/actions/profile/profile-info";
 import { toast } from "sonner";
 import { type ActionResponse } from "@/actions/types/action-response";
 import { useDebounce } from "@/hooks/use-debounce";

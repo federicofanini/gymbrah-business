@@ -17,7 +17,7 @@ import {
   AtSign,
   Music,
 } from "lucide-react";
-import { getUserInfo } from "@/actions/profile-info";
+import { getUserInfo } from "@/actions/profile/profile-info";
 import { useEffect, useState } from "react";
 import { type ActionResponse } from "@/actions/types/action-response";
 import { Badge } from "@/components/ui/badge";

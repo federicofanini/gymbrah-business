@@ -36,6 +36,7 @@ model user {
   updated_at     DateTime        @updatedAt
   health_profile health_profile?
   workouts       workout[]
+  feedback       feedback[]
 }
 
 model waitlist {
@@ -84,4 +85,19 @@ model workout_exercise {
   updated_at DateTime @updatedAt
 
   @@index([workout_id])
+}
+
+model feedback {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       user     @relation(fields: [user_id], references: [id])
+  message    String   @db.Text
+  rating     Int // 1-5 rating scale
+  category   String // e.g. "bug", "feature-request", "general"
+  status     String   @default("pending") // e.g. "pending", "in-review", "resolved"
+  upvotes    Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
 }

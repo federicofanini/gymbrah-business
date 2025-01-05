@@ -2,9 +2,9 @@
 
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
-import type { ActionResponse } from "./types/action-response";
+import type { ActionResponse } from "../types/action-response";
 import { createClient } from "@/utils/supabase/server";
-import { appErrors } from "./types/errors";
+import { appErrors } from "../types/errors";
 
 const profileInfoSchema = z.object({
   full_name: z.string().min(1),

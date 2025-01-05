@@ -50,12 +50,12 @@ export const sidebarItems = {
   navSecondary: [
     {
       title: "Feedback",
-      url: "#",
+      url: "/dashboard/feedback",
       icon: Feather,
     },
     {
       title: "Contribute",
-      url: "#",
+      url: "https://github.com/federicofanini/gymbrah.com",
       icon: Github,
     },
   ],
