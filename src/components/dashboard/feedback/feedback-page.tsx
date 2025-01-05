@@ -4,12 +4,7 @@ import { useEffect, useState } from "react";
 import { AddFeedback } from "./add-fedback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  ArrowBigUp,
-  ArrowBigDown,
-  ArrowBigUpDash,
-  ArrowBigDownDash,
-} from "lucide-react";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getFeedbacks } from "@/actions/feedback/feedback";
@@ -61,7 +56,6 @@ export default function FeedbackPage() {
         const response = result.data as ActionResponse;
         if (response.success && response.data) {
           setFeedbacks(response.data as Feedback[]);
-          // Get current user ID from first feedback if available
           const firstFeedback = (response.data as Feedback[])[0];
           if (firstFeedback) {
             setCurrentUserId(firstFeedback.user_id);
@@ -93,13 +87,12 @@ export default function FeedbackPage() {
         return;
       }
 
-      // Update local vote state
       setUserVotes((prev) => ({
         ...prev,
         [feedbackId]: voteType,
       }));
 
-      await loadFeedbacks(); // Refresh feedbacks after voting
+      await loadFeedbacks();
     } catch (error) {
       toast.error("Failed to vote");
     }
@@ -107,9 +100,9 @@ export default function FeedbackPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Feedback</h1>
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold">Feedback</h1>
           <AddFeedback />
         </div>
         <div className="text-center">Loading feedbacks...</div>
@@ -118,18 +111,18 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Feedback</h1>
+    <div className="container mx-auto px-4 py-4 sm:py-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">Feedback</h1>
         <AddFeedback />
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {feedbacks.map((feedback) => (
-          <Card key={feedback.id}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-10 w-10 rounded-lg">
+          <Card key={feedback.id} className="overflow-hidden">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-2">
+              <div className="flex items-center space-x-3">
+                <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg">
                   {feedback.user.avatar_url ? (
                     <AvatarImage
                       src={feedback.user.avatar_url}
@@ -137,7 +130,7 @@ export default function FeedbackPage() {
                     />
                   ) : (
                     <AvatarFallback className="rounded-lg bg-gradient-to-br from-green-500 via-teal-500 to-green-800">
-                      <span className="text-white">
+                      <span className="text-white text-sm">
                         {feedback.user.full_name[0]?.toUpperCase() || "U"}
                       </span>
                     </AvatarFallback>
@@ -156,65 +149,81 @@ export default function FeedbackPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="hidden sm:flex flex-wrap gap-2">
                 <Badge
-                  className={
+                  className={`text-xs ${
                     categoryColors[
                       feedback.category as keyof typeof categoryColors
                     ]
-                  }
+                  }`}
                 >
                   {feedback.category}
                 </Badge>
                 <Badge
-                  className={
+                  className={`text-xs ${
                     statusColors[feedback.status as keyof typeof statusColors]
-                  }
+                  }`}
                 >
                   {feedback.status}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-muted-foreground mb-3 sm:mb-4 break-words">
                 {feedback.message}
               </p>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
+              <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4">
+                <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="space-x-1"
+                    className="space-x-1 px-2 sm:px-3"
                     onClick={() => handleVote(feedback.id, "upvote")}
                   >
                     <ArrowBigUp
-                      className={`h-5 w-5 ${
+                      className={`h-4 w-4 sm:h-5 sm:w-5 ${
                         userVotes[feedback.id] === "upvote"
                           ? "fill-current"
                           : ""
                       }`}
                     />
-                    <span>{feedback.upvotes}</span>
+                    <span className="text-sm">{feedback.upvotes}</span>
                   </Button>
-                </div>
-                <div className="flex items-center">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="space-x-1"
+                    className="space-x-1 px-2 sm:px-3"
                     onClick={() => handleVote(feedback.id, "downvote")}
                   >
                     <ArrowBigDown
-                      className={`h-5 w-5 ${
+                      className={`h-4 w-4 sm:h-5 sm:w-5 ${
                         userVotes[feedback.id] === "downvote"
                           ? "fill-current"
                           : ""
                       }`}
                     />
                   </Button>
+                  <Badge variant="outline" className="text-xs hidden sm:block">
+                    {feedback.rating} ★
+                  </Badge>
                 </div>
-                <div className="flex items-center">
-                  <Badge variant="outline">{feedback.rating} ★</Badge>
+                <div className="flex sm:hidden items-center gap-2">
+                  <Badge
+                    className={`text-xs ${
+                      categoryColors[
+                        feedback.category as keyof typeof categoryColors
+                      ]
+                    }`}
+                  >
+                    {feedback.category}
+                  </Badge>
+                  <Badge
+                    className={`text-xs ${
+                      statusColors[feedback.status as keyof typeof statusColors]
+                    }`}
+                  >
+                    {feedback.status}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
