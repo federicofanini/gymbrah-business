@@ -14,7 +14,7 @@ export async function WorkoutPage() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
       <WorkoutForm userId={session.user.id} />
       <SavedWorkouts userId={session.user.id} />
     </div>

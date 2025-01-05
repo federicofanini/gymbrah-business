@@ -89,78 +89,89 @@ export function SavedWorkouts({ userId }: { userId: string }) {
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Workout History</h2>
-      {workouts.map((workout) => (
-        <Card key={workout.id} className="w-full md:w-1/3">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
-                Created on{" "}
-                <Badge variant="outline">
-                  {new Date(workout.created_at)
-                    .toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                    .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
-                      const num = parseInt(match);
-                      const suffix = ["th", "st", "nd", "rd"][
-                        num % 10 > 3 || (num % 100) - (num % 10) == 10
-                          ? 0
-                          : num % 10
-                      ];
-                      return num + suffix;
-                    })}
-                </Badge>
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <Switch
-                    checked={workout.selected}
-                    onCheckedChange={() => handleSelectWorkout(workout.id)}
-                  />
-                  <span className="text-xs text-muted-foreground">Active</span>
-                </div>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => handleDeleteWorkout(workout.id)}
-                  className="size-6"
-                >
-                  <Trash2 className="size-3" />
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {workout.exercises.map((exercise) => (
-              <div key={exercise.id} className="flex items-center space-x-4">
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <Dumbbell className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-medium">{exercise.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {exercise.sets} sets × {exercise.reps} reps
-                    {exercise.weight && ` @ ${exercise.weight}kg`}
-                  </p>
+    <div className="w-full">
+      <h2 className="text-2xl font-bold mb-4">Workout History</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {workouts.map((workout) => (
+          <Card key={workout.id}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">
+                  Created on{" "}
+                  <Badge variant="outline">
+                    {new Date(workout.created_at)
+                      .toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                      .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
+                        const num = parseInt(match);
+                        const suffix = ["th", "st", "nd", "rd"][
+                          num % 10 > 3 || (num % 100) - (num % 10) == 10
+                            ? 0
+                            : num % 10
+                        ];
+                        return num + suffix;
+                      })}
+                  </Badge>
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Switch
+                      checked={workout.selected}
+                      onCheckedChange={() => handleSelectWorkout(workout.id)}
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      Active
+                    </span>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => handleDeleteWorkout(workout.id)}
+                    className="size-6"
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
                 </div>
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      ))}
-      {workouts.length === 0 && (
-        <Card className="w-full md:w-1/3">
-          <CardContent className="py-8">
-            <p className="text-center text-muted-foreground">
-              No workouts found. Start logging your workouts to see them here!
-            </p>
-          </CardContent>
-        </Card>
-      )}
+            </CardHeader>
+            <CardContent className="grid gap-4">
+              {workout.exercises.map((exercise) => (
+                <div key={exercise.id} className="flex items-center space-x-4">
+                  <div className="bg-primary/10 p-2 rounded-lg">
+                    <Dumbbell className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{exercise.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {exercise.sets} sets × {exercise.reps} reps
+                      {exercise.weight && ` @ ${exercise.weight}kg`}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        ))}
+        {workouts.length === 0 && (
+          <Card className="md:col-span-3">
+            <CardContent className="flex flex-col items-center gap-4 py-8">
+              <div className="rounded-full bg-primary/10 p-4">
+                <Dumbbell className="h-8 w-8 text-primary animate-pulse" />
+              </div>
+              <div className="space-y-2 text-center">
+                <h3 className="font-semibold">No Workouts Yet</h3>
+                <p className="text-sm text-muted-foreground">
+                  Time to start your fitness journey! Create your first workout
+                  and track your progress.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
