@@ -1,6 +1,7 @@
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import OutlinedButton from "../ui/outlined-button";
+import Link from "next/link";
 
 export function CTA() {
   return (
@@ -11,9 +12,11 @@ export function CTA() {
         </p>
 
         <div className="flex justify-center">
-          <OutlinedButton className="flex items-center gap-2">
-            Get Started
-          </OutlinedButton>
+          <Link href="/signup">
+            <OutlinedButton className="flex items-center gap-2">
+              Get Started
+            </OutlinedButton>
+          </Link>
         </div>
       </div>
     </Section>

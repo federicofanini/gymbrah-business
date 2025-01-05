@@ -91,7 +91,7 @@ function HeroCTA() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.8, ease }}
       >
-        <Link href="/" className="text-sm text-secondary underline">
+        <Link href="/signup" className="text-sm text-secondary underline">
           <OutlinedButton>{siteConfig.hero.cta}</OutlinedButton>
         </Link>
       </motion.div>
@@ -106,10 +106,8 @@ function HeroCTA() {
     </div>
   );
 }
-const LazySpline = lazy(() => import("@splinetool/react-spline"));
 
 export function Hero() {
-  const [showSpline, setShowSpline] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -122,17 +120,6 @@ export function Hero() {
 
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  useEffect(() => {
-    // Don't show on mobile
-    if (!isMobile) {
-      const timer = setTimeout(() => {
-        setShowSpline(true);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isMobile]);
 
   return (
     <Section id="hero">
