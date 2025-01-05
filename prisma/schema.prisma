@@ -32,15 +32,9 @@ model user {
   customer_id String?
   plan_id     String?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
-model kg {
-  id         String   @id @default(uuid())
-  value      Float
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  health_profile health_profile?
 }
 
 model waitlist {
@@ -48,4 +42,18 @@ model waitlist {
   email      String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model health_profile {
+  id           String   @id @default(uuid())
+  user_id      String   @unique
+  user         user     @relation(fields: [user_id], references: [id])
+  height       Float? // in cm
+  weight       Float? // in kg
+  sleep_hours  String? // less-6, 6-7, 7-8, more-8
+  alcohol      String? // none, 1-3, 4-7, more
+  sugar_intake String? // low, moderate, high
+  is_smoker    Boolean? // true = smoker, false = non-smoker
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }

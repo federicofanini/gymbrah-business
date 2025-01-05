@@ -35,8 +35,8 @@ export const sidebarItems = {
       ],
     },
     {
-      title: "About you",
-      url: "/dashboard",
+      title: "Health Profile",
+      url: "/dashboard/health-profile",
       icon: User,
       isActive: true,
       items: [
