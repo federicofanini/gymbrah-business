@@ -2,17 +2,55 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dumbbell } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getActiveWorkout } from "@/actions/workout/get-workouts";
+import { toast } from "sonner";
+import { type ActionResponse } from "@/actions/types/action-response";
+import { Badge } from "../ui/badge";
+
+interface Exercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  isCompleted: boolean;
+}
 
 export function WorkoutPlan() {
-  const [exercises, setExercises] = useState({
-    pushups: false,
-    pullups: false,
-    chinups: false,
-    situps: false,
-  });
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => {
+    async function fetchActiveWorkout() {
+      try {
+        const result = await getActiveWorkout();
+
+        if (!result) {
+          throw new Error("No response from server");
+        }
+
+        if (result.data) {
+          const response = result.data as ActionResponse;
+          if (response.success && response.data) {
+            setExercises(
+              response.data.exercises.map((exercise: Exercise) => ({
+                ...exercise,
+                isCompleted: false,
+              }))
+            );
+          } else {
+            toast.error(response.error || "Failed to load workout plan");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch active workout:", error);
+        toast.error("Failed to load workout plan");
+      }
+    }
+
+    fetchActiveWorkout();
+  }, []);
 
   const triggerConfetti = () => {
     confetti({
@@ -22,15 +60,17 @@ export function WorkoutPlan() {
     });
   };
 
-  const handleCheck = (exercise: keyof typeof exercises) => {
+  const handleCheck = (exerciseId: string) => {
     setExercises((prev) => {
-      const newState = { ...prev, [exercise]: !prev[exercise] };
-
-      if (newState[exercise]) {
-        triggerConfetti();
-      }
-
-      return newState;
+      return prev.map((exercise) => {
+        if (exercise.id === exerciseId) {
+          if (!exercise.isCompleted) {
+            triggerConfetti();
+          }
+          return { ...exercise, isCompleted: !exercise.isCompleted };
+        }
+        return exercise;
+      });
     });
   };
 
@@ -40,65 +80,30 @@ export function WorkoutPlan() {
         <CardTitle className="text-lg">Daily Workout Plan</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="pushups"
-            checked={exercises.pushups}
-            onCheckedChange={() => handleCheck("pushups")}
-          />
-          <label
-            htmlFor="pushups"
-            className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            <Dumbbell className="h-4 w-4" />
-            80 Push-ups
-          </label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="pullups"
-            checked={exercises.pullups}
-            onCheckedChange={() => handleCheck("pullups")}
-          />
-          <label
-            htmlFor="pullups"
-            className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            <Dumbbell className="h-4 w-4" />
-            80 Pull-ups
-          </label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="chinups"
-            checked={exercises.chinups}
-            onCheckedChange={() => handleCheck("chinups")}
-          />
-          <label
-            htmlFor="chinups"
-            className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            <Dumbbell className="h-4 w-4" />
-            80 Chin-ups
-          </label>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="situps"
-            checked={exercises.situps}
-            onCheckedChange={() => handleCheck("situps")}
-          />
-          <label
-            htmlFor="situps"
-            className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            <Dumbbell className="h-4 w-4" />
-            120 Russian Sit-ups
-          </label>
-        </div>
+        {exercises.map((exercise) => (
+          <div key={exercise.id} className="flex items-center space-x-2">
+            <Checkbox
+              id={exercise.id}
+              checked={exercise.isCompleted}
+              onCheckedChange={() => handleCheck(exercise.id)}
+            />
+            <label
+              htmlFor={exercise.id}
+              className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              <Dumbbell className="h-4 w-4" />
+              {exercise.name}{" "}
+              <Badge variant="secondary">
+                {exercise.sets} sets x {exercise.reps} reps
+              </Badge>
+            </label>
+          </div>
+        ))}
+        {exercises.length === 0 && (
+          <div className="text-sm text-muted-foreground">
+            No active workout plan found
+          </div>
+        )}
       </CardContent>
     </Card>
   );
