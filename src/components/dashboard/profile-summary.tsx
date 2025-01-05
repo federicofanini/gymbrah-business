@@ -66,7 +66,11 @@ export function ProfileSummary() {
           {profile.is_smoker !== null && (
             <div className="flex justify-between items-center rounded-md bg-muted p-2 text-sm">
               <div className="flex items-center gap-1.5">
-                <Trophy className="h-3.5 w-3.5" />
+                {profile.is_smoker ? (
+                  <Cigarette className="h-3.5 w-3.5" />
+                ) : (
+                  <Trophy className="h-3.5 w-3.5" />
+                )}
                 <span className="font-medium">
                   {profile.is_smoker ? "Smoker" : "Non-Smoker"}
                 </span>

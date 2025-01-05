@@ -35,6 +35,7 @@ model user {
   created_at     DateTime        @default(now())
   updated_at     DateTime        @updatedAt
   health_profile health_profile?
+  workouts       workout[]
 }
 
 model waitlist {
@@ -56,4 +57,31 @@ model health_profile {
   is_smoker    Boolean? // true = smoker, false = non-smoker
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+model workout {
+  id        String             @id @default(uuid())
+  user_id   String
+  user      user               @relation(fields: [user_id], references: [id])
+  exercises workout_exercise[]
+  selected  Boolean            @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+}
+
+model workout_exercise {
+  id         String   @id @default(uuid())
+  workout_id String
+  workout    workout  @relation(fields: [workout_id], references: [id], onDelete: Cascade)
+  name       String // e.g. "Push-ups", "Bench Press"
+  reps       Int // e.g. 20 pushups
+  sets       Int // e.g. 3 sets
+  weight     Float? // Optional: for weighted exercises (in kg)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([workout_id])
 }
