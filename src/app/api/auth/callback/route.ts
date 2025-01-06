@@ -13,6 +13,10 @@ export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
   const provider = requestUrl.searchParams.get("provider");
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : process.env.APP_URL!;
 
   if (provider) {
     cookieStore.set(Cookies.PreferredSignInProvider, provider, {
@@ -49,12 +53,12 @@ export async function GET(req: NextRequest) {
         .single();
 
       if (!error && userData?.full_name) {
-        return NextResponse.redirect(`${requestUrl.origin}/dashboard`);
+        return NextResponse.redirect(`${baseUrl}/dashboard`);
       }
 
-      return NextResponse.redirect(`${requestUrl.origin}/onboarding`);
+      return NextResponse.redirect(`${baseUrl}/onboarding`);
     }
   }
 
-  return NextResponse.redirect(requestUrl.origin);
+  return NextResponse.redirect(baseUrl);
 }
