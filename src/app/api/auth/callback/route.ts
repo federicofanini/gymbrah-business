@@ -13,10 +13,9 @@ export async function GET(req: NextRequest) {
   const requestUrl = new URL(req.url);
   const code = requestUrl.searchParams.get("code");
   const provider = requestUrl.searchParams.get("provider");
-  const baseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : process.env.APP_URL!;
+
+  // Get the base URL from the request origin
+  const baseUrl = requestUrl.origin;
 
   if (provider) {
     cookieStore.set(Cookies.PreferredSignInProvider, provider, {
