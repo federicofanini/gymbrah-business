@@ -30,7 +30,7 @@ export function Header() {
           />
         </Link>
         <div className="hidden lg:block">
-          <Link href="/signup" className="text-xs text-secondary underline">
+          <Link href="/login" className="text-xs text-secondary underline">
             <OutlinedButton variant="secondary" className="text-xs h-6">
               {siteConfig.cta}
             </OutlinedButton>

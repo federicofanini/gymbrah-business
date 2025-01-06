@@ -91,7 +91,7 @@ function HeroCTA() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.8, ease }}
       >
-        <Link href="/signup" className="text-sm text-secondary underline">
+        <Link href="/login" className="text-sm text-secondary underline">
           <OutlinedButton>{siteConfig.hero.cta}</OutlinedButton>
         </Link>
       </motion.div>
