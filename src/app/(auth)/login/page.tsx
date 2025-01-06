@@ -1,5 +1,4 @@
 import { ConsentBanner } from "@/components/consent-banner";
-import { DesktopCommandMenuSignIn } from "@/components/desktop-command-menu-sign-in";
 import { GithubSignIn } from "@/components/github-sign-in";
 import { GoogleSignIn } from "@/components/google-sign-in";
 import { Cookies } from "@/utils/constants";
@@ -20,17 +19,7 @@ export const metadata: Metadata = {
   title: "Login",
 };
 
-interface PageProps {
-  searchParams?: {
-    return_to?: string;
-  };
-}
-
-export default async function Page({ searchParams }: PageProps) {
-  if (searchParams?.return_to === "desktop/command") {
-    return <DesktopCommandMenuSignIn />;
-  }
-
+export default async function Page() {
   const cookieStore = await cookies();
   const preferred = cookieStore.get(Cookies.PreferredSignInProvider);
   const showTrackingConsent =
