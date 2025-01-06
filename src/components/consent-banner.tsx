@@ -30,15 +30,13 @@ export function ConsentBanner() {
       </div>
       <div className="flex justify-end space-x-2">
         <Button
-          className="rounded-full h-8"
+          variant="outline"
+          className="h-6"
           onClick={() => trackingAction.execute(false)}
         >
           Deny
         </Button>
-        <Button
-          className="rounded-full h-8"
-          onClick={() => trackingAction.execute(true)}
-        >
+        <Button className="h-6" onClick={() => trackingAction.execute(true)}>
           Accept
         </Button>
       </div>

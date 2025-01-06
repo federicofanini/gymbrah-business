@@ -9,9 +9,15 @@ import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { userAgent } from "next/server";
 import Image from "next/image";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
 
 export const metadata: Metadata = {
-  title: "Login | GymBrah",
+  title: "Login",
 };
 
 interface PageProps {
@@ -87,14 +93,31 @@ export default async function Page({ searchParams }: PageProps) {
             </div>
 
             <p className="font-medium pb-1 text-2xl text-muted-foreground">
-              Automate financial tasks, <br /> stay organized, and make
-              <br />
-              informed decisions
-              <br /> effortlessly.
+              Every achievement counts. <br />
+              Track your fitness journey, <br />
+              keep yourself accountable, <br />
+              and stay motivated every step of the way.
             </p>
 
             <div className="pointer-events-auto mt-6 flex flex-col mb-6">
               {preferredSignInOption}
+
+              <Accordion
+                type="single"
+                collapsible
+                className="border-t-[1px] pt-2 mt-6"
+              >
+                <AccordionItem value="item-1" className="border-0">
+                  <AccordionTrigger className="justify-center space-x-2 flex text-sm">
+                    <span>More options</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="mt-4">
+                    <div className="flex flex-col space-y-4">
+                      {moreSignInOptions}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
 
             <p className="text-xs text-muted-foreground">
