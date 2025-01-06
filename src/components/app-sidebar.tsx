@@ -1,5 +1,5 @@
 import * as React from "react";
-import { NavMain } from "@/components/nav-main";
+// import { NavMain } from "@/components/nav-main";
 // import { NavProjects } from "@/components/nav-projects";
 import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
@@ -15,6 +15,7 @@ import {
 
 import Image from "next/image";
 import Link from "next/link";
+import { NavProjects } from "./nav-projects";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -37,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain />
+        <NavProjects />
         <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

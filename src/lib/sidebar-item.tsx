@@ -14,35 +14,39 @@ import {
   Feather,
   Github,
   User,
+  Crosshair,
+  Trophy,
+  HeaterIcon,
+  HeartPulse,
 } from "lucide-react";
 
 export const sidebarItems = {
   navMain: [
     {
       title: "Blackboard",
-      url: "/dashboard",
+      url: "/blackboard",
       icon: BicepsFlexed,
       isActive: true,
       items: [
         {
           title: "Workouts",
-          url: "/dashboard/workouts",
+          url: "/blackboard/workouts",
         },
         {
           title: "Achievements",
-          url: "/dashboard/achievements",
+          url: "/blackboard/achievements",
         },
       ],
     },
     {
       title: "Health Profile",
-      url: "/dashboard/health-profile",
+      url: "/blackboard/health-profile",
       icon: User,
       isActive: true,
       items: [
         {
           title: "Profile",
-          url: "/dashboard/profile",
+          url: "/blackboard/profile",
         },
       ],
     },
@@ -59,21 +63,26 @@ export const sidebarItems = {
       icon: Github,
     },
   ],
-  projects: [
+  items: [
     {
-      name: "Design Engineering",
-      url: "#",
+      name: "Blackboard",
+      url: "/blackboard",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
+      name: "Workouts",
+      url: "/blackboard/workouts",
+      icon: Dumbbell,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Achievements",
+      url: "/blackboard/achievements",
+      icon: Trophy,
+    },
+    {
+      name: "Health Profile",
+      url: "/blackboard/health-profile",
+      icon: HeartPulse,
     },
   ],
 };
