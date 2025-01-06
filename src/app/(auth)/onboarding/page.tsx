@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createUserProfile, getUserFullName } from "./actions";
-import Link from "next/link";
+import type { ActionResponse } from "@/actions/types/action-response";
+import { toast } from "sonner";
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     fullName: "",
   });
-  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -30,13 +30,11 @@ export default function OnboardingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setIsSubmitting(true);
 
     try {
       if (!formData.fullName.trim()) {
-        setError("Please enter your name");
-        setIsSubmitting(false);
+        toast.error("Please enter your name");
         return;
       }
 
@@ -44,17 +42,23 @@ export default function OnboardingPage() {
         fullName: formData.fullName.trim(),
       });
 
-      if (result.success) {
-        // Redirect immediately after successful save
-        router.push("/dashboard");
-        router.refresh(); // Refresh to ensure new data is loaded
-      } else {
-        setError("Failed to update profile. Please try again.");
-        console.error("Error:", result?.error);
+      if (!result) {
+        throw new Error("No response from server");
+      }
+
+      if (result.data) {
+        const response = result.data as ActionResponse;
+        if (response.success) {
+          // Redirect immediately after successful save
+          router.push("/dashboard");
+          router.refresh(); // Refresh to ensure new data is loaded
+        } else {
+          toast.error(response.error || "Failed to update profile");
+        }
       }
     } catch (error) {
-      setError("An unexpected error occurred. Please try again.");
       console.error("Error creating user profile:", error);
+      toast.error("An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -91,7 +95,6 @@ export default function OnboardingPage() {
                 }
                 disabled={isSubmitting}
               />
-              {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
             </div>
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

@@ -12,7 +12,7 @@ export function CTA() {
         </p>
 
         <div className="flex justify-center">
-          <Link href="/signup">
+          <Link href="/login">
             <OutlinedButton className="flex items-center gap-2">
               Get Started
             </OutlinedButton>

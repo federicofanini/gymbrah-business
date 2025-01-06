@@ -1,68 +1,88 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { createSafeActionClient } from "next-safe-action";
+import { z } from "zod";
+import type { ActionResponse } from "@/actions/types/action-response";
 
-export async function createUserProfile(formData: { fullName: string }) {
-  try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+const createProfileSchema = z.object({
+  fullName: z.string().min(1),
+});
 
-    if (error || !user) {
-      console.error(error);
-      throw new Error("No authenticated user found");
-    }
+export const createUserProfile = createSafeActionClient()
+  .schema(createProfileSchema)
+  .action(async ({ parsedInput }): Promise<ActionResponse> => {
+    try {
+      const { fullName } = parsedInput;
+      const supabase = await createClient();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
-    // First check if user exists
-    const { data: existingUser, error: fetchError } = await supabase
-      .from("user")
-      .select()
-      .eq("email", user.email)
-      .single();
+      if (error || !user) {
+        return { success: false, error: "No authenticated user found" };
+      }
 
-    if (fetchError && fetchError.code !== "PGRST116") {
-      // PGRST116 means no rows returned
-      console.error(fetchError);
-      throw fetchError;
-    }
-
-    let profile;
-    let updateError;
-
-    if (existingUser) {
-      // Update existing user
-      const { data, error } = await supabase
+      // First check if user exists
+      const { data: existingUser, error: fetchError } = await supabase
         .from("user")
-        .update({ full_name: formData.fullName })
-        .eq("email", user.email)
         .select()
+        .eq("id", user.id)
         .single();
-      profile = data;
-      updateError = error;
-    } else {
-      // Insert new user
-      const { data, error } = await supabase
-        .from("user")
-        .insert([{ email: user.email, full_name: formData.fullName }])
-        .select()
-        .single();
-      profile = data;
-      updateError = error;
-    }
 
-    if (updateError) {
-      console.error(updateError);
-      throw updateError;
-    }
+      if (fetchError && fetchError.code !== "PGRST116") {
+        // PGRST116 means no rows returned
+        return { success: false, error: fetchError.message };
+      }
 
-    return { success: true, profile };
-  } catch (error) {
-    console.error("Error creating user profile:", error);
-    return { success: false, error };
-  }
-}
+      let profile;
+      let updateError;
+
+      const now = new Date().toISOString();
+
+      if (existingUser) {
+        // Update existing user
+        const { data, error } = await supabase
+          .from("user")
+          .update({
+            full_name: fullName,
+            updated_at: now,
+            created_at: existingUser.created_at,
+          })
+          .eq("id", user.id)
+          .select()
+          .single();
+        profile = data;
+        updateError = error;
+      } else {
+        // Insert new user
+        const { data, error } = await supabase
+          .from("user")
+          .insert([
+            {
+              id: user.id,
+              email: user.email,
+              full_name: fullName,
+              created_at: now,
+              updated_at: now,
+            },
+          ])
+          .select()
+          .single();
+        profile = data;
+        updateError = error;
+      }
+
+      if (updateError) {
+        return { success: false, error: updateError.message };
+      }
+
+      return { success: true, data: profile };
+    } catch (error) {
+      return { success: false, error: "Unexpected error occurred" };
+    }
+  });
 
 export async function getUserFullName() {
   try {
@@ -79,7 +99,7 @@ export async function getUserFullName() {
     const { data, error } = await supabase
       .from("user")
       .select("full_name")
-      .eq("email", user.email)
+      .eq("id", user.id)
       .single();
 
     if (error) {
