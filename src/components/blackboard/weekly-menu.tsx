@@ -7,6 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DotIcon } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { WorkoutCard } from "./workout-card";
+import { DailyWorkout } from "./daily-workout";
+import { FinishButton } from "./finish-button";
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start on Monday
@@ -69,8 +71,10 @@ export function WeeklyMenu() {
                     : format(day.date, "MMM d, yyyy - EEEE")}
                 </span>
                 <Separator className="my-2" />
-                <div className="flex items-center gap-1 mt-4">
+                <div className="space-y-4">
                   <WorkoutCard />
+                  <DailyWorkout />
+                  <FinishButton />
                 </div>
               </TabsContent>
             ))}
