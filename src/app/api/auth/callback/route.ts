@@ -1,3 +1,5 @@
+"use server";
+
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
