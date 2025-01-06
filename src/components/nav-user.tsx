@@ -21,23 +21,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getUserFullName } from "@/app/(auth)/onboarding/actions";
+import { getUserMetadata } from "@/utils/supabase/cached-queries";
 
 export async function NavUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const userData = await getUserMetadata();
 
-  if (error || !user) return null;
-
-  // Temporarily hardcode user name until database is available
-  const fullName = await getUserFullName();
+  if (!userData) return null;
 
   const signOut = async () => {
     "use server";
@@ -56,17 +48,24 @@ export async function NavUser() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage
+                  src={userData.avatar_url || undefined}
+                  alt={userData.full_name}
+                  className="rounded-lg"
+                />
                 <AvatarFallback
                   className={`rounded-lg bg-gradient-to-br from-green-500 via-teal-500 to-green-800`}
                 >
                   <span className="text-white">
-                    {fullName[0]?.toUpperCase() || "U"}
+                    {userData.full_name?.[0]?.toUpperCase() || "U"}
                   </span>
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{fullName}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">
+                  {userData.full_name}
+                </span>
+                <span className="truncate text-xs">{userData.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -79,17 +78,24 @@ export async function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage
+                    src={userData.avatar_url || undefined}
+                    alt={userData.full_name}
+                    className="rounded-lg"
+                  />
                   <AvatarFallback
                     className={`rounded-lg bg-gradient-to-br from-green-500 via-teal-500 to-green-800`}
                   >
                     <span className="text-white">
-                      {fullName[0]?.toUpperCase() || "U"}
+                      {userData.full_name?.[0]?.toUpperCase() || "U"}
                     </span>
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{fullName}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold">
+                    {userData.full_name}
+                  </span>
+                  <span className="truncate text-xs">{userData.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
