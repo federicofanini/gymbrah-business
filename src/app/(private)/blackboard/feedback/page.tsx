@@ -1,4 +1,4 @@
-import FeedbackPage from "@/components/dashboard/feedback/feedback-page";
+import FeedbackPage from "@/components/blackboard/feedback/feedback-page";
 
 export default function Feedback() {
   return <FeedbackPage />;

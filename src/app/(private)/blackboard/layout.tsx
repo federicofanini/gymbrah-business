@@ -11,8 +11,8 @@ interface DashboardLayoutProps {
 }
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Dashboard",
+  title: "Blackboard",
+  description: "Blackboard",
 };
 
 export default async function DashboardLayout({

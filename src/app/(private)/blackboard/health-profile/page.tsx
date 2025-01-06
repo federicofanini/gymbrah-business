@@ -1,4 +1,4 @@
-import { HealthProfilePage } from "@/components/dashboard/health-profile/health-profile-page";
+import { HealthProfilePage } from "@/components/blackboard/health-profile/health-profile-page";
 
 export default function HealthProfile() {
   return <HealthProfilePage />;
