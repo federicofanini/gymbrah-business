@@ -15,7 +15,11 @@ export function GoogleSignIn() {
 
   const handleSignIn = async () => {
     setLoading(true);
-    const redirectTo = new URL("/api/auth/callback", window.location.origin);
+    const baseUrl =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : process.env.NEXT_PUBLIC_APP_URL;
+    const redirectTo = new URL("/api/auth/callback", baseUrl);
 
     if (returnTo) {
       redirectTo.searchParams.append("return_to", returnTo);

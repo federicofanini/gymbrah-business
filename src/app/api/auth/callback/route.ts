@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
   const provider = searchParams.get("provider");
   const returnTo = searchParams.get("return_to") ?? "/";
 
+  console.log("returnTo", returnTo);
+
   if (provider) {
     cookieStore.set(Cookies.PreferredSignInProvider, provider, {
       expires: addYears(new Date(), 1),
@@ -54,6 +56,7 @@ export async function GET(req: NextRequest) {
 
         const redirectPath =
           !userError && userData?.full_name ? "/dashboard" : "/onboarding";
+
         const forwardedHost = req.headers.get("x-forwarded-host");
         const isLocalEnv = process.env.NODE_ENV === "development";
 
@@ -70,5 +73,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/error`);
+  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
 }
