@@ -27,6 +27,7 @@ export async function getWorkouts(): Promise<ActionResponse> {
       },
       select: {
         id: true,
+        name: true,
         selected: true,
         created_at: true,
         exercises: {
@@ -55,6 +56,7 @@ export async function getWorkouts(): Promise<ActionResponse> {
 
     const formattedWorkouts = workouts.map((workout) => ({
       id: workout.id,
+      name: workout.name,
       selected: workout.selected,
       created_at: workout.created_at,
       exercises: workout.exercises.map((exercise) => ({

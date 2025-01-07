@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { getWorkouts } from "@/actions/workout/get-workouts";
+import { selectWorkout } from "@/actions/workout/select-workout";
 
 interface Exercise {
   id: string;
@@ -25,6 +26,7 @@ interface Exercise {
 
 interface Workout {
   id: string;
+  name: string;
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
@@ -54,18 +56,42 @@ export function SavedWorkouts({ userId }: { userId: string }) {
     fetchWorkouts();
   }, [userId]);
 
-  const handleSelectWorkout = async (workoutId: string) => {
+  const handleSelectWorkout = async (
+    workoutId: string,
+    isCurrentlySelected: boolean
+  ) => {
     try {
-      setWorkouts(
-        workouts.map((workout) => ({
-          ...workout,
-          selected: workout.id === workoutId,
-        }))
-      );
-      toast.success("Workout selected successfully");
+      if (!isCurrentlySelected) {
+        const response = await selectWorkout({ workoutId });
+        if (response?.data?.success) {
+          setWorkouts(
+            workouts.map((workout) => ({
+              ...workout,
+              selected: workout.id === workoutId,
+            }))
+          );
+          toast.success("Workout selected successfully");
+        } else {
+          toast.error("Failed to select workout");
+        }
+      } else {
+        // Deselect the workout
+        const response = await selectWorkout({ workoutId: "" });
+        if (response?.data?.success) {
+          setWorkouts(
+            workouts.map((workout) => ({
+              ...workout,
+              selected: false,
+            }))
+          );
+          toast.success("Workout deselected successfully");
+        } else {
+          toast.error("Failed to deselect workout");
+        }
+      }
     } catch (error) {
       console.error("Workout selection error:", error);
-      toast.error("Failed to select workout");
+      toast.error("Failed to update workout selection");
     }
   };
 
@@ -88,7 +114,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">
-                  Created on{" "}
+                  {workout.name}{" "}
                   <Badge variant="outline">
                     {new Date(workout.created_at)
                       .toLocaleDateString("en-US", {
@@ -111,7 +137,9 @@ export function SavedWorkouts({ userId }: { userId: string }) {
                   <div className="flex items-center gap-1">
                     <Switch
                       checked={workout.selected}
-                      onCheckedChange={() => handleSelectWorkout(workout.id)}
+                      onCheckedChange={() =>
+                        handleSelectWorkout(workout.id, workout.selected)
+                      }
                     />
                     <span className="text-xs text-muted-foreground">
                       Active
