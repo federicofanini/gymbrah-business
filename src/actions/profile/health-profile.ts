@@ -4,6 +4,8 @@ import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
+import { appErrors } from "../types/errors";
+import { prisma } from "@/lib/db";
 
 const schema = z.object({
   height: z.string().transform((val) => parseFloat(val) || null),
@@ -26,31 +28,24 @@ export async function getHealthProfile(): Promise<ActionResponse> {
     if (userError || !user) {
       return {
         success: false,
-        error: "Unauthorized",
+        error: appErrors.UNAUTHORIZED,
       };
     }
 
-    const { data, error } = await supabase
-      .from("health_profile")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
-
-    if (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
+    const healthProfile = await prisma.health_profile.findUnique({
+      where: {
+        user_id: user.id,
+      },
+    });
 
     return {
       success: true,
-      data,
+      data: healthProfile,
     };
   } catch (error) {
     return {
       success: false,
-      error: "An unexpected error occurred",
+      error: appErrors.UNEXPECTED_ERROR,
     };
   }
 }
@@ -61,55 +56,53 @@ export const updateHealthProfile = createSafeActionClient()
     try {
       const supabase = await createClient();
 
-      // Get current user
       const {
         data: { user },
         error: userError,
       } = await supabase.auth.getUser();
+
       if (userError || !user) {
         return {
           success: false,
-          error: "Unauthorized",
+          error: appErrors.UNAUTHORIZED,
         };
       }
 
-      // Update or insert health profile
-      const { data, error } = await supabase
-        .from("health_profile")
-        .upsert(
-          {
-            id: crypto.randomUUID(), // Add unique ID for new records
-            user_id: user.id,
-            height: input.parsedInput.height,
-            weight: input.parsedInput.weight,
-            sleep_hours: input.parsedInput.sleep,
-            alcohol: input.parsedInput.alcohol,
-            sugar_intake: input.parsedInput.sugarIntake,
-            is_smoker: input.parsedInput.isSmoker,
-            updated_at: new Date().toISOString(),
-          },
-          {
-            onConflict: "user_id",
-          }
-        )
-        .select()
-        .single();
-
-      if (error) {
-        return {
-          success: false,
-          error: error.message,
-        };
-      }
+      const healthProfile = await prisma.health_profile.upsert({
+        where: {
+          user_id: user.id,
+        },
+        update: {
+          height: input.parsedInput.height,
+          weight: input.parsedInput.weight,
+          sleep_hours: input.parsedInput.sleep,
+          alcohol: input.parsedInput.alcohol,
+          sugar_intake: input.parsedInput.sugarIntake,
+          is_smoker: input.parsedInput.isSmoker,
+          updated_at: new Date(),
+        },
+        create: {
+          id: crypto.randomUUID(),
+          user_id: user.id,
+          height: input.parsedInput.height,
+          weight: input.parsedInput.weight,
+          sleep_hours: input.parsedInput.sleep,
+          alcohol: input.parsedInput.alcohol,
+          sugar_intake: input.parsedInput.sugarIntake,
+          is_smoker: input.parsedInput.isSmoker,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
 
       return {
         success: true,
-        data,
+        data: healthProfile,
       };
     } catch (error) {
       return {
         success: false,
-        error: "An unexpected error occurred",
+        error: appErrors.UNEXPECTED_ERROR,
       };
     }
   });

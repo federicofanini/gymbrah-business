@@ -50,7 +50,7 @@ export default function OnboardingPage() {
         const response = result.data as ActionResponse;
         if (response.success) {
           // Redirect immediately after successful save
-          router.push("/dashboard");
+          router.push("/blackboard");
           router.refresh(); // Refresh to ensure new data is loaded
         } else {
           toast.error(response.error || "Failed to update profile");

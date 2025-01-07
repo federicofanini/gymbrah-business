@@ -5,14 +5,15 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardHeader } from "@/components/dashboard-header";
+import { prisma } from "@/lib/db";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description: "Dashboard",
+  title: "Blackboard",
+  description: "Blackboard",
 };
 
 export default async function DashboardLayout({
@@ -25,11 +26,14 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const { data: userData, error: userError } = await supabase
-    .from("user")
-    .select("full_name")
-    .eq("email", data.user.email)
-    .single();
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: data.user.id,
+    },
+    select: {
+      full_name: true,
+    },
+  });
 
   if (!userData?.full_name) {
     redirect("/onboarding");

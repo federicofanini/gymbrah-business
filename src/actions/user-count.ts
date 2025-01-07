@@ -2,30 +2,22 @@
 
 import { createSafeActionClient } from "next-safe-action";
 import type { ActionResponse } from "./types/action-response";
-import { createClient } from "@/utils/supabase/server";
+import { appErrors } from "./types/errors";
+import { prisma } from "@/lib/db";
 
 export const getUserCount = createSafeActionClient().action(
   async (): Promise<ActionResponse> => {
     try {
-      const supabase = await createClient();
-
-      const { count, error } = await supabase
-        .from("user")
-        .select("id", { count: "exact", head: true });
-
-      if (error) {
-        throw error;
-      }
+      const count = await prisma.user.count();
 
       return {
         success: true,
-        data: count ?? 0,
+        data: count,
       };
     } catch (error) {
       return {
         success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to get user count",
+        error: appErrors.UNEXPECTED_ERROR,
       };
     }
   }

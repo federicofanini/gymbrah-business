@@ -2,47 +2,114 @@
 
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
-import { prisma } from "@/lib/db";
+import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
+import { appErrors } from "../types/errors";
+import { prisma } from "@/lib/db";
 
-// Define the exercise input schema
 const exerciseSchema = z.object({
-  name: z.string(),
-  reps: z.number().int().positive(),
-  sets: z.number().int().positive(),
-  weight: z.number().optional(), // Optional for bodyweight exercises
+  exercise_id: z.string(),
+  sets: z.number().min(1),
+  reps: z.number().min(1),
+  weight: z.number().nullable(),
+  duration: z.number().nullable(),
 });
 
-// Schema for creating a complete workout
-const createWorkoutSchema = z.object({
-  userId: z.string(),
-  exercises: z.array(exerciseSchema),
+const schema = z.object({
+  name: z.string().min(1, "Workout name is required"),
+  exercises: z
+    .array(exerciseSchema)
+    .min(1, "At least one exercise is required"),
 });
 
-// Schema for selecting/deleting a workout
-const workoutIdSchema = z.object({
-  workoutId: z.string(),
-});
+export async function getWorkouts(): Promise<ActionResponse> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return {
+        success: false,
+        error: appErrors.UNAUTHORIZED,
+      };
+    }
+
+    const workouts = await prisma.workout.findMany({
+      where: {
+        user_id: user.id,
+      },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    return {
+      success: true,
+      data: workouts,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: appErrors.UNEXPECTED_ERROR,
+    };
+  }
+}
 
 export const createWorkout = createSafeActionClient()
-  .schema(createWorkoutSchema)
+  .schema(schema)
   .action(async (input): Promise<ActionResponse> => {
     try {
-      // Create workout
+      const supabase = await createClient();
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        return {
+          success: false,
+          error: appErrors.UNAUTHORIZED,
+        };
+      }
+
       const workout = await prisma.workout.create({
         data: {
-          user_id: input.parsedInput.userId,
+          id: crypto.randomUUID(),
+          user_id: user.id,
+          name: input.parsedInput.name,
+          created_at: new Date(),
+          updated_at: new Date(),
           exercises: {
             create: input.parsedInput.exercises.map((exercise) => ({
-              name: exercise.name,
-              reps: exercise.reps,
+              id: crypto.randomUUID(),
+              exercise_id: exercise.exercise_id,
               sets: exercise.sets,
+              reps: exercise.reps,
               weight: exercise.weight,
+              duration: exercise.duration,
+              created_at: new Date(),
+              updated_at: new Date(),
             })),
           },
         },
         include: {
-          exercises: true,
+          exercises: {
+            include: {
+              exercise: true,
+            },
+          },
         },
       });
 
@@ -53,68 +120,7 @@ export const createWorkout = createSafeActionClient()
     } catch (error) {
       return {
         success: false,
-        error: "An unexpected error occurred",
-      };
-    }
-  });
-
-export const selectWorkout = createSafeActionClient()
-  .schema(workoutIdSchema)
-  .action(async (input): Promise<ActionResponse> => {
-    try {
-      // First, unselect any currently selected workout
-      await prisma.workout.updateMany({
-        where: {
-          selected: true,
-        },
-        data: {
-          selected: false,
-        },
-      });
-
-      // Then select the specified workout
-      const workout = await prisma.workout.update({
-        where: {
-          id: input.parsedInput.workoutId,
-        },
-        data: {
-          selected: true,
-        },
-        include: {
-          exercises: true,
-        },
-      });
-
-      return {
-        success: true,
-        data: workout,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Failed to select workout",
-      };
-    }
-  });
-
-export const deleteWorkout = createSafeActionClient()
-  .schema(workoutIdSchema)
-  .action(async (input): Promise<ActionResponse> => {
-    try {
-      const workout = await prisma.workout.delete({
-        where: {
-          id: input.parsedInput.workoutId,
-        },
-      });
-
-      return {
-        success: true,
-        data: workout,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Failed to delete workout",
+        error: appErrors.UNEXPECTED_ERROR,
       };
     }
   });

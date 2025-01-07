@@ -37,6 +37,7 @@ model user {
   health_profile health_profile?
   workouts       workout[]
   feedback       feedback[]
+  exercises      exercises[]
 }
 
 model waitlist {
@@ -44,6 +45,21 @@ model waitlist {
   email      String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+}
+
+model feedback {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       user     @relation(fields: [user_id], references: [id])
+  message    String   @db.Text
+  rating     Int // 1-5 rating scale
+  category   String // e.g. "bug", "feature-request", "general"
+  status     String   @default("pending") // e.g. "pending", "in-review", "resolved"
+  upvotes    Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
 }
 
 model health_profile {
@@ -60,44 +76,52 @@ model health_profile {
   updated_at   DateTime @updatedAt
 }
 
-model workout {
-  id        String             @id @default(uuid())
-  user_id   String
-  user      user               @relation(fields: [user_id], references: [id])
-  exercises workout_exercise[]
-  selected  Boolean            @default(false)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@index([user_id])
-}
-
 model workout_exercise {
-  id         String   @id @default(uuid())
-  workout_id String
-  workout    workout  @relation(fields: [workout_id], references: [id], onDelete: Cascade)
-  name       String // e.g. "Push-ups", "Bench Press"
-  reps       Int // e.g. 20 pushups
-  sets       Int // e.g. 3 sets
-  weight     Float? // Optional: for weighted exercises (in kg)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String    @id @default(uuid())
+  exercise_id String
+  exercise    exercises @relation(fields: [exercise_id], references: [id])
+  reps        Int?
+  sets        Int?
+  weight      Float?
+  duration    Int?
+  workout_id  String
+  workout     workout   @relation(fields: [workout_id], references: [id])
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 
+  @@index([exercise_id])
   @@index([workout_id])
 }
 
-model feedback {
-  id         String   @id @default(uuid())
+model workout {
+  id         String             @id @default(uuid())
+  name       String
   user_id    String
-  user       user     @relation(fields: [user_id], references: [id])
-  message    String   @db.Text
-  rating     Int // 1-5 rating scale
-  category   String // e.g. "bug", "feature-request", "general"
-  status     String   @default("pending") // e.g. "pending", "in-review", "resolved"
-  upvotes    Int      @default(0)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  user       user               @relation(fields: [user_id], references: [id])
+  selected   Boolean            @default(false)
+  exercises  workout_exercise[]
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
 
   @@index([user_id])
+}
+
+model exercises {
+  id               String             @id @default(uuid())
+  category         String // e.g. "Upper Body", "Lower Body", "Core"
+  name             String // e.g. "Push-ups", "Bench Press"
+  muscles          String[] // e.g. ["Chest", "Triceps", "Shoulders"]
+  outcomes         String[] // e.g. ["Strength", "Hypertrophy"]
+  reps             Int? // e.g. 20 pushups
+  sets             Int? // e.g. 3 sets
+  duration         Int? // e.g. 30 seconds
+  weight           Float? // Optional: for weighted exercises (in kg)
+  creator_id       String? // Optional: ID of user who created custom exercise
+  creator_name     String? // gymbrah or community 
+  creator          user?              @relation(fields: [creator_id], references: [id])
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  workout_exercise workout_exercise[]
+
+  @@index([creator_id])
 }

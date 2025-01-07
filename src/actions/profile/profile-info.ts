@@ -5,6 +5,7 @@ import { z } from "zod";
 import type { ActionResponse } from "../types/action-response";
 import { createClient } from "@/utils/supabase/server";
 import { appErrors } from "../types/errors";
+import { prisma } from "@/lib/db";
 
 const profileInfoSchema = z.object({
   full_name: z.string().min(1),
@@ -38,21 +39,19 @@ export const getUserInfo = createSafeActionClient().action(
       } = await supabase.auth.getUser();
 
       if (authError || !user) {
-        console.error("Auth error:", authError);
         return {
           success: false,
           error: appErrors.UNAUTHORIZED,
         };
       }
 
-      const { data, error } = await supabase
-        .from("user")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      const userData = await prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
 
-      if (error) {
-        console.error("Database error:", error);
+      if (!userData) {
         return {
           success: false,
           error: appErrors.DATABASE_ERROR,
@@ -61,10 +60,9 @@ export const getUserInfo = createSafeActionClient().action(
 
       return {
         success: true,
-        data,
+        data: userData,
       };
     } catch (error) {
-      console.error("Unexpected error:", error);
       return {
         success: false,
         error: appErrors.UNEXPECTED_ERROR,
@@ -80,27 +78,17 @@ export const checkUsernameAvailability = createSafeActionClient()
       parsedInput,
     }): Promise<ActionResponse<{ available: boolean }>> => {
       try {
-        const supabase = await createClient();
-        const { data, error } = await supabase
-          .from("user")
-          .select("username")
-          .eq("username", parsedInput.username)
-          .single();
-
-        if (error && error.code === "PGRST116") {
-          // No match found - username is available
-          return {
-            success: true,
-            data: { available: true },
-          };
-        }
+        const user = await prisma.user.findUnique({
+          where: {
+            username: parsedInput.username,
+          },
+        });
 
         return {
           success: true,
-          data: { available: false },
+          data: { available: !user },
         };
       } catch (error) {
-        console.error("Username availability check error:", error);
         return {
           success: false,
           error: appErrors.UNEXPECTED_ERROR,
@@ -121,7 +109,6 @@ export const updateProfileInfo = createSafeActionClient()
       } = await supabase.auth.getUser();
 
       if (authError || !user) {
-        console.error("Auth error:", authError);
         return {
           success: false,
           error: appErrors.UNAUTHORIZED,
@@ -129,15 +116,16 @@ export const updateProfileInfo = createSafeActionClient()
       }
 
       // Check username availability before update if username is changed
-      const { data: existingUser } = await supabase
-        .from("user")
-        .select("username")
-        .eq("username", parsedInput.username)
-        .neq("id", user.id)
-        .single();
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username: parsedInput.username,
+          NOT: {
+            id: user.id,
+          },
+        },
+      });
 
       if (existingUser) {
-        console.error("Username taken:", parsedInput.username);
         return {
           success: false,
           error: "Username is already taken",
@@ -145,9 +133,11 @@ export const updateProfileInfo = createSafeActionClient()
       }
 
       // Update profile information in the database
-      const { error: updateError } = await supabase
-        .from("user")
-        .update({
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
           full_name: parsedInput.full_name || "",
           bio: parsedInput.bio || "",
           location: parsedInput.location || "",
@@ -163,24 +153,15 @@ export const updateProfileInfo = createSafeActionClient()
           telegram: parsedInput.telegram || "",
           bsky: parsedInput.bsky || "",
           username: parsedInput.username,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
-
-      if (updateError) {
-        console.error("Database update error:", updateError);
-        return {
-          success: false,
-          error: appErrors.DATABASE_ERROR,
-        };
-      }
+          updated_at: new Date(),
+        },
+      });
 
       return {
         success: true,
         data: { message: "Profile updated successfully" },
       };
     } catch (error) {
-      console.error("Profile update error:", error);
       return {
         success: false,
         error: appErrors.UNEXPECTED_ERROR,
