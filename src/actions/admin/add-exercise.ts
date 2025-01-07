@@ -5,11 +5,23 @@ import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { appErrors } from "@/actions/types/errors";
-import { exercises } from "@/components/blackboard/workout/exercises-list";
+import {
+  exercises,
+  categories,
+} from "@/components/blackboard/workout/exercises-list";
 import { prisma } from "@/lib/db";
 
 const schema = z.object({
-  category: z.string(),
+  category: z.enum([
+    categories.warmUp,
+    categories.upperBody,
+    categories.lowerBody,
+    categories.core,
+    categories.cardio,
+    categories.flexibilityMobility,
+    categories.functionalFullBody,
+    categories.coolDown,
+  ]),
   name: z.string(),
   muscles: z.array(z.string()),
   outcomes: z.array(z.string()),
@@ -37,20 +49,18 @@ export const addExercise = createSafeActionClient()
         };
       }
 
-      const exercise = await prisma.workout_exercise.create({
+      const exercise = await prisma.exercises.create({
         data: {
-          id: crypto.randomUUID(),
-          creator_id: user.id,
           category: input.parsedInput.category,
           name: input.parsedInput.name,
           muscles: input.parsedInput.muscles,
           outcomes: input.parsedInput.outcomes,
-          reps: input.parsedInput.reps || 0,
-          sets: input.parsedInput.sets || 0,
-          duration: input.parsedInput.duration || 0,
-          weight: input.parsedInput.weight || 0,
-          created_at: new Date(),
-          updated_at: new Date(),
+          reps: input.parsedInput.reps,
+          sets: input.parsedInput.sets,
+          duration: input.parsedInput.duration,
+          weight: input.parsedInput.weight,
+          creator_id: user.id,
+          creator_name: "gymbrah",
         },
       });
 
@@ -87,22 +97,20 @@ export const bulkAddExercises = createSafeActionClient().action(
       // Convert exercises object to array of exercise records
       const exerciseRecords = Object.entries(exercises).map(
         ([_, exercise]) => ({
-          id: crypto.randomUUID(),
-          creator_id: user.id,
-          category: "gymbrah",
+          category: exercise.category || categories.functionalFullBody, // Use the category from exercise or default
           name: exercise.name,
           muscles: exercise.muscles,
           outcomes: exercise.outcomes,
-          reps: 0,
-          sets: 0,
-          duration: 0,
-          weight: 0,
-          created_at: new Date(),
-          updated_at: new Date(),
+          reps: null,
+          sets: null,
+          duration: null,
+          weight: null,
+          creator_id: user.id,
+          creator_name: "gymbrah",
         })
       );
 
-      const createdExercises = await prisma.workout_exercise.createMany({
+      const createdExercises = await prisma.exercises.createMany({
         data: exerciseRecords,
       });
 
