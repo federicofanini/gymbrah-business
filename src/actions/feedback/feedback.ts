@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
+import { prisma } from "@/lib/db";
 
 const schema = z.object({
   message: z.string().min(10).max(1000),
@@ -36,9 +37,9 @@ export const createFeedback = createSafeActionClient()
         };
       }
 
-      const { data, error } = await supabase.from("feedback").insert([
-        {
-          id: crypto.randomUUID(), // Add unique ID
+      const feedback = await prisma.feedback.create({
+        data: {
+          id: crypto.randomUUID(),
           user_id: user.id,
           message: input.parsedInput.message,
           rating: input.parsedInput.rating,
@@ -47,18 +48,11 @@ export const createFeedback = createSafeActionClient()
           created_at: new Date(),
           updated_at: new Date(),
         },
-      ]);
-
-      if (error) {
-        return {
-          success: false,
-          error: error.message,
-        };
-      }
+      });
 
       return {
         success: true,
-        data,
+        data: feedback,
       };
     } catch (error) {
       return {
@@ -73,29 +67,35 @@ export const getFeedbacks = createSafeActionClient().action(
     try {
       const supabase = await createClient();
 
-      const { data, error } = await supabase
-        .from("feedback")
-        .select(
-          `
-          *,
-          user:user_id (
-            full_name,
-            avatar_url
-          )
-        `
-        )
-        .order("created_at", { ascending: false });
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-      if (error) {
+      if (authError || !user) {
         return {
           success: false,
-          error: error.message,
+          error: appErrors.UNAUTHORIZED,
         };
       }
 
+      const feedbacks = await prisma.feedback.findMany({
+        include: {
+          user: {
+            select: {
+              full_name: true,
+              avatar_url: true,
+            },
+          },
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
+
       return {
         success: true,
-        data,
+        data: feedbacks,
       };
     } catch (error) {
       return {

@@ -1,36 +1,39 @@
 "use server";
 
-import { createClient } from "@/utils/supabase/server";
+import { createSafeActionClient } from "next-safe-action";
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { v4 as uuidv4 } from "uuid";
+import type { ActionResponse } from "@/actions/types/action-response";
+import { appErrors } from "@/actions/types/errors";
+import { prisma } from "@/lib/db";
 
-export async function subscribeAction(formData: FormData) {
-  try {
-    const email = formData.get("email") as string;
+const schema = z.object({
+  email: z.string().email(),
+});
 
-    if (!email) {
-      throw new Error("Email is required");
+export const subscribeAction = createSafeActionClient()
+  .schema(schema)
+  .action(async (input): Promise<ActionResponse> => {
+    try {
+      const waitlistEntry = await prisma.waitlist.create({
+        data: {
+          id: crypto.randomUUID(),
+          email: input.parsedInput.email,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+
+      revalidatePath("/");
+
+      return {
+        success: true,
+        data: waitlistEntry,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: appErrors.UNEXPECTED_ERROR,
+      };
     }
-
-    const supabase = await createClient();
-
-    const { error } = await supabase.from("waitlist").insert([
-      {
-        id: uuidv4(),
-        email,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      },
-    ]);
-
-    if (error) {
-      throw error;
-    }
-
-    revalidatePath("/");
-    return { success: true };
-  } catch (error) {
-    console.error("Error subscribing:", error);
-    return { success: false, error: "Failed to subscribe" };
-  }
-}
+  });

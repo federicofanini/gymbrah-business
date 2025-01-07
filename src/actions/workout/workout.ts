@@ -38,6 +38,7 @@ export const createWorkout = createSafeActionClient()
               reps: exercise.reps,
               sets: exercise.sets,
               weight: exercise.weight,
+              category: "community",
             })),
           },
         },
