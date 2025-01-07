@@ -113,7 +113,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold mb-4">Workout History</h2>
+      <h2 className="text-2xl font-bold mb-4">Your workouts</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {workouts.map((workout) => (
           <Card key={workout.id}>

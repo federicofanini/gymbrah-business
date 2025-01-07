@@ -5,9 +5,32 @@ import { format, startOfWeek, addDays } from "date-fns";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "../ui/separator";
-import { WorkoutCard } from "./workout-card";
-import { DailyWorkout } from "./daily-workout";
-import { FinishButton } from "./finish-button";
+import { Suspense } from "react";
+import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const WorkoutCard = dynamic(
+  () => import("./workout-card").then((mod) => ({ default: mod.WorkoutCard })),
+  {
+    loading: () => <Skeleton className="w-full h-32" />,
+  }
+);
+
+const DailyWorkout = dynamic(
+  () =>
+    import("./daily-workout").then((mod) => ({ default: mod.DailyWorkout })),
+  {
+    loading: () => <Skeleton className="w-full h-24" />,
+  }
+);
+
+const FinishButton = dynamic(
+  () =>
+    import("./finish-button").then((mod) => ({ default: mod.FinishButton })),
+  {
+    loading: () => <Skeleton className="w-full h-10" />,
+  }
+);
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start on Monday
@@ -71,9 +94,15 @@ export function WeeklyMenu() {
                 </span>
                 <Separator className="my-2" />
                 <div className="space-y-4">
-                  <WorkoutCard />
-                  <DailyWorkout />
-                  <FinishButton />
+                  <Suspense fallback={<Skeleton className="w-full h-32" />}>
+                    <WorkoutCard />
+                  </Suspense>
+                  <Suspense fallback={<Skeleton className="w-full h-24" />}>
+                    <DailyWorkout />
+                  </Suspense>
+                  <Suspense fallback={<Skeleton className="w-full h-10" />}>
+                    <FinishButton />
+                  </Suspense>
                 </div>
               </TabsContent>
             ))}
