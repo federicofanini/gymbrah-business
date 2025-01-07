@@ -1,5 +1,6 @@
 "use server";
 
+import { prisma } from "@/lib/db";
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
@@ -48,14 +49,14 @@ export async function GET(req: NextRequest) {
         });
 
         // Check if user has full_name in database
-        const { data: userData, error: userError } = await supabase
-          .from("user")
-          .select("full_name")
-          .eq("id", userId)
-          .single();
+        const userData = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { full_name: true },
+        });
 
-        const redirectPath =
-          !userError && userData?.full_name ? "/blackboard" : "/onboarding";
+        const redirectPath = userData?.full_name
+          ? "/blackboard"
+          : "/onboarding";
 
         const forwardedHost = req.headers.get("x-forwarded-host");
         const isLocalEnv = process.env.NODE_ENV === "development";
