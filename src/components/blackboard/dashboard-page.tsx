@@ -2,7 +2,6 @@ import { AchievementsList } from "./achivements-list";
 import { ProfileSummary } from "./profile-summary";
 import { WeeklyMenu } from "./weekly-menu";
 // import { WorkoutCarousel } from "./workout-carousel";
-import { WorkoutPlan } from "./workout-plan-old";
 
 export default function DashboardPage() {
   return (
