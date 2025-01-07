@@ -38,6 +38,7 @@ model user {
   workouts       workout[]
   feedback       feedback[]
   exercises      exercises[]
+  gamification   gamification?
 }
 
 model waitlist {
@@ -124,4 +125,22 @@ model exercises {
   workout_exercise workout_exercise[]
 
   @@index([creator_id])
+}
+
+model gamification {
+  id                 String    @id @default(uuid())
+  user_id            String    @unique
+  user               user      @relation(fields: [user_id], references: [id])
+  points             Int       @default(0)
+  level              Int       @default(1)
+  streak_days        Int       @default(0)
+  longest_streak     Int       @default(0)
+  workouts_completed Int       @default(0)
+  achievements       String[]  @default([])
+  badges             String[]  @default([])
+  last_workout_date  DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  @@index([user_id])
 }

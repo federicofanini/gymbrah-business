@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/card";
 import { format, startOfWeek, addDays } from "date-fns";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DotIcon } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { WorkoutCard } from "./workout-card";
 import { DailyWorkout } from "./daily-workout";

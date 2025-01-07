@@ -11,15 +11,20 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dumbbell, Flame, Snowflake } from "lucide-react";
 import confetti from "canvas-confetti";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getSelectedWorkout } from "@/actions/workout/get-workouts";
+import { toast } from "sonner";
+import { categories } from "./workout/exercises-list";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Exercise {
   id: string;
   name: string;
-  sets?: number;
-  reps?: number;
-  duration?: string;
-  isCompleted: boolean;
+  sets: number;
+  reps: number;
+  duration?: number | null;
+  category: string;
+  isCompleted?: boolean;
 }
 
 interface WorkoutSection {
@@ -29,77 +34,72 @@ interface WorkoutSection {
   exercises: Exercise[];
 }
 
-const mockWorkoutSections: WorkoutSection[] = [
-  {
-    id: "warmup",
-    title: "Warm Up",
-    icon: <Flame className="h-4 w-4 text-orange-500" />,
-    exercises: [
-      {
-        id: "wu1",
-        name: "Dynamic Stretching",
-        duration: "5 min",
-        isCompleted: false,
-      },
-      {
-        id: "wu2",
-        name: "Jumping Jacks",
-        sets: 2,
-        reps: 20,
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: "workout",
-    title: "Main Workout",
-    icon: <Dumbbell className="h-4 w-4 text-muted-foreground" />,
-    exercises: [
-      {
-        id: "w1",
-        name: "Push-ups",
-        sets: 3,
-        reps: 12,
-        isCompleted: false,
-      },
-      {
-        id: "w2",
-        name: "Squats",
-        sets: 4,
-        reps: 15,
-        isCompleted: false,
-      },
-      {
-        id: "w3",
-        name: "Plank",
-        duration: "45 sec",
-        isCompleted: false,
-      },
-    ],
-  },
-  {
-    id: "cooldown",
-    title: "Cool Down",
-    icon: <Snowflake className="h-4 w-4 text-cyan-500" />,
-    exercises: [
-      {
-        id: "cd1",
-        name: "Static Stretching",
-        duration: "5 min",
-        isCompleted: false,
-      },
-      {
-        id: "cd2",
-        name: "Deep Breathing",
-        duration: "2 min",
-        isCompleted: false,
-      },
-    ],
-  },
-];
-
 export function DailyWorkout() {
-  const [sections, setSections] = useState(mockWorkoutSections);
+  const [sections, setSections] = useState<WorkoutSection[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchWorkout() {
+      try {
+        const response = await getSelectedWorkout();
+        if (response.success && response.data) {
+          // Group exercises by category
+          const warmupExercises = response.data.exercises.filter(
+            (e: Exercise) => e.category === categories.warmUp
+          );
+          const cooldownExercises = response.data.exercises.filter(
+            (e: Exercise) => e.category === categories.flexibilityMobility
+          );
+          const workoutExercises = response.data.exercises.filter(
+            (e: Exercise) =>
+              ![categories.warmUp, categories.flexibilityMobility].includes(
+                e.category
+              )
+          );
+
+          // Create sections with exercises
+          const formattedSections = [
+            {
+              id: "warmup",
+              title: "Warm Up",
+              icon: <Flame className="h-4 w-4 text-orange-500" />,
+              exercises: warmupExercises.map((e: Exercise) => ({
+                ...e,
+                isCompleted: false,
+              })),
+            },
+            {
+              id: "workout",
+              title: "Workout",
+              icon: <Dumbbell className="h-4 w-4" />,
+              exercises: workoutExercises.map((e: Exercise) => ({
+                ...e,
+                isCompleted: false,
+              })),
+            },
+            {
+              id: "cooldown",
+              title: "Flexibility & Mobility",
+              icon: <Snowflake className="h-4 w-4 text-cyan-500" />,
+              exercises: cooldownExercises.map((e: Exercise) => ({
+                ...e,
+                isCompleted: false,
+              })),
+            },
+          ].filter((section) => section.exercises.length > 0);
+
+          setSections(formattedSections);
+        }
+      } catch (error) {
+        console.error("Error fetching workout:", error);
+        toast.error("Failed to fetch workout");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchWorkout();
+  }, []);
 
   const triggerConfetti = () => {
     confetti({
@@ -130,6 +130,35 @@ export function DailyWorkout() {
       });
     });
   };
+
+  if (isLoading) {
+    return (
+      <Card className="w-full p-4">
+        <div className="space-y-6">
+          {[1, 2, 3].map((section) => (
+            <div key={section} className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-4" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <div className="pl-6 space-y-4">
+                {[1, 2, 3].map((exercise) => (
+                  <div key={exercise} className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
+
+  if (sections.length === 0) {
+    return null;
+  }
 
   return (
     <Card className="w-full p-4">
@@ -166,7 +195,9 @@ export function DailyWorkout() {
                       <Badge variant="secondary">
                         {exercise.sets && exercise.reps
                           ? `${exercise.sets} sets x ${exercise.reps} reps`
-                          : exercise.duration}
+                          : exercise.duration
+                          ? `${exercise.duration} min`
+                          : null}
                       </Badge>
                     </label>
                   </div>
