@@ -7,19 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { getWorkouts } from "@/actions/workout/get-workouts";
 
 interface Exercise {
   id: string;
   name: string;
   reps: number;
   sets: number;
-  weight?: number;
+  weight?: number | null;
+  duration?: number | null;
   workout_id: string;
+  exercise_id: string;
+  category: string;
+  muscles: string[];
+  outcomes: string[];
 }
 
 interface Workout {
   id: string;
-  user_id: string;
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
@@ -27,9 +32,26 @@ interface Workout {
 
 export function SavedWorkouts({ userId }: { userId: string }) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch workouts implementation needed
+    async function fetchWorkouts() {
+      try {
+        const response = await getWorkouts();
+        if (response.success && response.data) {
+          setWorkouts(response.data);
+        } else {
+          toast.error("Failed to fetch workouts");
+        }
+      } catch (error) {
+        console.error("Error fetching workouts:", error);
+        toast.error("Failed to fetch workouts");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchWorkouts();
   }, [userId]);
 
   const handleSelectWorkout = async (workoutId: string) => {
@@ -117,6 +139,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
                     <p className="text-sm text-muted-foreground">
                       {exercise.sets} sets × {exercise.reps} reps
                       {exercise.weight && ` @ ${exercise.weight}kg`}
+                      {exercise.duration && ` for ${exercise.duration}s`}
                     </p>
                   </div>
                 </div>
@@ -124,7 +147,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
             </CardContent>
           </Card>
         ))}
-        {workouts.length === 0 && (
+        {!isLoading && workouts.length === 0 && (
           <Card className="md:col-span-3">
             <CardContent className="flex flex-col items-center gap-4 py-8">
               <div className="rounded-full bg-primary/10 p-4">
