@@ -15,6 +15,20 @@ export const subscribeAction = createSafeActionClient()
   .schema(schema)
   .action(async (input): Promise<ActionResponse> => {
     try {
+      // Check if email already exists
+      const existingSubscriber = await prisma.waitlist.findFirst({
+        where: {
+          email: input.parsedInput.email,
+        },
+      });
+
+      if (existingSubscriber) {
+        return {
+          success: false,
+          error: "This email is already subscribed",
+        };
+      }
+
       const waitlistEntry = await prisma.waitlist.create({
         data: {
           id: crypto.randomUUID(),
@@ -31,6 +45,7 @@ export const subscribeAction = createSafeActionClient()
         data: waitlistEntry,
       };
     } catch (error) {
+      console.error("Subscribe error:", error);
       return {
         success: false,
         error: appErrors.UNEXPECTED_ERROR,

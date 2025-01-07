@@ -4,6 +4,7 @@ import { subscribeAction } from "@/actions/subscribe-action";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -52,12 +53,18 @@ export function SubscribeInput() {
         ) : (
           <form
             action={async (formData) => {
-              setSubmitted(true);
-              await subscribeAction(formData);
+              const email = formData.get("email") as string;
+              const result = await subscribeAction({ email });
 
-              setTimeout(() => {
-                setSubmitted(false);
-              }, 5000);
+              if (result?.data?.success) {
+                setSubmitted(true);
+                toast.success("Successfully subscribed!");
+                setTimeout(() => {
+                  setSubmitted(false);
+                }, 5000);
+              } else {
+                toast.error("Failed to subscribe");
+              }
             }}
           >
             <fieldset className="relative">
