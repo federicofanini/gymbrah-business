@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { getWorkouts } from "@/actions/workout/get-workouts";
 import { selectWorkout } from "@/actions/workout/select-workout";
+import { deleteWorkout } from "@/actions/workout/delete-workout";
 
 interface Exercise {
   id: string;
@@ -97,8 +98,13 @@ export function SavedWorkouts({ userId }: { userId: string }) {
 
   const handleDeleteWorkout = async (workoutId: string) => {
     try {
-      setWorkouts(workouts.filter((workout) => workout.id !== workoutId));
-      toast.success("Workout deleted successfully");
+      const response = await deleteWorkout({ workoutId });
+      if (response?.data?.success) {
+        setWorkouts(workouts.filter((workout) => workout.id !== workoutId));
+        toast.success("Workout deleted successfully");
+      } else {
+        toast.error("Failed to delete workout");
+      }
     } catch (error) {
       console.error("Workout deletion error:", error);
       toast.error("Failed to delete workout");
