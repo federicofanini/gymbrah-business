@@ -91,14 +91,15 @@ model workout {
 
 model workout_exercise {
   id         String   @id @default(uuid())
-  workout_id String
-  workout    workout  @relation(fields: [workout_id], references: [id], onDelete: Cascade)
+  workout_id String?
+  workout    workout? @relation(fields: [workout_id], references: [id], onDelete: Cascade)
   category   String // e.g. "Upper Body", "Lower Body", "Core"
   name       String // e.g. "Push-ups", "Bench Press"
   muscles    String[] // e.g. ["Chest", "Triceps", "Shoulders"]
   outcomes   String[] // e.g. ["Strength", "Hypertrophy"]
-  reps       Int // e.g. 20 pushups
-  sets       Int // e.g. 3 sets
+  reps       Int? // e.g. 20 pushups
+  sets       Int? // e.g. 3 sets
+  duration   Int? // e.g. 30 seconds
   weight     Float? // Optional: for weighted exercises (in kg)
   creator_id String? // Optional: ID of user who created custom exercise
   creator    user?    @relation(fields: [creator_id], references: [id])
