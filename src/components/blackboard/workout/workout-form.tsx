@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getExercises } from "@/actions/workout/get-exercises";
+import { createWorkout } from "@/actions/workout/workout";
 import { type ActionResponse } from "@/actions/types/action-response";
 
 interface Exercise {
@@ -220,17 +221,27 @@ export function WorkoutForm() {
 
   const handleSaveWorkout = async () => {
     try {
-      // Mock saving workout
-      console.log("Saving workout:", {
+      const workoutData = {
         name: workoutName,
-        exercises: selectedExercises,
-      });
+        exercises: selectedExercises.map((exercise) => ({
+          exercise_id: exercise.id,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight: exercise.weight || null,
+          duration: exercise.duration || null,
+        })),
+      };
 
-      // Simulate success
-      toast.success("Workout created successfully");
-      setWorkoutName("");
-      setSelectedExercises([]);
-      setStep(1);
+      const result = await createWorkout(workoutData);
+
+      if (result?.data?.success) {
+        toast.success("Workout created successfully");
+        setWorkoutName("");
+        setSelectedExercises([]);
+        setStep(1);
+      } else {
+        toast.error("Failed to create workout");
+      }
     } catch (error) {
       console.error("Workout creation error:", error);
       toast.error("Failed to create workout");
