@@ -98,6 +98,7 @@ model workout {
   name       String
   user_id    String
   user       user               @relation(fields: [user_id], references: [id])
+  selected   Boolean            @default(false)
   exercises  workout_exercise[]
   created_at DateTime           @default(now())
   updated_at DateTime           @updatedAt

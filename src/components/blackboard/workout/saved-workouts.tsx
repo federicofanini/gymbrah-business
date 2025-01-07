@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getWorkoutHistory } from "@/actions/workout/get-workouts";
 import { Dumbbell, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { selectWorkout, deleteWorkout } from "@/actions/workout/workout";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,35 +29,18 @@ export function SavedWorkouts({ userId }: { userId: string }) {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   useEffect(() => {
-    async function fetchWorkouts() {
-      const workoutHistory = await getWorkoutHistory(userId);
-      setWorkouts(workoutHistory as Workout[]);
-    }
-
-    fetchWorkouts();
+    // Fetch workouts implementation needed
   }, [userId]);
 
   const handleSelectWorkout = async (workoutId: string) => {
     try {
-      const result = await selectWorkout({ workoutId });
-      if (!result) {
-        throw new Error("No response from server");
-      }
-
-      if (result.data) {
-        const response = result.data;
-        if (response.success) {
-          setWorkouts(
-            workouts.map((workout) => ({
-              ...workout,
-              selected: workout.id === workoutId,
-            }))
-          );
-          toast.success("Workout selected successfully");
-        } else {
-          toast.error(response.error || "Failed to select workout");
-        }
-      }
+      setWorkouts(
+        workouts.map((workout) => ({
+          ...workout,
+          selected: workout.id === workoutId,
+        }))
+      );
+      toast.success("Workout selected successfully");
     } catch (error) {
       console.error("Workout selection error:", error);
       toast.error("Failed to select workout");
@@ -68,20 +49,8 @@ export function SavedWorkouts({ userId }: { userId: string }) {
 
   const handleDeleteWorkout = async (workoutId: string) => {
     try {
-      const result = await deleteWorkout({ workoutId });
-      if (!result) {
-        throw new Error("No response from server");
-      }
-
-      if (result.data) {
-        const response = result.data;
-        if (response.success) {
-          setWorkouts(workouts.filter((workout) => workout.id !== workoutId));
-          toast.success("Workout deleted successfully");
-        } else {
-          toast.error(response.error || "Failed to delete workout");
-        }
-      }
+      setWorkouts(workouts.filter((workout) => workout.id !== workoutId));
+      toast.success("Workout deleted successfully");
     } catch (error) {
       console.error("Workout deletion error:", error);
       toast.error("Failed to delete workout");

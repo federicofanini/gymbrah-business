@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { WorkoutForm } from "./workout-form";
 import { redirect } from "next/navigation";
 import { SavedWorkouts } from "./saved-workouts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export async function WorkoutPage() {
   const supabase = await createClient();
@@ -14,9 +15,17 @@ export async function WorkoutPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <WorkoutForm userId={session.user.id} />
-      <SavedWorkouts userId={session.user.id} />
-    </div>
+    <Tabs defaultValue="saved" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="saved">Workouts</TabsTrigger>
+        <TabsTrigger value="create">Create Workouts</TabsTrigger>
+      </TabsList>
+      <TabsContent value="create" className="mt-6">
+        <WorkoutForm />
+      </TabsContent>
+      <TabsContent value="saved" className="mt-6">
+        <SavedWorkouts userId={session.user.id} />
+      </TabsContent>
+    </Tabs>
   );
 }

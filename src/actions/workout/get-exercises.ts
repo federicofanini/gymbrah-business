@@ -26,7 +26,7 @@ const getCachedExercises = unstable_cache(
   },
   ["all-exercises"],
   {
-    revalidate: 5, // 60 * 60 * 4 - 4 hours in seconds
+    revalidate: 60 * 60 * 4, // 4 hours in seconds
   }
 );
 
