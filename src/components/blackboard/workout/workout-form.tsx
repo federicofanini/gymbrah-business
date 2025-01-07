@@ -36,13 +36,20 @@ import {
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Exercise {
   id: string;
   name: string;
   category: string;
   muscles: string;
-  outcomes: string; // Changed from outcome to outcomes to match API
+  outcomes: string;
   created_at: string;
   updated_at: string;
 }
@@ -76,6 +83,36 @@ export function WorkoutForm() {
     if (!result.data?.success) return [];
     return result.data.data;
   }, [result.data]);
+
+  // Get unique values for filters
+  const uniqueCategories = React.useMemo(() => {
+    const categories = new Set(
+      exercises.map((exercise: Exercise) => exercise.category)
+    );
+    return Array.from(categories) as string[];
+  }, [exercises]);
+
+  const uniqueMuscles = React.useMemo(() => {
+    const muscles = new Set(
+      exercises.flatMap((exercise: Exercise) =>
+        Array.isArray(exercise.muscles)
+          ? exercise.muscles
+          : exercise.muscles.split(",").map((m: string) => m.trim())
+      )
+    );
+    return Array.from(muscles) as string[];
+  }, [exercises]);
+
+  const uniqueOutcomes = React.useMemo(() => {
+    const outcomes = new Set(
+      exercises.flatMap((exercise: Exercise) =>
+        Array.isArray(exercise.outcomes)
+          ? exercise.outcomes
+          : exercise.outcomes.split(",").map((o: string) => o.trim())
+      )
+    );
+    return Array.from(outcomes) as string[];
+  }, [exercises]);
 
   const columns: ColumnDef<Exercise>[] = [
     {
@@ -120,7 +157,6 @@ export function WorkoutForm() {
       accessorKey: "muscles",
       header: "Muscles",
       cell: ({ row }) => {
-        // Handle both string and array muscles
         const muscles = Array.isArray(row.original.muscles)
           ? row.original.muscles
           : row.original.muscles?.split(",").map((o) => o.trim()) || [];
@@ -140,7 +176,6 @@ export function WorkoutForm() {
       accessorKey: "outcomes",
       header: "Outcomes",
       cell: ({ row }) => {
-        // Handle both string and array outcomes
         const outcomes = Array.isArray(row.original.outcomes)
           ? row.original.outcomes
           : row.original.outcomes?.split(",").map((o) => o.trim()) || [];
@@ -205,7 +240,7 @@ export function WorkoutForm() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Filter by name..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
@@ -214,6 +249,25 @@ export function WorkoutForm() {
           }
           className="max-w-sm"
         />
+
+        <Select
+          onValueChange={(value) =>
+            table.getColumn("category")?.setFilterValue(value)
+          }
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {uniqueCategories.map((category) => (
+              <SelectItem key={category} value={category}>
+                {category}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
