@@ -22,8 +22,8 @@ export async function WorkoutForm() {
 
   const analytics = await setupAnalytics();
   analytics.track({
-    event: LogEvents.PageView.name,
-    channel: LogEvents.PageView.channel,
+    event: LogEvents.WorkoutCreated.name,
+    channel: LogEvents.WorkoutCreated.channel,
     page: "workouts",
   });
 
