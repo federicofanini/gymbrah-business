@@ -9,6 +9,7 @@ import { X, MoveUp, MoveDown } from "lucide-react";
 import { createWorkout } from "@/actions/workout/workout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface Exercise {
   id: string;
@@ -52,6 +53,7 @@ export function ConfigureWorkout({
 }: ConfigureWorkoutProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>(["1"]);
 
   const handleSave = async () => {
     try {
@@ -65,6 +67,14 @@ export function ConfigureWorkout({
           weight: exercise.weight || null,
           duration: exercise.duration || null,
         })),
+        frequency: selectedDays.join(",") as
+          | "1"
+          | "2"
+          | "3"
+          | "4"
+          | "5"
+          | "6"
+          | "7",
       });
 
       if (!result?.data?.success) {
@@ -86,15 +96,46 @@ export function ConfigureWorkout({
     <Card className="border-none">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="workout-name">Workout Name</Label>
-            <Input
-              id="workout-name"
-              value={workoutName}
-              onChange={(e) => onWorkoutNameChange(e.target.value)}
-              placeholder="Enter workout name"
-              className="w-full"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="workout-name">Workout Name</Label>
+              <Input
+                id="workout-name"
+                value={workoutName}
+                onChange={(e) => onWorkoutNameChange(e.target.value)}
+                placeholder="Enter workout name"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <Label>Workout Days</Label>
+              <ToggleGroup
+                type="multiple"
+                value={selectedDays}
+                onValueChange={setSelectedDays}
+                className="justify-start"
+              >
+                {[
+                  { label: "M", value: "1" },
+                  { label: "T", value: "2" },
+                  { label: "W", value: "3" },
+                  { label: "T", value: "4" },
+                  { label: "F", value: "5" },
+                  { label: "S", value: "6" },
+                  { label: "S", value: "7" },
+                ].map((day) => (
+                  <ToggleGroupItem
+                    key={day.value}
+                    value={day.value}
+                    aria-label={`${day.label}`}
+                    className="w-10"
+                  >
+                    {day.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+            </div>
           </div>
 
           <h3 className="text-lg font-semibold mb-4">Configure Exercises</h3>

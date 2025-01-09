@@ -32,13 +32,14 @@ model user {
   customer_id String?
   plan_id     String?
 
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-  health_profile health_profile?
-  workouts       workout[]
-  feedback       feedback[]
-  exercises      exercises[]
-  gamification   gamification?
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  health_profile    health_profile?
+  workouts          workout[]
+  feedback          feedback[]
+  exercises         exercises[]
+  gamification      gamification?
+  workout_frequency workout_frequency?
 }
 
 model waitlist {
@@ -101,6 +102,7 @@ model workout {
   user       user               @relation(fields: [user_id], references: [id])
   selected   Boolean            @default(false)
   exercises  workout_exercise[]
+  frequency  String? // Days of the week [1,2,3,4,5,6,7]
   created_at DateTime           @default(now())
   updated_at DateTime           @updatedAt
 
@@ -141,6 +143,17 @@ model gamification {
   last_workout_date  DateTime?
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
+
+  @@index([user_id])
+}
+
+model workout_frequency {
+  id         String   @id @default(uuid())
+  user_id    String   @unique
+  user       user     @relation(fields: [user_id], references: [id])
+  frequency  String? // Days of the week [1,2,3,4,5,6,7]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([user_id])
 }

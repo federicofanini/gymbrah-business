@@ -21,6 +21,7 @@ const schema = z.object({
   exercises: z
     .array(exerciseSchema)
     .min(1, "At least one exercise is required"),
+  frequency: z.string(),
 });
 
 export async function getWorkouts(): Promise<ActionResponse> {
@@ -90,6 +91,7 @@ export const createWorkout = createSafeActionClient()
           id: crypto.randomUUID(),
           user_id: user.id,
           name: input.parsedInput.name,
+          frequency: input.parsedInput.frequency,
           created_at: new Date(),
           updated_at: new Date(),
           exercises: {
