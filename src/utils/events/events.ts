@@ -1,109 +1,122 @@
 export const LogEvents = {
   // Authentication Events
   SignIn: {
-    name: "🔑 Sign In",
+    name: (fullName?: string) => `🔑 Sign In${fullName ? ` ${fullName}` : ""}`,
     channel: "auth",
   },
   SignOut: {
-    name: "👋 Sign Out",
+    name: (fullName?: string) => `👋 Sign Out${fullName ? ` ${fullName}` : ""}`,
     channel: "auth",
   },
   Registered: {
-    name: "✨ New User",
+    name: (fullName?: string) => `✨ New User${fullName ? ` ${fullName}` : ""}`,
     channel: "auth",
   },
   MfaVerify: {
-    name: "🔒 MFA",
+    name: (fullName?: string) => `🔒 MFA${fullName ? ` ${fullName}` : ""}`,
     channel: "auth",
   },
 
   // Profile Events
   UpdateProfile: {
-    name: "👤 Edit Profile",
+    name: (fullName?: string) =>
+      `👤 Edit Profile${fullName ? ` ${fullName}` : ""}`,
     channel: "profile",
   },
   UpdateHealthProfile: {
-    name: "💪 Edit Health",
+    name: (fullName?: string) =>
+      `💪 Edit Health${fullName ? ` ${fullName}` : ""}`,
     channel: "profile",
   },
   UpdateUsername: {
-    name: "📝 Edit Name",
+    name: (fullName?: string) =>
+      `📝 Edit Name${fullName ? ` ${fullName}` : ""}`,
     channel: "profile",
   },
 
   // Workout Events
   WorkoutCreated: {
-    name: "🏋️ New Workout",
+    name: (fullName?: string) =>
+      `🏋️ New Workout${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   WorkoutDeleted: {
-    name: "🗑️ Del Workout",
+    name: (fullName?: string) =>
+      `🗑️ Del Workout${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   WorkoutUpdated: {
-    name: "✏️ Edit Workout",
+    name: (fullName?: string) =>
+      `✏️ Edit Workout${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   WorkoutCompleted: {
-    name: "✅ Done Workout",
+    name: (fullName?: string) =>
+      `✅ Done Workout${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   WorkoutSelected: {
-    name: "👆 Pick Workout",
+    name: (fullName?: string) =>
+      `👆 Pick Workout${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   ExerciseAdded: {
-    name: "➕ Add Exercise",
+    name: (fullName?: string) =>
+      `➕ Add Exercise${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
   ExerciseRemoved: {
-    name: "➖ Del Exercise",
+    name: (fullName?: string) =>
+      `➖ Del Exercise${fullName ? ` ${fullName}` : ""}`,
     channel: "workout",
   },
 
   // Achievement Events
   AchievementUnlocked: {
-    name: "🏆 Achievement",
+    name: (fullName?: string) =>
+      `🏆 Achievement${fullName ? ` ${fullName}` : ""}`,
     channel: "achievement",
   },
   DailyGoalCompleted: {
-    name: "📅 Daily Goal",
+    name: (fullName?: string) =>
+      `📅 Daily Goal${fullName ? ` ${fullName}` : ""}`,
     channel: "achievement",
   },
   WeeklyGoalCompleted: {
-    name: "📆 Weekly Goal",
+    name: (fullName?: string) =>
+      `📆 Weekly Goal${fullName ? ` ${fullName}` : ""}`,
     channel: "achievement",
   },
 
   // Feedback Events
   SendFeedback: {
-    name: "📨 Feedback",
+    name: (fullName?: string) => `📨 Feedback${fullName ? ` ${fullName}` : ""}`,
     channel: "feedback",
   },
   VoteFeedback: {
-    name: "👍 Vote",
+    name: (fullName?: string) => `👍 Vote${fullName ? ` ${fullName}` : ""}`,
     channel: "feedback",
   },
 
   // Support Events
   SupportTicket: {
-    name: "🎫 Support",
+    name: (fullName?: string) => `🎫 Support${fullName ? ` ${fullName}` : ""}`,
     channel: "support",
   },
 
   // Settings Events
   UpdateAppSettings: {
-    name: "⚙️ Settings",
+    name: (fullName?: string) => `⚙️ Settings${fullName ? ` ${fullName}` : ""}`,
     channel: "settings",
   },
 
   // Analytics Events
   PageView: {
-    name: "👀 View",
+    name: (fullName?: string) => `👀 View${fullName ? ` ${fullName}` : ""}`,
     channel: "analytics",
   },
   FeatureUsed: {
-    name: "🎯 Feature",
+    name: (fullName?: string) => `🎯 Feature${fullName ? ` ${fullName}` : ""}`,
     channel: "analytics",
   },
 };

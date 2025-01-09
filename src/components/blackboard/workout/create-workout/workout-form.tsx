@@ -2,6 +2,7 @@ import { getCachedExercises } from "@/actions/workout/cached-workout";
 import { WorkoutFormClient } from "./workout-form-client";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 
 interface Exercise {
   id: string;
@@ -22,7 +23,7 @@ export async function WorkoutForm() {
 
   const analytics = await setupAnalytics();
   analytics.track({
-    event: LogEvents.WorkoutCreated.name,
+    event: LogEvents.WorkoutCreated.name((await getUserMetadata())?.full_name),
     channel: LogEvents.WorkoutCreated.channel,
     page: "workouts",
   });

@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
         });
 
         await analytics.track({
-          event: LogEvents.SignIn.name,
+          event: LogEvents.SignIn.name(session.user.user_metadata?.full_name),
           channel: LogEvents.SignIn.channel,
         });
 
