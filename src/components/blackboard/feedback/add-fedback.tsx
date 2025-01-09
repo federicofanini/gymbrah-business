@@ -109,7 +109,7 @@ export function AddFeedback() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button size="sm">
           <Plus className="mr-2 h-4 w-4" />
           Add Feedback
         </Button>

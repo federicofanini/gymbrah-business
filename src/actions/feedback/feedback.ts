@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { Client } from "@/utils/supabase/type";
 
 const schema = z.object({
@@ -98,4 +98,35 @@ export async function getFeedbacks(supabase: Client): Promise<ActionResponse> {
     success: true,
     data: feedbacks,
   };
+}
+
+export async function revalidateFeedbackCache(): Promise<ActionResponse> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: appErrors.UNAUTHORIZED,
+      };
+    }
+
+    // Revalidate the cache tag for this user's feedbacks
+    revalidateTag(`feedbacks_${user.id}`);
+    revalidatePath("/blackboard/feedback");
+
+    return {
+      success: true,
+      data: null,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: appErrors.UNEXPECTED_ERROR,
+    };
+  }
 }

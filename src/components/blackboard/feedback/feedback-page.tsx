@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowBigUp, ArrowBigDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCachedFeedbacks } from "@/actions/feedback/cached-feedback";
 import { AddFeedback } from "./add-fedback";
+import { VoteButton } from "./vote-button";
+import { HardUpdate } from "./hard-update";
 
 interface Feedback {
   id: string;
@@ -43,7 +43,10 @@ export default async function FeedbackPage() {
     <div className="container mx-auto px-4 py-4 sm:py-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold">Feedback</h1>
-        <AddFeedback />
+        <div className="flex items-center gap-2">
+          <AddFeedback />
+          <HardUpdate />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:gap-6">
@@ -52,18 +55,16 @@ export default async function FeedbackPage() {
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-2">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg">
-                  {feedback.user.avatar_url ? (
-                    <AvatarImage
-                      src={feedback.user.avatar_url}
-                      alt={feedback.user.full_name}
-                    />
-                  ) : (
-                    <AvatarFallback className="rounded-lg bg-gradient-to-br from-green-500 via-teal-500 to-green-800">
-                      <span className="text-white text-sm">
-                        {feedback.user.full_name[0]?.toUpperCase() || "U"}
-                      </span>
-                    </AvatarFallback>
-                  )}
+                  <AvatarImage
+                    src={feedback.user.avatar_url || undefined}
+                    alt={feedback.user.full_name}
+                    className="rounded-lg"
+                  />
+                  <AvatarFallback className="rounded-lg bg-gradient-to-br from-green-500 via-teal-500 to-green-800">
+                    <span className="text-white">
+                      {feedback.user.full_name?.[0]?.toUpperCase() || "U"}
+                    </span>
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <CardTitle className="text-sm font-medium">

@@ -6,7 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import { getFeedbacks } from "./feedback";
 import type { ActionResponse } from "../types/action-response";
 
-// Cache per request and revalidate every 30 minutes
+// Cache all feedbacks globally and revalidate every 30 minutes
 export const getCachedFeedbacks = cache(async (): Promise<ActionResponse> => {
   const supabase = await createClient();
 
@@ -25,9 +25,11 @@ export const getCachedFeedbacks = cache(async (): Promise<ActionResponse> => {
     async () => {
       return getFeedbacks(supabase);
     },
-    ["feedbacks", user.id],
+    // Use a single global key for all feedbacks
+    ["feedbacks"],
     {
-      tags: [`feedbacks_${user.id}`],
+      // Use a single global tag for all feedbacks
+      tags: ["feedbacks"],
       // 30 minutes, jwt expires in 1 hour
       revalidate: 1800,
     }
