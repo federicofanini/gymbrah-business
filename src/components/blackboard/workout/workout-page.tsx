@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { WorkoutForm } from "./workout-form";
+import { WorkoutForm } from "./create-workout/workout-form";
 import { redirect } from "next/navigation";
 import { SavedWorkouts } from "./saved-workouts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,7 +24,7 @@ export async function WorkoutPage() {
         <WorkoutForm />
       </TabsContent>
       <TabsContent value="saved" className="mt-6">
-        <SavedWorkouts userId={session.user.id} />
+        <SavedWorkouts />
       </TabsContent>
     </Tabs>
   );

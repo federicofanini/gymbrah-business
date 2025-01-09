@@ -1,15 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dumbbell, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { toast } from "sonner";
+import { Dumbbell } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { getWorkouts } from "@/actions/workout/get-workouts";
-import { selectWorkout } from "@/actions/workout/select-workout";
-import { deleteWorkout } from "@/actions/workout/delete-workout";
+import { getCachedExercises } from "@/actions/workout/cached-workout";
+import { WorkoutActions } from "./create-workout/workout-actions";
 
 interface Exercise {
   id: string;
@@ -25,6 +20,14 @@ interface Exercise {
   outcomes: string[];
 }
 
+interface CachedExercise {
+  id: string;
+  name: string;
+  category: string;
+  muscles: string[];
+  outcomes: string[];
+}
+
 interface Workout {
   id: string;
   name: string;
@@ -33,83 +36,45 @@ interface Workout {
   selected: boolean;
 }
 
-export function SavedWorkouts({ userId }: { userId: string }) {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export async function SavedWorkouts() {
+  const [workoutsResponse, exercisesResponse] = await Promise.all([
+    getWorkouts(),
+    getCachedExercises(),
+  ]);
 
-  useEffect(() => {
-    async function fetchWorkouts() {
-      try {
-        const response = await getWorkouts();
-        if (response.success && response.data) {
-          setWorkouts(response.data);
-        } else {
-          toast.error("Failed to fetch workouts");
-        }
-      } catch (error) {
-        console.error("Error fetching workouts:", error);
-        toast.error("Failed to fetch workouts");
-      } finally {
-        setIsLoading(false);
-      }
-    }
+  let workouts: Workout[] = [];
 
-    fetchWorkouts();
-  }, [userId]);
+  if (
+    workoutsResponse.success &&
+    workoutsResponse.data &&
+    exercisesResponse?.success &&
+    exercisesResponse?.data
+  ) {
+    // Create a map of exercise details for quick lookup
+    const exerciseMap = new Map<string, CachedExercise>(
+      exercisesResponse.data.map((exercise: CachedExercise) => [
+        exercise.id,
+        exercise,
+      ])
+    );
 
-  const handleSelectWorkout = async (
-    workoutId: string,
-    isCurrentlySelected: boolean
-  ) => {
-    try {
-      if (!isCurrentlySelected) {
-        const response = await selectWorkout({ workoutId });
-        if (response?.data?.success) {
-          setWorkouts(
-            workouts.map((workout) => ({
-              ...workout,
-              selected: workout.id === workoutId,
-            }))
-          );
-          toast.success("Workout selected successfully");
-        } else {
-          toast.error("Failed to select workout");
-        }
-      } else {
-        // Deselect the workout
-        const response = await selectWorkout({ workoutId: "" });
-        if (response?.data?.success) {
-          setWorkouts(
-            workouts.map((workout) => ({
-              ...workout,
-              selected: false,
-            }))
-          );
-          toast.success("Workout deselected successfully");
-        } else {
-          toast.error("Failed to deselect workout");
-        }
-      }
-    } catch (error) {
-      console.error("Workout selection error:", error);
-      toast.error("Failed to update workout selection");
-    }
-  };
-
-  const handleDeleteWorkout = async (workoutId: string) => {
-    try {
-      const response = await deleteWorkout({ workoutId });
-      if (response?.data?.success) {
-        setWorkouts(workouts.filter((workout) => workout.id !== workoutId));
-        toast.success("Workout deleted successfully");
-      } else {
-        toast.error("Failed to delete workout");
-      }
-    } catch (error) {
-      console.error("Workout deletion error:", error);
-      toast.error("Failed to delete workout");
-    }
-  };
+    // Enrich workout exercises with cached exercise details
+    workouts = workoutsResponse.data.map((workout: Workout) => ({
+      ...workout,
+      exercises: workout.exercises.map((exercise) => {
+        const cachedExercise = exerciseMap.get(exercise.exercise_id);
+        return cachedExercise
+          ? {
+              ...exercise,
+              name: cachedExercise.name,
+              category: cachedExercise.category,
+              muscles: cachedExercise.muscles,
+              outcomes: cachedExercise.outcomes,
+            }
+          : exercise;
+      }),
+    }));
+  }
 
   return (
     <div className="w-full">
@@ -139,27 +104,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
                       })}
                   </Badge>
                 </CardTitle>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <Switch
-                      checked={workout.selected}
-                      onCheckedChange={() =>
-                        handleSelectWorkout(workout.id, workout.selected)
-                      }
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      Active
-                    </span>
-                  </div>
-                  <Button
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => handleDeleteWorkout(workout.id)}
-                    className="size-6"
-                  >
-                    <Trash2 className="size-3" />
-                  </Button>
-                </div>
+                <WorkoutActions workout={workout} />
               </div>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -181,7 +126,7 @@ export function SavedWorkouts({ userId }: { userId: string }) {
             </CardContent>
           </Card>
         ))}
-        {!isLoading && workouts.length === 0 && (
+        {workouts.length === 0 && (
           <Card className="md:col-span-3">
             <CardContent className="flex flex-col items-center gap-4 py-8">
               <div className="rounded-full bg-primary/10 p-4">

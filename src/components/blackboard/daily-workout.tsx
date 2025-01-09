@@ -14,7 +14,7 @@ import confetti from "canvas-confetti";
 import { useEffect, useState } from "react";
 import { getSelectedWorkout } from "@/actions/workout/get-workouts";
 import { toast } from "sonner";
-import { categories } from "./workout/exercises-list";
+import { categories } from "./workout/create-workout/exercises/exercises-list";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Exercise {

@@ -1,49 +1,40 @@
 "use server";
 
-import { createSafeActionClient } from "next-safe-action";
-import { unstable_cache } from "next/cache";
+import { Client } from "@/utils/supabase/type";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
 
-// Cache exercises query for 4 hours
-const getCachedExercises = unstable_cache(
-  async () => {
-    return prisma.exercises.findMany({
-      select: {
-        id: true,
-        name: true,
-        category: true,
-        muscles: true,
-        outcomes: true,
-        created_at: true,
-        updated_at: true,
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
-  },
-  ["all-exercises"],
-  {
-    revalidate: 60 * 60 * 4, // 4 hours in seconds
-  }
-);
+export async function getExercises(supabase: Client): Promise<ActionResponse> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-export const getExercises = createSafeActionClient().action(
-  async (): Promise<ActionResponse> => {
-    try {
-      const exercises = await getCachedExercises();
-
-      return {
-        success: true,
-        data: exercises,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: appErrors.UNEXPECTED_ERROR,
-      };
-    }
+  if (authError || !user) {
+    return {
+      success: false,
+      error: appErrors.UNAUTHORIZED,
+    };
   }
-);
+
+  const exercises = await prisma.exercises.findMany({
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      muscles: true,
+      outcomes: true,
+      created_at: true,
+      updated_at: true,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+
+  return {
+    success: true,
+    data: exercises,
+  };
+}

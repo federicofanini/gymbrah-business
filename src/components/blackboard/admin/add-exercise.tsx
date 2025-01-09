@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { categories, muscles, outcomes } from "../workout/exercises-list";
+import {
+  categories,
+  muscles,
+  outcomes,
+} from "../workout/create-workout/exercises/exercises-list";
 import {
   Select,
   SelectContent,
