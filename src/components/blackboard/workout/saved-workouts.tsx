@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dumbbell } from "lucide-react";
+import { Calendar, Dumbbell } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { getWorkouts } from "@/actions/workout/get-workouts";
@@ -35,7 +35,18 @@ interface Workout {
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
+  frequency: string;
 }
+
+const dayMap: Record<string, string> = {
+  "1": "Mon",
+  "2": "Tue",
+  "3": "Wed",
+  "4": "Thu",
+  "5": "Fri",
+  "6": "Sat",
+  "7": "Sun",
+};
 
 export async function SavedWorkouts() {
   const supabase = await createClient();
@@ -85,27 +96,45 @@ export async function SavedWorkouts() {
         {workouts.map((workout) => (
           <Card key={workout.id} className="w-full">
             <CardHeader className="p-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="flex flex-row sm:items-center justify-between gap-4">
                 <CardTitle className="text-base sm:text-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span className="truncate">{workout.name}</span>
-                    <Badge variant="outline" className="w-fit text-xs">
-                      {new Date(workout.created_at)
-                        .toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
-                        .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
-                          const num = parseInt(match);
-                          const suffix = ["th", "st", "nd", "rd"][
-                            num % 10 > 3 || (num % 100) - (num % 10) == 10
-                              ? 0
-                              : num % 10
-                          ];
-                          return num + suffix;
-                        })}
-                    </Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="w-fit text-xs flex flex-col gap-1 text-muted-foreground">
+                      <span className="truncate text-sm sm:text-base text-primary uppercase">
+                        {workout.name}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <Badge
+                        variant="outline"
+                        className="w-fit text-xs flex flex-row gap-1 items-center"
+                      >
+                        <Calendar className="h-3 w-3" />
+                        {workout.frequency
+                          ? workout.frequency
+                              .split(",")
+                              .map((day) => dayMap[day])
+                              .join(", ")
+                          : "No days set"}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-2">
+                    {new Date(workout.created_at)
+                      .toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
+                      .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
+                        const num = parseInt(match);
+                        const suffix = ["th", "st", "nd", "rd"][
+                          num % 10 > 3 || (num % 100) - (num % 10) == 10
+                            ? 0
+                            : num % 10
+                        ];
+                        return num + suffix;
+                      })}
                   </div>
                 </CardTitle>
                 <WorkoutActions workout={workout} />

@@ -27,6 +27,7 @@ export async function getWorkouts(supabase: Client): Promise<ActionResponse> {
       name: true,
       selected: true,
       created_at: true,
+      frequency: true,
       exercises: {
         select: {
           id: true,
@@ -56,6 +57,7 @@ export async function getWorkouts(supabase: Client): Promise<ActionResponse> {
     name: workout.name,
     selected: workout.selected,
     created_at: workout.created_at,
+    frequency: workout.frequency,
     exercises: workout.exercises.map((exercise) => ({
       id: exercise.id,
       name: exercise.exercise.name,
