@@ -8,7 +8,7 @@ import { appErrors } from "@/actions/types/errors";
 import {
   exercises,
   categories,
-} from "@/components/blackboard/workout/create-workout/exercises-list";
+} from "@/components/blackboard/workout/create-workout/exercises/exercises-list";
 import { prisma } from "@/lib/db";
 
 const schema = z.object({
