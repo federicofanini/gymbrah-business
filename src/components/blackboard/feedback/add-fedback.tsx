@@ -36,6 +36,9 @@ import { Plus } from "lucide-react";
 import { createFeedback } from "@/actions/feedback/feedback";
 import { toast } from "sonner";
 import { type ActionResponse } from "@/actions/types/action-response";
+import { LogEvents } from "@/utils/events/events";
+import { setupAnalytics } from "@/utils/events/server";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 
 type FeedbackCategory =
   | "bug"
@@ -91,6 +94,15 @@ export function AddFeedback() {
       if (result.data) {
         const response = result.data as ActionResponse;
         if (response.success) {
+          const analytics = await setupAnalytics();
+          analytics.track({
+            event: LogEvents.SendFeedback.name(
+              (await getUserMetadata())?.full_name
+            ),
+            channel: LogEvents.SendFeedback.channel,
+            page: "feedback",
+          });
+
           toast.success("Feedback submitted successfully");
           setIsOpen(false);
           form.reset();

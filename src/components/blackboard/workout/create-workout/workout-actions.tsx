@@ -8,6 +8,9 @@ import { selectWorkout } from "@/actions/workout/select-workout";
 import { deleteWorkout } from "@/actions/workout/delete-workout";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { LogEvents } from "@/utils/events/events";
+import { setupAnalytics } from "@/utils/events/server";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 
 interface WorkoutActionsProps {
   workout: {
@@ -31,6 +34,15 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
         return;
       }
 
+      const analytics = await setupAnalytics();
+      analytics.track({
+        event: LogEvents.WorkoutSelected.name(
+          (await getUserMetadata())?.full_name
+        ),
+        channel: LogEvents.WorkoutSelected.channel,
+        page: "workouts",
+      });
+
       router.refresh();
     });
   };
@@ -45,6 +57,15 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
         toast.error("Failed to delete workout");
         return;
       }
+
+      const analytics = await setupAnalytics();
+      analytics.track({
+        event: LogEvents.WorkoutDeleted.name(
+          (await getUserMetadata())?.full_name
+        ),
+        channel: LogEvents.WorkoutDeleted.channel,
+        page: "workouts",
+      });
 
       toast.success("Workout deleted successfully");
       router.refresh();
