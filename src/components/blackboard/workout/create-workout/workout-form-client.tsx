@@ -9,6 +9,8 @@ import { z } from "zod";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { ExercisesTable } from "./exercises/exercises-table";
 import { ConfigureWorkout } from "./create-workout";
+import { WorkoutInstructions } from "./workout-instructions";
+import { Separator } from "@/components/ui/separator";
 
 interface Exercise {
   id: string;
@@ -113,11 +115,17 @@ export function WorkoutFormClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
+      <div className="px-2 md:px-0">
+        <WorkoutInstructions />
+      </div>
+
+      <Separator className="mx-2 md:mx-0" />
+
       {/* Step 1: Select Exercises */}
       {step === 1 && (
-        <Card>
-          <CardContent className="pt-6">
+        <Card className="border-none mx-2 md:mx-0">
+          <CardContent className="p-2 md:p-6">
             <ExercisesTable
               exercises={exercises}
               uniqueCategories={uniqueCategories}
@@ -126,7 +134,10 @@ export function WorkoutFormClient({
             />
 
             {selectedExercises.length > 0 && (
-              <Button className="w-full mt-4" onClick={() => setStep(2)}>
+              <Button
+                className="w-full mt-4 text-sm md:text-base"
+                onClick={() => setStep(2)}
+              >
                 Next Step <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             )}
@@ -135,16 +146,18 @@ export function WorkoutFormClient({
       )}
 
       {step === 2 && (
-        <ConfigureWorkout
-          selectedExercises={selectedExercises}
-          workoutName={workoutName}
-          onWorkoutNameChange={setWorkoutName}
-          onExerciseUpdate={handleExerciseUpdate}
-          onRemoveExercise={handleRemoveExercise}
-          onMoveExercise={moveExercise}
-          onBack={() => setStep(1)}
-          onSave={handleSaveWorkout}
-        />
+        <div className="px-2 md:px-0">
+          <ConfigureWorkout
+            selectedExercises={selectedExercises}
+            workoutName={workoutName}
+            onWorkoutNameChange={setWorkoutName}
+            onExerciseUpdate={handleExerciseUpdate}
+            onRemoveExercise={handleRemoveExercise}
+            onMoveExercise={moveExercise}
+            onBack={() => setStep(1)}
+            onSave={handleSaveWorkout}
+          />
+        </div>
       )}
     </div>
   );

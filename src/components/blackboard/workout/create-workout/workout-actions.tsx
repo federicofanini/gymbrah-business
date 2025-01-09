@@ -52,17 +52,18 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative">
+    <div className="flex items-center gap-3 touch-manipulation">
+      <div className="relative min-w-[36px] min-h-[24px]">
         <Switch
           checked={workout.selected}
           onCheckedChange={handleToggle}
           disabled={isPending}
           aria-label="Toggle workout selection"
+          className="touch-manipulation"
         />
         {isPending && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         )}
       </div>
@@ -71,13 +72,13 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
         size="icon"
         onClick={handleDelete}
         disabled={isPending}
-        className="text-red-500 hover:bg-red-500/10 relative"
+        className="text-red-500 hover:bg-red-500/10 relative min-w-[40px] min-h-[40px] touch-manipulation"
         aria-label="Delete workout"
       >
         {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-5 w-5" />
         )}
       </Button>
     </div>

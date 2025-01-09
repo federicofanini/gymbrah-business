@@ -71,8 +71,8 @@ export function ExercisesTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="w-full sm:flex-1">
           <Label htmlFor="category">Category</Label>
           <Select
             onValueChange={(value) => {
@@ -95,7 +95,7 @@ export function ExercisesTable({
           </Select>
         </div>
 
-        <div className="flex-1">
+        <div className="w-full sm:flex-1">
           <Label htmlFor="search">Search</Label>
           <Input
             id="search"
@@ -109,50 +109,56 @@ export function ExercisesTable({
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[30px]"></TableHead>
-            <TableHead
-              className="cursor-pointer"
-              onClick={() => setSortByName(!sortByName)}
-            >
-              Name <ArrowUpDown className="inline h-4 w-4" />
-            </TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Muscles</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedExercises.map((exercise) => (
-            <TableRow key={exercise.id}>
-              <TableCell>
-                <Checkbox
-                  checked={selectedExercises.some((e) => e.id === exercise.id)}
-                  onCheckedChange={() => onExerciseSelect(exercise)}
-                />
-              </TableCell>
-              <TableCell>{exercise.name}</TableCell>
-              <TableCell>{exercise.category}</TableCell>
-              <TableCell>
-                {exercise.muscles.map((muscle) => (
-                  <Badge key={muscle} variant="outline" className="mr-1">
-                    {muscle}
-                  </Badge>
-                ))}
-              </TableCell>
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[30px]"></TableHead>
+              <TableHead
+                className="cursor-pointer whitespace-nowrap"
+                onClick={() => setSortByName(!sortByName)}
+              >
+                Name <ArrowUpDown className="inline h-4 w-4" />
+              </TableHead>
+              <TableHead className="whitespace-nowrap">Category</TableHead>
+              <TableHead className="whitespace-nowrap">Muscles</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {paginatedExercises.map((exercise) => (
+              <TableRow key={exercise.id}>
+                <TableCell>
+                  <Checkbox
+                    checked={selectedExercises.some(
+                      (e) => e.id === exercise.id
+                    )}
+                    onCheckedChange={() => onExerciseSelect(exercise)}
+                  />
+                </TableCell>
+                <TableCell className="font-medium">{exercise.name}</TableCell>
+                <TableCell>{exercise.category}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {exercise.muscles.map((muscle) => (
+                      <Badge key={muscle} variant="outline">
+                        {muscle}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
           Showing {startIndex + 1} to{" "}
           {Math.min(startIndex + exercisesPerPage, filteredExercises.length)} of{" "}
           {filteredExercises.length} exercises
         </div>
-        <div className="flex gap-2">
+        <div className="flex justify-center gap-2">
           <Button
             variant="outline"
             size="sm"

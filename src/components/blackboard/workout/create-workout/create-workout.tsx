@@ -83,7 +83,7 @@ export function ConfigureWorkout({
   };
 
   return (
-    <Card>
+    <Card className="border-none">
       <CardContent className="pt-6">
         <div className="space-y-4">
           <div>
@@ -93,6 +93,7 @@ export function ConfigureWorkout({
               value={workoutName}
               onChange={(e) => onWorkoutNameChange(e.target.value)}
               placeholder="Enter workout name"
+              className="w-full"
             />
           </div>
 
@@ -101,57 +102,73 @@ export function ConfigureWorkout({
             {selectedExercises.map((exercise, index) => (
               <div
                 key={`${exercise.id}-${index}`}
-                className="flex items-center gap-4 border p-4 rounded-lg"
+                className="flex flex-col gap-4 border p-4 rounded-lg"
               >
-                <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onMoveExercise(index, "up")}
+                        disabled={index === 0}
+                      >
+                        <MoveUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => onMoveExercise(index, "down")}
+                        disabled={index === selectedExercises.length - 1}
+                      >
+                        <MoveDown className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <span className="font-medium">{exercise.name}</span>
+                  </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onMoveExercise(index, "up")}
-                    disabled={index === 0}
+                    onClick={() => onRemoveExercise(index)}
                   >
-                    <MoveUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onMoveExercise(index, "down")}
-                    disabled={index === selectedExercises.length - 1}
-                  >
-                    <MoveDown className="h-4 w-4" />
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onRemoveExercise(index)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <div className="flex-1">{exercise.name}</div>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    value={exercise.sets}
-                    onChange={(e) =>
-                      onExerciseUpdate(index, "sets", parseInt(e.target.value))
-                    }
-                    className="w-20"
-                    min={1}
-                  />
-                  <span>sets</span>
-                  <Input
-                    type="number"
-                    value={exercise.reps}
-                    onChange={(e) =>
-                      onExerciseUpdate(index, "reps", parseInt(e.target.value))
-                    }
-                    className="w-20"
-                    min={1}
-                  />
-                  <span>reps</span>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <Label>Sets</Label>
+                    <Input
+                      type="number"
+                      value={exercise.sets}
+                      onChange={(e) =>
+                        onExerciseUpdate(
+                          index,
+                          "sets",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      min={1}
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label>Reps</Label>
+                    <Input
+                      type="number"
+                      value={exercise.reps}
+                      onChange={(e) =>
+                        onExerciseUpdate(
+                          index,
+                          "reps",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      min={1}
+                    />
+                  </div>
                   {exercise.category !== "Cardio" && (
-                    <>
+                    <div className="flex flex-col gap-1">
+                      <Label>Weight (kg)</Label>
                       <Input
                         type="number"
                         value={exercise.weight || ""}
@@ -162,35 +179,38 @@ export function ConfigureWorkout({
                             parseInt(e.target.value)
                           )
                         }
-                        className="w-20"
-                        placeholder="kg"
+                        placeholder="Optional"
                       />
-                      <span>kg</span>
-                    </>
+                    </div>
                   )}
-                  <Input
-                    type="number"
-                    value={exercise.duration || ""}
-                    onChange={(e) =>
-                      onExerciseUpdate(
-                        index,
-                        "duration",
-                        parseInt(e.target.value)
-                      )
-                    }
-                    className="w-20"
-                    placeholder="seconds"
-                  />
-                  <span>s</span>
+                  <div className="flex flex-col gap-1">
+                    <Label>Duration (s)</Label>
+                    <Input
+                      type="number"
+                      value={exercise.duration || ""}
+                      onChange={(e) =>
+                        onExerciseUpdate(
+                          index,
+                          "duration",
+                          parseInt(e.target.value)
+                        )
+                      }
+                      placeholder="Optional"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
-            <div className="flex gap-4">
-              <Button variant="outline" onClick={onBack}>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                variant="outline"
+                onClick={onBack}
+                className="w-full sm:w-auto"
+              >
                 Back
               </Button>
               <Button
-                className="flex-1"
+                className="w-full sm:flex-1"
                 onClick={handleSave}
                 disabled={
                   !workoutName || selectedExercises.length === 0 || isSaving
