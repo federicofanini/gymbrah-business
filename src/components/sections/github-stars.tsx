@@ -1,9 +1,6 @@
-"use client";
-
-import { cn } from "@/lib/utils";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { unstable_cache } from "next/cache";
 
 export const formatStars = (count: number | null) => {
   if (!count) return null;
@@ -23,27 +20,21 @@ export async function getGithubStars() {
   }
 }
 
-export function GithubStars() {
-  const [stars, setStars] = useState<number | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+const getCachedStars = unstable_cache(
+  async () => {
+    return getGithubStars();
+  },
+  ["github-stars"],
+  { revalidate: 3600 } // Revalidate every hour
+);
 
-  useEffect(() => {
-    async function fetchStars() {
-      const count = await getGithubStars();
-      setStars(count);
-      setIsLoaded(true);
-    }
-
-    fetchStars();
-  }, []);
+export async function GithubStars() {
+  const stars = await getCachedStars();
 
   return (
     <Link
       href="https://github.com/federicofanini/gymbrah.com"
-      className={cn(
-        "hidden md:flex items-center gap-2 transition-opacity duration-300 text-primary/50 text-sm",
-        isLoaded ? "opacity-100" : "opacity-0"
-      )}
+      className="hidden md:flex items-center gap-2 text-primary/50 text-sm"
     >
       <svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor">
         <path

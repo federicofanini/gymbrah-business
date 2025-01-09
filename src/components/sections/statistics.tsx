@@ -1,5 +1,3 @@
-"use client";
-
 import { Icons } from "@/components/icons";
 import { Section } from "@/components/section";
 import { BorderText } from "@/components/ui/border-number";
@@ -8,30 +6,25 @@ import { Users } from "lucide-react";
 import { formatStars } from "./github-stars";
 import { getGithubStars } from "./github-stars";
 import { getUserCount } from "@/actions/user-count";
-import { useEffect, useState } from "react";
+import { unstable_cache } from "next/cache";
 
-export function Statistics() {
-  const [stars, setStars] = useState<number | null>(null);
-  const [userCount, setUserCount] = useState<number>(1);
+const getCachedStats = unstable_cache(
+  async () => {
+    const starsCount = await getGithubStars();
+    const result = await getUserCount();
+    const userCount = result?.data?.success ? result.data.data : 1;
 
-  useEffect(() => {
-    async function fetchStats() {
-      const starsCount = await getGithubStars();
-      setStars(starsCount);
+    return {
+      stars: starsCount,
+      userCount,
+    };
+  },
+  ["stats"],
+  { revalidate: 3600 } // Revalidate every hour
+);
 
-      const result = await getUserCount();
-      if (
-        result &&
-        "success" in result &&
-        result.success &&
-        typeof result.data === "number"
-      ) {
-        setUserCount(result.data);
-      }
-    }
-
-    fetchStats();
-  }, []);
+export async function Statistics() {
+  const { stars, userCount } = await getCachedStats();
 
   const stats = [
     {

@@ -1,5 +1,4 @@
 import { Section } from "@/components/section";
-import { Button } from "@/components/ui/button";
 import OutlinedButton from "../ui/outlined-button";
 import Link from "next/link";
 

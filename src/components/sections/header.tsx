@@ -1,14 +1,6 @@
-"use client";
-
-import { Icons } from "@/components/icons";
 import { MobileDrawer } from "@/components/mobile-drawer";
-import { buttonVariants } from "@/components/ui/button";
-import { easeInOutCubic } from "@/lib/animation";
 import { siteConfig } from "@/lib/config";
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import OutlinedButton from "../ui/outlined-button";
 import Image from "next/image";
 
