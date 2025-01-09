@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const exerciseSchema = z.object({
   exercise_id: z.string(),
@@ -112,6 +113,10 @@ export const createWorkout = createSafeActionClient()
           },
         },
       });
+
+      // Revalidate the cache for the user's selected workout
+      revalidateTag(`selected-workout-${user.id}`);
+      revalidatePath("/blackboard/workout");
 
       return {
         success: true,

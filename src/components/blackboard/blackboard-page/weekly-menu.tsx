@@ -1,36 +1,13 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { format, startOfWeek, addDays } from "date-fns";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "../ui/separator";
+import { Separator } from "../../ui/separator";
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const WorkoutCard = dynamic(
-  () => import("./workout-card").then((mod) => ({ default: mod.WorkoutCard })),
-  {
-    loading: () => <Skeleton className="w-full h-32" />,
-  }
-);
-
-const DailyWorkout = dynamic(
-  () =>
-    import("./daily-workout").then((mod) => ({ default: mod.DailyWorkout })),
-  {
-    loading: () => <Skeleton className="w-full h-24" />,
-  }
-);
-
-const FinishButton = dynamic(
-  () =>
-    import("./finish-button").then((mod) => ({ default: mod.FinishButton })),
-  {
-    loading: () => <Skeleton className="w-full h-10" />,
-  }
-);
+import { WorkoutCard } from "./workout-card";
+import { DailyWorkout } from "./daily-workout";
+import { FinishButton } from "./finish-button";
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start on Monday
@@ -45,7 +22,7 @@ const WEEKDAYS = Array.from({ length: 7 }, (_, i) => {
   };
 });
 
-export function WeeklyMenu() {
+export async function WeeklyMenu() {
   return (
     <Card className="w-[calc(100vw-2rem)] sm:w-full border-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

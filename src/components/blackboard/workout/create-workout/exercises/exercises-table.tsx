@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Exercise {
   id: string;
@@ -46,6 +47,8 @@ export function ExercisesTable({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByName, setSortByName] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const exercisesPerPage = 10;
 
   const filteredExercises = exercises
     .filter(
@@ -59,13 +62,23 @@ export function ExercisesTable({
         : a.category.localeCompare(b.category)
     );
 
+  const totalPages = Math.ceil(filteredExercises.length / exercisesPerPage);
+  const startIndex = (currentPage - 1) * exercisesPerPage;
+  const paginatedExercises = filteredExercises.slice(
+    startIndex,
+    startIndex + exercisesPerPage
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex gap-4">
         <div className="flex-1">
           <Label htmlFor="category">Category</Label>
           <Select
-            onValueChange={(value) => setSelectedCategory(value || null)}
+            onValueChange={(value) => {
+              setSelectedCategory(value || null);
+              setCurrentPage(1);
+            }}
             value={selectedCategory || undefined}
           >
             <SelectTrigger>
@@ -87,7 +100,10 @@ export function ExercisesTable({
           <Input
             id="search"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search exercises..."
           />
         </div>
@@ -108,7 +124,7 @@ export function ExercisesTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredExercises.map((exercise) => (
+          {paginatedExercises.map((exercise) => (
             <TableRow key={exercise.id}>
               <TableCell>
                 <Checkbox
@@ -129,6 +145,34 @@ export function ExercisesTable({
           ))}
         </TableBody>
       </Table>
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing {startIndex + 1} to{" "}
+          {Math.min(startIndex + exercisesPerPage, filteredExercises.length)} of{" "}
+          {filteredExercises.length} exercises
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

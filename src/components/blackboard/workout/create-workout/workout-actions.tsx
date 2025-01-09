@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useTransition } from "react";
 import { selectWorkout } from "@/actions/workout/select-workout";
@@ -53,21 +53,32 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <Switch
-        checked={workout.selected}
-        onCheckedChange={handleToggle}
-        disabled={isPending}
-        aria-label="Toggle workout selection"
-      />
+      <div className="relative">
+        <Switch
+          checked={workout.selected}
+          onCheckedChange={handleToggle}
+          disabled={isPending}
+          aria-label="Toggle workout selection"
+        />
+        {isPending && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Loader2 className="h-4 w-4 animate-spin" />
+          </div>
+        )}
+      </div>
       <Button
         variant="ghost"
         size="icon"
         onClick={handleDelete}
         disabled={isPending}
-        className="text-red-500 hover:bg-red-500/10"
+        className="text-red-500 hover:bg-red-500/10 relative"
         aria-label="Delete workout"
       >
-        <Trash2 className="h-4 w-4" />
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Trash2 className="h-4 w-4" />
+        )}
       </Button>
     </div>
   );

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { getWorkouts } from "@/actions/workout/get-workouts";
 import { getCachedExercises } from "@/actions/workout/cached-workout";
 import { WorkoutActions } from "./create-workout/workout-actions";
+import { createClient } from "@/utils/supabase/server";
 
 interface Exercise {
   id: string;
@@ -37,8 +38,9 @@ interface Workout {
 }
 
 export async function SavedWorkouts() {
+  const supabase = await createClient();
   const [workoutsResponse, exercisesResponse] = await Promise.all([
-    getWorkouts(),
+    getWorkouts(supabase),
     getCachedExercises(),
   ]);
 
