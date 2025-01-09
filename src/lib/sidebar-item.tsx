@@ -18,6 +18,7 @@ import {
   Trophy,
   HeaterIcon,
   HeartPulse,
+  Code,
 } from "lucide-react";
 
 export const sidebarItems = {
@@ -63,7 +64,7 @@ export const sidebarItems = {
       icon: Github,
     },
   ],
-  items: [
+  fitness: [
     {
       name: "Blackboard",
       url: "/blackboard",
@@ -83,6 +84,20 @@ export const sidebarItems = {
       name: "Health Profile",
       url: "/blackboard/health-profile",
       icon: HeartPulse,
+    },
+  ],
+  coding: [
+    {
+      name: "Coding",
+      url: "/coding",
+      icon: Code,
+    },
+  ],
+  startup: [
+    {
+      name: "Startup",
+      url: "/startup",
+      icon: Frame,
     },
   ],
 };

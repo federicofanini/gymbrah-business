@@ -1,16 +1,5 @@
 "use client";
 
-import {
-  Folder,
-  MoreHorizontal,
-  Share,
-  Trash2,
-  Frame,
-  PieChart,
-  Map,
-  BicepsFlexed,
-  User,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,14 +14,16 @@ import {
 
 import { sidebarItems } from "@/lib/sidebar-item";
 
-export function NavProjects() {
+export function NavStartup() {
   const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel className="font-mono">TINY HABITS</SidebarGroupLabel>
+      <SidebarGroupLabel className="font-mono tracking-widest">
+        STARTUP
+      </SidebarGroupLabel>
       <SidebarMenu>
-        {sidebarItems.items.map((item) => {
+        {sidebarItems.startup.map((item) => {
           const IconComponent = item.icon;
           const isActive = pathname === item.url;
 

@@ -15,7 +15,7 @@ import {
 
 import Image from "next/image";
 import Link from "next/link";
-import { NavProjects } from "./nav-projects";
+import { NavFitness } from "./nav-fitness";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -38,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavProjects />
+        <NavFitness />
         <NavSecondary className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

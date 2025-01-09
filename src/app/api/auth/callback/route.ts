@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
-import { getSession } from "@/utils/supabase/cached-queries";
+import { getSession } from "@/utils/supabase/database/cached-queries";
 import { createClient } from "@/utils/supabase/server";
 import { addYears } from "date-fns";
 import { cookies } from "next/headers";

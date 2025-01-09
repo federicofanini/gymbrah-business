@@ -2,10 +2,10 @@ import "server-only";
 
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
-import { createClient } from "./server";
+import { createClient } from "../server";
 import { getUserQuery, getUserAuthMetadata } from "./queries";
 
-// Cache per request
+// Cache per request and revalidate every 30 minutes
 export const getSession = cache(async () => {
   const supabase = await createClient();
 

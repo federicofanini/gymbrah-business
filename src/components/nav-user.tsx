@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
-import { getUserMetadata } from "@/utils/supabase/cached-queries";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 
 export async function NavUser() {
   const userData = await getUserMetadata();

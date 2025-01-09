@@ -1,4 +1,4 @@
-import type { Client } from "./type";
+import type { Client } from "../type";
 
 export async function getUserQuery(supabase: Client, userId: string) {
   return supabase
