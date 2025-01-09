@@ -1,4 +1,4 @@
-import { getUserMetadata } from "@/utils/supabase/cached-queries";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 import {
   Avatar,
   AvatarFallback,
