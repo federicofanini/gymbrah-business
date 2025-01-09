@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Info, Dumbbell } from "lucide-react";
+import { Info } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,

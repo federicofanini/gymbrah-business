@@ -104,6 +104,7 @@ export async function getSelectedWorkout(
       name: true,
       selected: true,
       created_at: true,
+      frequency: true,
       exercises: {
         select: {
           id: true,

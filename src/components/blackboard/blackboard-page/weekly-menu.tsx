@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/card";
-import { format, startOfWeek, addDays } from "date-fns";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "../../ui/separator";
@@ -8,82 +7,90 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { WorkoutCard } from "./workout-card";
 import { DailyWorkout } from "./daily-workout";
 import { FinishButton } from "./finish-button";
+import { SetFrequencyDialog } from "./set-frequency-dialog";
+import { EditScheduleButton } from "./set-frequency-dialog";
+import { getCachedWorkoutFrequency } from "@/actions/workout/cached-workout";
 
-const today = new Date();
-const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start on Monday
-
-const WEEKDAYS = Array.from({ length: 7 }, (_, i) => {
-  const date = addDays(weekStart, i);
-  return {
-    name: format(date, "EEEE"),
-    shortName: format(date, "EEE"), // Add short name for mobile
-    date: date,
-    isToday: format(date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd"),
-  };
-});
+const WEEKDAYS = [
+  { name: "Monday", shortName: "Mon", value: "1" },
+  { name: "Tuesday", shortName: "Tue", value: "2" },
+  { name: "Wednesday", shortName: "Wed", value: "3" },
+  { name: "Thursday", shortName: "Thu", value: "4" },
+  { name: "Friday", shortName: "Fri", value: "5" },
+  { name: "Saturday", shortName: "Sat", value: "6" },
+  { name: "Sunday", shortName: "Sun", value: "7" },
+];
 
 export async function WeeklyMenu() {
+  const frequencyResponse = await getCachedWorkoutFrequency();
+
+  if (!frequencyResponse.success || !frequencyResponse.data) {
+    return <SetFrequencyDialog />;
+  }
+
+  const userDays = frequencyResponse.data.frequency?.split(",") || [];
+  const hasFrequency = userDays.length > 0;
+
+  const defaultDay =
+    WEEKDAYS.find((day) => userDays.includes(day.value))?.name ||
+    WEEKDAYS[0].name;
+
+  if (!hasFrequency) {
+    return <SetFrequencyDialog />;
+  }
+
   return (
     <Card className="w-[calc(100vw-2rem)] sm:w-full border-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <Tabs
-            defaultValue={
-              WEEKDAYS.find((day) => day.isToday)?.name || WEEKDAYS[0].name
-            }
-            className="w-full"
-          >
-            <ScrollArea className="w-full">
-              <TabsList className="w-max min-w-full justify-start">
-                {WEEKDAYS.map((day) => (
-                  <TabsTrigger
+          <div className="flex items-center justify-between mb-4">
+            <Tabs defaultValue={defaultDay} className="w-full">
+              <ScrollArea className="w-full">
+                <TabsList className="w-max min-w-full justify-start">
+                  {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
+                    (day) => (
+                      <TabsTrigger
+                        key={day.name}
+                        value={day.name}
+                        className="min-w-[4.5rem]"
+                      >
+                        <span className="text-xs text-muted-foreground font-medium">
+                          <span className="hidden sm:inline">{day.name}</span>
+                          <span className="sm:hidden">{day.shortName}</span>
+                        </span>
+                      </TabsTrigger>
+                    )
+                  )}
+                </TabsList>
+              </ScrollArea>
+              {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
+                (day) => (
+                  <TabsContent
                     key={day.name}
                     value={day.name}
-                    className={`min-w-[4.5rem]`}
+                    className="text-xs sm:text-sm min-h-[3rem] sm:min-h-[4rem] rounded-md p-1.5 sm:p-2"
                   >
-                    <span className="text-xs text-muted-foreground font-medium">
-                      {day.isToday ? (
-                        <div className="flex items-center text-primary gap-1">
-                          <div className="size-[6px] rounded-full bg-green-500" />
-                          {format(day.date, "EEE, MMM d")}
-                        </div>
-                      ) : (
-                        <>{format(day.date, "EEE, MMM d")}</>
-                      )}
-                    </span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </ScrollArea>
-            {WEEKDAYS.map((day) => (
-              <TabsContent
-                key={day.name}
-                value={day.name}
-                className="text-xs sm:text-sm min-h-[3rem] sm:min-h-[4rem] rounded-md p-1.5 sm:p-2"
-              >
-                <span className="text-xs font-semibold">
-                  {day.isToday
-                    ? "Today"
-                    : format(day.date, "yyyy-MM-dd") ===
-                      format(addDays(today, 1), "yyyy-MM-dd")
-                    ? "Tomorrow"
-                    : format(day.date, "MMM d, yyyy - EEEE")}
-                </span>
-                <Separator className="my-2" />
-                <div className="space-y-4">
-                  <Suspense fallback={<Skeleton className="w-full h-32" />}>
-                    <WorkoutCard />
-                  </Suspense>
-                  <Suspense fallback={<Skeleton className="w-full h-24" />}>
-                    <DailyWorkout />
-                  </Suspense>
-                  <Suspense fallback={<Skeleton className="w-full h-10" />}>
-                    <FinishButton />
-                  </Suspense>
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold">{day.name}</span>
+                      <EditScheduleButton />
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="space-y-4">
+                      <Suspense fallback={<Skeleton className="w-full h-32" />}>
+                        <WorkoutCard />
+                      </Suspense>
+                      <Suspense fallback={<Skeleton className="w-full h-24" />}>
+                        <DailyWorkout />
+                      </Suspense>
+                      <Suspense fallback={<Skeleton className="w-full h-10" />}>
+                        <FinishButton />
+                      </Suspense>
+                    </div>
+                  </TabsContent>
+                )
+              )}
+            </Tabs>
+          </div>
         </div>
         <div className="">
           {/* Content for the third column */}

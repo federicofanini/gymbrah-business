@@ -10,6 +10,8 @@ import { Dumbbell, Flame, Snowflake } from "lucide-react";
 import { getCachedSelectedWorkout } from "@/actions/workout/cached-workout";
 import { categories } from "../workout/create-workout/exercises/exercises-list";
 import { ExerciseCheckbox } from "./exercise-checkbox";
+import { createClient } from "@/utils/supabase/client";
+import { prisma } from "@/lib/db";
 
 interface Exercise {
   id: string;
@@ -28,6 +30,38 @@ interface WorkoutSection {
 }
 
 export async function DailyWorkout() {
+  // Get current user
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  // Get user's workout frequency
+  const frequency = await prisma.workout_frequency.findUnique({
+    where: {
+      user_id: user.id,
+    },
+    select: {
+      frequency: true,
+    },
+  });
+
+  console.log(frequency);
+
+  if (!frequency?.frequency) return null;
+
+  // Get current day of week (1-7, Monday = 1)
+  const today = new Date().getDay();
+  const dayNumber = today === 0 ? "7" : today.toString();
+
+  // Check if today is a workout day
+  const workoutDays = frequency.frequency.split(",");
+  if (!workoutDays.includes(dayNumber)) {
+    return null;
+  }
+
   const response = await getCachedSelectedWorkout();
 
   if (!response.success || !response.data) {

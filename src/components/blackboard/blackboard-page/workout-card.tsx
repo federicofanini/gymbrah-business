@@ -2,7 +2,10 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, Dumbbell, PersonStanding, Zap } from "lucide-react";
 import { estimateWorkoutTime } from "@/actions/workout/time-estimation";
-import { getCachedSelectedWorkout } from "@/actions/workout/cached-workout";
+import {
+  getCachedSelectedWorkout,
+  getCachedWorkoutFrequency,
+} from "@/actions/workout/cached-workout";
 
 interface Exercise {
   id: string;
@@ -24,16 +27,43 @@ interface Workout {
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
+  frequency: string;
 }
 
 export async function WorkoutCard() {
-  const response = await getCachedSelectedWorkout();
+  // Get current day of week (1-7, Monday = 1)
+  const today = new Date().getDay();
+  const dayNumber = today === 0 ? "7" : today.toString();
 
-  if (!response.success || !response.data) {
+  // Get user's workout frequency
+  const frequencyResponse = await getCachedWorkoutFrequency();
+
+  if (!frequencyResponse.success || !frequencyResponse.data) {
     return null;
   }
 
-  const workout = response.data;
+  // Get user's workout days
+  const userWorkoutDays = frequencyResponse.data.frequency?.split(",") || [];
+
+  // Get selected workout
+  const workoutResponse = await getCachedSelectedWorkout();
+
+  if (!workoutResponse.success || !workoutResponse.data) {
+    return null;
+  }
+
+  const workout = workoutResponse.data;
+
+  // Get workout's frequency days
+  const workoutFrequencyDays = workout.frequency?.split(",") || [];
+
+  // Check if today matches both user's frequency and workout's frequency
+  if (
+    !userWorkoutDays.includes(dayNumber) ||
+    !workoutFrequencyDays.includes(dayNumber)
+  ) {
+    return null;
+  }
 
   // Estimate workout time
   const timeResponse = await estimateWorkoutTime(
