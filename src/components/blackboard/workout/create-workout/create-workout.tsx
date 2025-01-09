@@ -102,41 +102,46 @@ export function ConfigureWorkout({
             {selectedExercises.map((exercise, index) => (
               <div
                 key={`${exercise.id}-${index}`}
-                className="flex flex-col gap-4 border p-4 rounded-lg"
+                className="grid grid-cols-1 sm:grid-cols-6 gap-4 border p-4 rounded-lg"
               >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <div className="flex flex-col gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onMoveExercise(index, "up")}
-                        disabled={index === 0}
-                      >
-                        <MoveUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => onMoveExercise(index, "down")}
-                        disabled={index === selectedExercises.length - 1}
-                      >
-                        <MoveDown className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <span className="font-medium">{exercise.name}</span>
+                {/* Col 1: Exercise name and move controls */}
+                <div className="w-full grid grid-cols-6 justify-between items-center sm:flex sm:items-center sm:gap-2 sm:justify-start sm:col-span-1">
+                  <div className="flex justify-start col-span-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onMoveExercise(index, "up")}
+                      disabled={index === 0}
+                    >
+                      <MoveUp className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onMoveExercise(index, "down")}
+                      disabled={index === selectedExercises.length - 1}
+                    >
+                      <MoveDown className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemoveExercise(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <span className="font-medium text-center col-span-4">
+                    {exercise.name}
+                  </span>
+                  <div className="flex justify-end sm:hidden col-span-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onRemoveExercise(index)}
+                      className="text-red-500 hover:bg-red-500/10"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
+                {/* Col 2: Exercise configuration */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 col-span-4">
+                  <div className="flex flex-col gap-2">
                     <Label>Sets</Label>
                     <Input
                       type="number"
@@ -151,7 +156,7 @@ export function ConfigureWorkout({
                       min={1}
                     />
                   </div>
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-2">
                     <Label>Reps</Label>
                     <Input
                       type="number"
@@ -166,8 +171,9 @@ export function ConfigureWorkout({
                       min={1}
                     />
                   </div>
+
                   {exercise.category !== "Cardio" && (
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-2">
                       <Label>Weight (kg)</Label>
                       <Input
                         type="number"
@@ -183,7 +189,7 @@ export function ConfigureWorkout({
                       />
                     </div>
                   )}
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-2">
                     <Label>Duration (s)</Label>
                     <Input
                       type="number"
@@ -198,6 +204,18 @@ export function ConfigureWorkout({
                       placeholder="Optional"
                     />
                   </div>
+                </div>
+
+                {/* Col 3: Remove button */}
+                <div className=" justify-end hidden sm:flex sm:col-span-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onRemoveExercise(index)}
+                    className="text-red-500 hover:bg-red-500/10"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
