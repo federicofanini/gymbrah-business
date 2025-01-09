@@ -1,49 +1,15 @@
 import type { Client } from "../type";
+import { prisma } from "@/lib/db";
 
 export async function getUserQuery(supabase: Client, userId: string) {
-  return supabase
-    .from("user")
-    .select(
-      `
-      id,
-      email,
-      full_name,
-      avatar_url,
-      bio,
-      location,
-      website,
-      twitter,
-      linkedin, 
-      github,
-      instagram,
-      youtube,
-      tiktok,
-      discord,
-      telegram,
-      bsky,
-      contactEmail,
-      username,
-      paid,
-      customer_id,
-      plan_id,
-      created_at,
-      updated_at,
-      health_profile (
-        id,
-        height,
-        weight,
-        sleep_hours,
-        alcohol,
-        sugar_intake,
-        is_smoker,
-        created_at,
-        updated_at
-      )
-    `
-    )
-    .eq("id", userId)
-    .single()
-    .throwOnError();
+  return prisma.user.findUniqueOrThrow({
+    where: {
+      id: userId,
+    },
+    include: {
+      health_profile: true,
+    },
+  });
 }
 
 export async function getUserAuthMetadata(supabase: Client) {
@@ -60,21 +26,27 @@ export async function getUserAuthMetadata(supabase: Client) {
   const provider = user.app_metadata.provider;
 
   // Get current user data
-  const { data: userData } = await supabase
-    .from("user")
-    .select("avatar_url, full_name")
-    .eq("id", user.id)
-    .single();
+  const userData = await prisma.user.findUnique({
+    where: {
+      id: user.id,
+    },
+    select: {
+      avatar_url: true,
+      full_name: true,
+    },
+  });
 
   // Only update avatar and full name if not already set
   if (!userData?.avatar_url || !userData?.full_name) {
-    await supabase
-      .from("user")
-      .update({
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
         avatar_url: metadata.avatar_url,
         full_name: metadata.full_name,
-      })
-      .eq("id", user.id);
+      },
+    });
   }
 
   // Map common fields between providers
