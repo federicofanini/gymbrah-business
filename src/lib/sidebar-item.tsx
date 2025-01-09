@@ -55,7 +55,7 @@ export const sidebarItems = {
   navSecondary: [
     {
       title: "Feedback",
-      url: "/dashboard/feedback",
+      url: "/blackboard/feedback",
       icon: Feather,
     },
     {

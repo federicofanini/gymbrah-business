@@ -1,16 +1,10 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { AddFeedback } from "./add-fedback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getFeedbacks } from "@/actions/feedback/feedback";
-import { voteFeedback } from "@/actions/feedback/votes";
-import { type ActionResponse } from "@/actions/types/action-response";
-import { toast } from "sonner";
+import { getCachedFeedbacks } from "@/actions/feedback/cached-feedback";
+import { AddFeedback } from "./add-fedback";
 
 interface Feedback {
   id: string;
@@ -41,74 +35,9 @@ export const categoryColors = {
   performance: "bg-pink-100 text-pink-800 hover:bg-pink-200",
 };
 
-export default function FeedbackPage() {
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [userVotes, setUserVotes] = useState<{
-    [key: string]: "upvote" | "downvote" | null;
-  }>({});
-
-  async function loadFeedbacks() {
-    try {
-      const result = await getFeedbacks();
-      if (result?.data) {
-        const response = result.data as ActionResponse;
-        if (response.success && response.data) {
-          setFeedbacks(response.data as Feedback[]);
-          const firstFeedback = (response.data as Feedback[])[0];
-          if (firstFeedback) {
-            setCurrentUserId(firstFeedback.user_id);
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error loading feedbacks:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadFeedbacks();
-  }, []);
-
-  const handleVote = async (
-    feedbackId: string,
-    voteType: "upvote" | "downvote"
-  ) => {
-    try {
-      const response = await voteFeedback({ feedbackId, voteType });
-      if (!response?.data) return;
-
-      const result = response.data as ActionResponse;
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-
-      setUserVotes((prev) => ({
-        ...prev,
-        [feedbackId]: voteType,
-      }));
-
-      await loadFeedbacks();
-    } catch (error) {
-      toast.error("Failed to vote");
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold">Feedback</h1>
-          <AddFeedback />
-        </div>
-        <div className="text-center">Loading feedbacks...</div>
-      </div>
-    );
-  }
+export default async function FeedbackPage() {
+  const result = await getCachedFeedbacks();
+  const feedbacks = result.success ? (result.data as Feedback[]) : [];
 
   return (
     <div className="container mx-auto px-4 py-4 sm:py-8">
@@ -173,40 +102,7 @@ export default function FeedbackPage() {
                 {feedback.message}
               </p>
               <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4">
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="space-x-1 px-2 sm:px-3"
-                    onClick={() => handleVote(feedback.id, "upvote")}
-                  >
-                    <ArrowBigUp
-                      className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                        userVotes[feedback.id] === "upvote"
-                          ? "fill-current"
-                          : ""
-                      }`}
-                    />
-                    <span className="text-sm">{feedback.upvotes}</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="space-x-1 px-2 sm:px-3"
-                    onClick={() => handleVote(feedback.id, "downvote")}
-                  >
-                    <ArrowBigDown
-                      className={`h-4 w-4 sm:h-5 sm:w-5 ${
-                        userVotes[feedback.id] === "downvote"
-                          ? "fill-current"
-                          : ""
-                      }`}
-                    />
-                  </Button>
-                  <Badge variant="outline" className="text-xs hidden sm:block">
-                    {feedback.rating} ★
-                  </Badge>
-                </div>
+                <VoteButton feedback={feedback} />
                 <div className="flex sm:hidden items-center gap-2">
                   <Badge
                     className={`text-xs ${

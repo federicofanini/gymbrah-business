@@ -6,6 +6,8 @@ import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
+import { revalidatePath } from "next/cache";
+import { Client } from "@/utils/supabase/type";
 
 const schema = z.object({
   message: z.string().min(10).max(1000),
@@ -50,6 +52,9 @@ export const createFeedback = createSafeActionClient()
         },
       });
 
+      // Revalidate the feedback page after creating new feedback
+      revalidatePath("/blackboard/feedback");
+
       return {
         success: true,
         data: feedback,
@@ -62,46 +67,35 @@ export const createFeedback = createSafeActionClient()
     }
   });
 
-export const getFeedbacks = createSafeActionClient().action(
-  async (): Promise<ActionResponse> => {
-    try {
-      const supabase = await createClient();
+export async function getFeedbacks(supabase: Client): Promise<ActionResponse> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
-
-      if (authError || !user) {
-        return {
-          success: false,
-          error: appErrors.UNAUTHORIZED,
-        };
-      }
-
-      const feedbacks = await prisma.feedback.findMany({
-        include: {
-          user: {
-            select: {
-              full_name: true,
-              avatar_url: true,
-            },
-          },
-        },
-        orderBy: {
-          created_at: "desc",
-        },
-      });
-
-      return {
-        success: true,
-        data: feedbacks,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: appErrors.UNEXPECTED_ERROR,
-      };
-    }
+  if (authError || !user) {
+    return {
+      success: false,
+      error: appErrors.UNAUTHORIZED,
+    };
   }
-);
+
+  const feedbacks = await prisma.feedback.findMany({
+    include: {
+      user: {
+        select: {
+          full_name: true,
+          avatar_url: true,
+        },
+      },
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+  });
+
+  return {
+    success: true,
+    data: feedbacks,
+  };
+}
