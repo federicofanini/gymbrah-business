@@ -93,7 +93,7 @@ export async function DailyWorkout({ workoutData }: { workoutData?: Workout }) {
                   <div className="flex items-center justify-center gap-2 mb-4">
                     {section.icon}
                     <h3 className="font-semibold text-center">
-                      {section.title}
+                      {section.title} ({section.exercises.length} exercises)
                     </h3>
                   </div>
                   <div className="flex flex-col space-y-2">

@@ -75,7 +75,7 @@ export async function WeeklyMenu() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <Tabs defaultValue={defaultDay} className="w-full border">
+            <Tabs defaultValue={defaultDay} className="w-full">
               <div className="w-full overflow-x-auto sm:mx-auto">
                 <TabsList className="w-full inline-flex min-w-[640px] sm:min-w-0">
                   {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
