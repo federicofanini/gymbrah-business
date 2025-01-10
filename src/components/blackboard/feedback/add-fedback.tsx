@@ -12,13 +12,11 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -38,7 +36,6 @@ import { toast } from "sonner";
 import { type ActionResponse } from "@/actions/types/action-response";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
-import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
 
 type FeedbackCategory =
   | "bug"
@@ -96,9 +93,7 @@ export function AddFeedback() {
         if (response.success) {
           const analytics = await setupAnalytics();
           analytics.track({
-            event: LogEvents.SendFeedback.name(
-              (await getUserMetadata())?.full_name
-            ),
+            event: LogEvents.SendFeedback.name("."),
             channel: LogEvents.SendFeedback.channel,
             page: "feedback",
           });
