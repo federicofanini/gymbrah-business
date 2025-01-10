@@ -1,3 +1,5 @@
-export default function AchievementsPage() {
-  return <div>Achievements</div>;
+import AchivementsPage from "@/components/blackboard/achivements/achivements-page";
+
+export default function Achievements() {
+  return <AchivementsPage />;
 }

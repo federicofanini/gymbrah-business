@@ -14,6 +14,7 @@ import {
   getCachedWorkoutsByDay,
 } from "@/actions/workout/cached-workout";
 import { format, startOfWeek, addDays } from "date-fns";
+import { ProgressComponent } from "./progress-component";
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start from Monday
@@ -84,7 +85,7 @@ export async function WeeklyMenu() {
                   className="flex-shrink-0 min-w-[calc(100vw/7-0.5rem)] sm:min-w-[4.5rem] lg:min-w-[5.5rem] px-0.5 sm:px-2 relative"
                 >
                   <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[10px] sm:text-sm lg:text-base text-muted-foreground font-medium truncate">
+                    <span className="text-[10px] sm:text-sm lg:text-base font-medium truncate">
                       <span className="hidden sm:inline font-semibold">
                         {day.name}
                       </span>
@@ -136,9 +137,8 @@ export async function WeeklyMenu() {
             </div>
           </Tabs>
         </div>
-        <div className="hidden lg:block">
-          {/* Content for the third column */}
-          third column
+        <div>
+          <ProgressComponent />
         </div>
       </div>
     </Card>
