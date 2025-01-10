@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 interface Exercise {
   id: string;
@@ -111,6 +112,9 @@ export async function DailyWorkout({ workoutData }: { workoutData?: Workout }) {
                       </Badge>
                     ) : (
                       <div className="grid grid-cols-1 gap-1 mb-4">
+                        <Label className="text-xs sm:text-sm font-medium text-muted-foreground">
+                          Sets
+                        </Label>
                         {Array.from({ length: exercise.sets }).map(
                           (_, index) => (
                             <div
@@ -120,7 +124,7 @@ export async function DailyWorkout({ workoutData }: { workoutData?: Workout }) {
                               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
                                 <Checkbox id={`set-${exercise.id}-${index}`} />
                                 <Badge variant="secondary" className="w-full">
-                                  0{index + 1} - 🎯 {exercise.reps} reps
+                                  🎯 {index + 1} - {exercise.reps} reps
                                 </Badge>
                               </div>
                               <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
