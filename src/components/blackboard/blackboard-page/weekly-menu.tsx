@@ -13,15 +13,39 @@ import {
   getCachedWorkoutFrequency,
   getCachedWorkoutsByDay,
 } from "@/actions/workout/cached-workout";
+import { format, startOfWeek, addDays } from "date-fns";
+
+const today = new Date();
+const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start from Monday
 
 const WEEKDAYS = [
-  { name: "Monday", shortName: "Mon", value: "1" },
-  { name: "Tuesday", shortName: "Tue", value: "2" },
-  { name: "Wednesday", shortName: "Wed", value: "3" },
-  { name: "Thursday", shortName: "Thu", value: "4" },
-  { name: "Friday", shortName: "Fri", value: "5" },
-  { name: "Saturday", shortName: "Sat", value: "6" },
-  { name: "Sunday", shortName: "Sun", value: "7" },
+  { name: "Monday", shortName: "Mon", value: "1", date: weekStart },
+  {
+    name: "Tuesday",
+    shortName: "Tue",
+    value: "2",
+    date: addDays(weekStart, 1),
+  },
+  {
+    name: "Wednesday",
+    shortName: "Wed",
+    value: "3",
+    date: addDays(weekStart, 2),
+  },
+  {
+    name: "Thursday",
+    shortName: "Thu",
+    value: "4",
+    date: addDays(weekStart, 3),
+  },
+  { name: "Friday", shortName: "Fri", value: "5", date: addDays(weekStart, 4) },
+  {
+    name: "Saturday",
+    shortName: "Sat",
+    value: "6",
+    date: addDays(weekStart, 5),
+  },
+  { name: "Sunday", shortName: "Sun", value: "7", date: addDays(weekStart, 6) },
 ];
 
 export async function WeeklyMenu() {
@@ -36,8 +60,9 @@ export async function WeeklyMenu() {
   const hasFrequency = userDays.length > 0;
 
   const defaultDay =
-    WEEKDAYS.find((day) => userDays.includes(day.value))?.name ||
-    WEEKDAYS[0].name;
+    WEEKDAYS.find(
+      (day) => format(day.date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")
+    )?.name || WEEKDAYS[0].name;
 
   if (!hasFrequency) {
     return <SetFrequencyDialog />;
@@ -50,51 +75,72 @@ export async function WeeklyMenu() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <Tabs defaultValue={defaultDay} className="w-full">
-              <ScrollArea className="w-full">
-                <TabsList className="w-max min-w-full justify-start">
+            <Tabs defaultValue={defaultDay} className="w-full border">
+              <div className="w-full overflow-x-auto sm:mx-auto">
+                <TabsList className="w-full inline-flex min-w-[640px] sm:min-w-0">
                   {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
                     (day) => (
                       <TabsTrigger
                         key={day.name}
                         value={day.name}
-                        className="min-w-[4.5rem]"
+                        className="flex-1 min-w-[4.5rem] relative"
                       >
-                        <span className="text-xs text-muted-foreground font-medium">
-                          <span className="hidden sm:inline">{day.name}</span>
-                          <span className="sm:hidden">{day.shortName}</span>
-                        </span>
+                        <div className="flex flex-col items-center">
+                          <span className="text-xs text-muted-foreground font-medium">
+                            <span className="hidden sm:inline">{day.name}</span>
+                            <span className="sm:hidden">{day.shortName}</span>
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {format(day.date, "EEE MM/dd")}
+                          </span>
+                          {format(day.date, "yyyy-MM-dd") ===
+                            format(today, "yyyy-MM-dd") && (
+                            <div className="absolute top-1 right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                          )}
+                        </div>
                       </TabsTrigger>
                     )
                   )}
                 </TabsList>
+              </div>
+              <ScrollArea className="h-full">
+                {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
+                  (day) => (
+                    <TabsContent
+                      key={day.name}
+                      value={day.name}
+                      className="text-xs sm:text-sm min-h-[3rem] sm:min-h-[4rem] rounded-md p-1.5 sm:p-2"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold">
+                          {day.name} - {format(day.date, "EEE MM/dd")}
+                        </span>
+                        <EditScheduleButton />
+                      </div>
+                      <Separator className="my-2" />
+                      <div className="space-y-4">
+                        <Suspense
+                          fallback={<Skeleton className="w-full h-32" />}
+                        >
+                          <WorkoutCard workoutData={workoutsByDay[day.value]} />
+                        </Suspense>
+                        <Suspense
+                          fallback={<Skeleton className="w-full h-24" />}
+                        >
+                          <DailyWorkout
+                            workoutData={workoutsByDay[day.value]}
+                          />
+                        </Suspense>
+                        <Suspense
+                          fallback={<Skeleton className="w-full h-10" />}
+                        >
+                          <FinishButton />
+                        </Suspense>
+                      </div>
+                    </TabsContent>
+                  )
+                )}
               </ScrollArea>
-              {WEEKDAYS.filter((day) => userDays.includes(day.value)).map(
-                (day) => (
-                  <TabsContent
-                    key={day.name}
-                    value={day.name}
-                    className="text-xs sm:text-sm min-h-[3rem] sm:min-h-[4rem] rounded-md p-1.5 sm:p-2"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold">{day.name}</span>
-                      <EditScheduleButton />
-                    </div>
-                    <Separator className="my-2" />
-                    <div className="space-y-4">
-                      <Suspense fallback={<Skeleton className="w-full h-32" />}>
-                        <WorkoutCard workoutData={workoutsByDay[day.value]} />
-                      </Suspense>
-                      <Suspense fallback={<Skeleton className="w-full h-24" />}>
-                        <DailyWorkout workoutData={workoutsByDay[day.value]} />
-                      </Suspense>
-                      <Suspense fallback={<Skeleton className="w-full h-10" />}>
-                        <FinishButton />
-                      </Suspense>
-                    </div>
-                  </TabsContent>
-                )
-              )}
             </Tabs>
           </div>
         </div>
