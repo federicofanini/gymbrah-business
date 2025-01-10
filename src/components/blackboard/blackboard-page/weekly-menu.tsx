@@ -113,7 +113,7 @@ export async function WeeklyMenu() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-semibold">
-                          {day.name} - {format(day.date, "EEE MM/dd")}
+                          {day.name} - {format(day.date, "MMM dd, yyyy")}
                         </span>
                         <EditScheduleButton />
                       </div>

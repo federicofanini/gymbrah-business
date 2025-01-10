@@ -50,7 +50,7 @@ export function ClientEditScheduleButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="outline" className="gap-2 h-8">
           <Calendar className="h-4 w-4" />
           Edit Schedule
         </Button>
