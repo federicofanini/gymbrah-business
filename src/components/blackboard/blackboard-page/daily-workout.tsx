@@ -90,9 +90,11 @@ export async function DailyWorkout({ workoutData }: { workoutData?: Workout }) {
             section.exercises.map((exercise) => (
               <CarouselItem key={exercise.id} className="mb-12">
                 <div className="p-4">
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center justify-center gap-2 mb-4">
                     {section.icon}
-                    <h3 className="font-semibold">{section.title}</h3>
+                    <h3 className="font-semibold text-center">
+                      {section.title}
+                    </h3>
                   </div>
                   <div className="flex flex-col space-y-2">
                     <div className="flex items-center gap-2">
