@@ -9,7 +9,10 @@ import { DailyWorkout } from "./daily-workout";
 import { FinishButton } from "./finish-button";
 import { SetFrequencyDialog } from "./set-frequency-dialog";
 import { EditScheduleButton } from "./set-frequency-dialog";
-import { getCachedWorkoutFrequency } from "@/actions/workout/cached-workout";
+import {
+  getCachedWorkoutFrequency,
+  getCachedWorkoutsByDay,
+} from "@/actions/workout/cached-workout";
 
 const WEEKDAYS = [
   { name: "Monday", shortName: "Mon", value: "1" },
@@ -23,6 +26,7 @@ const WEEKDAYS = [
 
 export async function WeeklyMenu() {
   const frequencyResponse = await getCachedWorkoutFrequency();
+  const workoutsResponse = await getCachedWorkoutsByDay();
 
   if (!frequencyResponse.success || !frequencyResponse.data) {
     return <SetFrequencyDialog />;
@@ -38,6 +42,8 @@ export async function WeeklyMenu() {
   if (!hasFrequency) {
     return <SetFrequencyDialog />;
   }
+
+  const workoutsByDay = workoutsResponse.success ? workoutsResponse.data : {};
 
   return (
     <Card className="w-[calc(100vw-2rem)] sm:w-full border-none">
@@ -77,10 +83,10 @@ export async function WeeklyMenu() {
                     <Separator className="my-2" />
                     <div className="space-y-4">
                       <Suspense fallback={<Skeleton className="w-full h-32" />}>
-                        <WorkoutCard />
+                        <WorkoutCard workoutData={workoutsByDay[day.value]} />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-24" />}>
-                        <DailyWorkout />
+                        <DailyWorkout workoutData={workoutsByDay[day.value]} />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-10" />}>
                         <FinishButton />

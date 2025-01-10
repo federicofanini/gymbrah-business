@@ -30,48 +30,54 @@ interface Workout {
   frequency: string;
 }
 
-export async function WorkoutCard() {
+export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
   // Get current day of week (1-7, Monday = 1)
   const today = new Date().getDay();
   const dayNumber = today === 0 ? "7" : today.toString();
 
-  // Get user's workout frequency
-  const frequencyResponse = await getCachedWorkoutFrequency();
+  let selectedWorkout: Workout;
 
-  if (!frequencyResponse.success || !frequencyResponse.data) {
-    return null;
-  }
+  if (workoutData) {
+    selectedWorkout = workoutData;
+  } else {
+    // Get user's workout frequency
+    const frequencyResponse = await getCachedWorkoutFrequency();
 
-  // Get user's workout days
-  const userWorkoutDays = frequencyResponse.data.frequency?.split(",") || [];
+    if (!frequencyResponse.success || !frequencyResponse.data) {
+      return null;
+    }
 
-  // Get selected workout
-  const workoutResponse = await getCachedSelectedWorkout();
+    // Get user's workout days
+    const userWorkoutDays = frequencyResponse.data.frequency?.split(",") || [];
 
-  if (!workoutResponse.success || !workoutResponse.data) {
-    return null;
-  }
+    // Get selected workout
+    const workoutResponse = await getCachedSelectedWorkout();
 
-  const workout = workoutResponse.data;
+    if (!workoutResponse.success || !workoutResponse.data) {
+      return null;
+    }
 
-  // Get workout's frequency days
-  const workoutFrequencyDays = workout.frequency?.split(",") || [];
+    selectedWorkout = workoutResponse.data;
 
-  // Check if today matches both user's frequency and workout's frequency
-  if (
-    !userWorkoutDays.includes(dayNumber) ||
-    !workoutFrequencyDays.includes(dayNumber)
-  ) {
-    return null;
+    // Get workout's frequency days
+    const workoutFrequencyDays = selectedWorkout.frequency?.split(",") || [];
+
+    // Check if today matches both user's frequency and workout's frequency
+    if (
+      !userWorkoutDays.includes(dayNumber) ||
+      !workoutFrequencyDays.includes(dayNumber)
+    ) {
+      return null;
+    }
   }
 
   // Estimate workout time
   const timeResponse = await estimateWorkoutTime(
-    workout.exercises.map((e: Exercise) => ({
+    selectedWorkout.exercises.map((e: Exercise) => ({
       exercise_id: e.exercise_id,
       sets: e.sets,
       reps: e.reps,
-      duration: e.duration,
+      duration: e.duration || null,
     }))
   );
 
@@ -85,12 +91,18 @@ export async function WorkoutCard() {
 
   // Get unique muscle groups
   const muscleGroups = Array.from(
-    new Set(workout.exercises.flatMap((exercise: Exercise) => exercise.muscles))
+    new Set(
+      selectedWorkout.exercises.flatMap(
+        (exercise: Exercise) => exercise.muscles
+      )
+    )
   ) as string[];
 
   // Get unique equipment (categories)
   const equipment = Array.from(
-    new Set(workout.exercises.map((exercise: Exercise) => exercise.category))
+    new Set(
+      selectedWorkout.exercises.map((exercise: Exercise) => exercise.category)
+    )
   ).join(", ");
 
   return (
@@ -98,7 +110,7 @@ export async function WorkoutCard() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1.5 sm:gap-4">
         <div className="space-y-1.5 sm:space-y-3 flex justify-between gap-2 items-center">
           <h2 className="text-base sm:text-2xl font-semibold line-clamp-2 uppercase">
-            {workout.name}
+            {selectedWorkout.name}
           </h2>
           <div className="flex flex-wrap gap-2 sm:gap-4 text-[11px] sm:text-sm text-gray-300">
             <div className="flex items-center gap-1 sm:gap-2">

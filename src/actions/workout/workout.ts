@@ -92,6 +92,7 @@ export const createWorkout = createSafeActionClient()
           user_id: user.id,
           name: input.parsedInput.name,
           frequency: input.parsedInput.frequency,
+          selected: true,
           created_at: new Date(),
           updated_at: new Date(),
           exercises: {

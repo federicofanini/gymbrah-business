@@ -110,7 +110,114 @@ export const getCachedWorkoutFrequency = cache(
       [`workout-frequency-${user.id}`],
       {
         tags: [`workout-frequency-${user.id}`],
-        revalidate: 300,
+        revalidate: 300, // 5 minutes
+      }
+    )();
+  }
+);
+
+export const getCachedWorkoutsByDay = cache(
+  async (): Promise<ActionResponse> => {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        error: appErrors.UNAUTHORIZED,
+      };
+    }
+
+    return unstable_cache(
+      async () => {
+        try {
+          const workouts = await prisma.workout.findMany({
+            where: {
+              user_id: user.id,
+              selected: true,
+            },
+            select: {
+              id: true,
+              name: true,
+              selected: true,
+              created_at: true,
+              frequency: true,
+              exercises: {
+                select: {
+                  id: true,
+                  sets: true,
+                  reps: true,
+                  weight: true,
+                  duration: true,
+                  exercise: {
+                    select: {
+                      id: true,
+                      name: true,
+                      category: true,
+                      muscles: true,
+                      outcomes: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          const workoutsByDay: Record<string, any> = {
+            "1": null,
+            "2": null,
+            "3": null,
+            "4": null,
+            "5": null,
+            "6": null,
+            "7": null,
+          };
+
+          workouts.forEach((workout) => {
+            const days = workout.frequency?.split(",") || [];
+            const formattedWorkout = {
+              id: workout.id,
+              name: workout.name,
+              selected: workout.selected,
+              created_at: workout.created_at,
+              exercises: workout.exercises.map((exercise) => ({
+                id: exercise.id,
+                name: exercise.exercise.name,
+                sets: exercise.sets,
+                reps: exercise.reps,
+                weight: exercise.weight,
+                duration: exercise.duration,
+                category: exercise.exercise.category,
+                muscles: exercise.exercise.muscles,
+                outcomes: exercise.exercise.outcomes,
+                exercise_id: exercise.exercise.id,
+                workout_id: workout.id,
+              })),
+            };
+
+            days.forEach((day) => {
+              workoutsByDay[day] = formattedWorkout;
+            });
+          });
+
+          return {
+            success: true,
+            data: workoutsByDay,
+          };
+        } catch (error) {
+          return {
+            success: false,
+            error: appErrors.UNEXPECTED_ERROR,
+          };
+        }
+      },
+      [`workouts-by-day-${user.id}`],
+      {
+        tags: [`workouts-by-day-${user.id}`],
+        revalidate: 300, // 5 minutes
       }
     )();
   }

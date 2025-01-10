@@ -30,36 +30,43 @@ export const selectWorkout = createSafeActionClient()
         };
       }
 
-      // First, unselect all workouts for this user
-      await prisma.workout.updateMany({
+      // Get current workout state
+      const currentWorkout = await prisma.workout.findUnique({
         where: {
+          id: input.parsedInput.workoutId,
           user_id: user.id,
         },
-        data: {
-          selected: false,
+        select: {
+          selected: true,
         },
       });
 
-      // If workoutId is not empty, select the specified workout
-      if (input.parsedInput.workoutId) {
-        await prisma.workout.update({
-          where: {
-            id: input.parsedInput.workoutId,
-            user_id: user.id,
-          },
-          data: {
-            selected: true,
-          },
-        });
+      if (!currentWorkout) {
+        return {
+          success: false,
+          error: appErrors.NOT_FOUND,
+        };
       }
+
+      // Toggle the selected state
+      await prisma.workout.update({
+        where: {
+          id: input.parsedInput.workoutId,
+          user_id: user.id,
+        },
+        data: {
+          selected: !currentWorkout.selected,
+        },
+      });
 
       // Revalidate the cache tag for this user's selected workout
       revalidateTag(`selected-workout-${user.id}`);
+      revalidateTag(`workouts-by-day-${user.id}`);
       revalidatePath("/blackboard/workout");
 
       return {
         success: true,
-        data: { success: true },
+        data: { selected: !currentWorkout.selected },
       };
     } catch (error) {
       return {

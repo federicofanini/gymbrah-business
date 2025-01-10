@@ -23,7 +23,7 @@ export function WorkoutActions({ workout }: WorkoutActionsProps) {
   const handleToggle = () => {
     startTransition(async () => {
       const result = await selectWorkout({
-        workoutId: !workout.selected ? workout.id : "",
+        workoutId: workout.id,
       });
 
       if (!result?.data?.success) {
