@@ -1,14 +1,18 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import { Dumbbell, Flame, Snowflake } from "lucide-react";
+import { Check, Dumbbell, Flame, Snowflake } from "lucide-react";
 import { categories } from "../workout/create-workout/exercises/exercises-list";
 import { ExerciseCheckbox } from "./exercise-checkbox";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface Exercise {
   id: string;
@@ -80,48 +84,73 @@ export async function DailyWorkout({ workoutData }: { workoutData?: Workout }) {
 
   return (
     <Card className="w-full p-4">
-      <Accordion type="single" collapsible className="w-full">
-        {sections.map((section) => (
-          <AccordionItem
-            key={section.id}
-            value={section.id}
-            className="border-none"
-          >
-            <AccordionTrigger className="flex items-center gap-2">
-              {section.icon}
-              <span>{section.title}</span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="grid gap-4 pl-6">
-                {section.exercises.map((exercise: Exercise) => (
-                  <div
-                    key={exercise.id}
-                    className="flex items-center space-x-2"
-                  >
-                    <ExerciseCheckbox
-                      sectionId={section.id}
-                      exercise={exercise}
-                    />
-                    <label
-                      htmlFor={exercise.id}
-                      className="flex items-center gap-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {exercise.name}{" "}
-                      <Badge variant="secondary">
-                        {exercise.sets && exercise.reps
-                          ? `${exercise.sets} sets x ${exercise.reps} reps`
-                          : exercise.duration
-                          ? `${exercise.duration} min`
-                          : null}
-                      </Badge>
-                    </label>
+      <Carousel className="w-full">
+        <CarouselContent>
+          {sections.map((section) =>
+            section.exercises.map((exercise) => (
+              <CarouselItem key={exercise.id} className="mb-12">
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    {section.icon}
+                    <h3 className="font-semibold">{section.title}</h3>
                   </div>
-                ))}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+                  <div className="flex flex-col space-y-2">
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor={exercise.id}
+                        className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {exercise.name}
+                      </label>
+                    </div>
+                    {exercise.duration ? (
+                      <Badge variant="secondary" className="w-fit">
+                        {exercise.duration} min
+                      </Badge>
+                    ) : (
+                      <div className="grid grid-cols-1 gap-1 mb-4">
+                        {Array.from({ length: exercise.sets }).map(
+                          (_, index) => (
+                            <div
+                              key={index}
+                              className="grid grid-cols-4 items-center gap-2"
+                            >
+                              <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
+                                <Checkbox id={`set-${exercise.id}-${index}`} />
+                                <Badge variant="secondary" className="w-full">
+                                  0{index + 1} - 🎯 {exercise.reps} reps
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-2 col-span-2 sm:col-span-1">
+                                <Input
+                                  type="number"
+                                  placeholder="Actual reps"
+                                  className="w-32 h-6 text-xs"
+                                  min={0}
+                                  max={99}
+                                />
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="w-12 h-6"
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CarouselItem>
+            ))
+          )}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </Card>
   );
 }
