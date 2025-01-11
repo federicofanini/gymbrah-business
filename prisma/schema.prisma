@@ -40,6 +40,7 @@ model user {
   exercises         exercises[]
   gamification      gamification?
   workout_frequency workout_frequency?
+  completed_sets    completed_set[]
 }
 
 model waitlist {
@@ -79,17 +80,18 @@ model health_profile {
 }
 
 model workout_exercise {
-  id          String    @id @default(uuid())
-  exercise_id String
-  exercise    exercises @relation(fields: [exercise_id], references: [id])
-  reps        Int?
-  sets        Int?
-  weight      Float?
-  duration    Int?
-  workout_id  String
-  workout     workout   @relation(fields: [workout_id], references: [id])
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  id             String          @id @default(uuid())
+  exercise_id    String
+  exercise       exercises       @relation(fields: [exercise_id], references: [id])
+  reps           Int?
+  sets           Int?
+  weight         Float?
+  duration       Int?
+  workout_id     String
+  workout        workout         @relation(fields: [workout_id], references: [id])
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  completed_sets completed_set[]
 
   @@index([exercise_id])
   @@index([workout_id])
@@ -155,5 +157,20 @@ model workout_frequency {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@index([user_id])
+}
+
+model completed_set {
+  id                  String           @id @default(uuid())
+  workout_exercise_id String
+  workout_exercise    workout_exercise @relation(fields: [workout_exercise_id], references: [id])
+  user_id             String
+  user                user             @relation(fields: [user_id], references: [id])
+  completed_reps      Int
+  set_number          Int
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  @@index([workout_exercise_id])
   @@index([user_id])
 }

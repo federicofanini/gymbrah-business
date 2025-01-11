@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { getCachedWorkoutsByDay } from "@/actions/workout/cached-workout";
 import { WorkoutClient } from "@/components/blackboard/workout-page/workout-client";
+import { getUser } from "@/utils/supabase/database/cached-queries";
 
 interface Exercise {
   id: string;
@@ -28,7 +29,25 @@ interface Workout {
 type PageParams = { idWorkout: string } & Promise<any>;
 
 export default async function WorkoutPage({ params }: { params: PageParams }) {
-  const workoutsResponse = await getCachedWorkoutsByDay();
+  const [workoutsResponse, user] = await Promise.all([
+    getCachedWorkoutsByDay(),
+    getUser(),
+  ]);
+
+  if (!user) {
+    return (
+      <div className="container max-w-2xl mx-auto p-4">
+        <Card className="p-6">
+          <div className="text-center">
+            <h1 className="text-xl font-semibold">Not authenticated</h1>
+            <p className="text-muted-foreground">
+              Please sign in to view this workout
+            </p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (!workoutsResponse.success || !workoutsResponse.data) {
     return (
@@ -65,5 +84,5 @@ export default async function WorkoutPage({ params }: { params: PageParams }) {
     );
   }
 
-  return <WorkoutClient workout={workout} />;
+  return <WorkoutClient workout={workout} userId={user.id} />;
 }

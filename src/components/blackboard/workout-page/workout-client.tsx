@@ -10,6 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { FinishButton } from "@/components/blackboard/blackboard-page/finish-button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { saveCompletedReps } from "@/actions/workout-page/reps-completed";
+import { toast } from "sonner";
 
 interface Exercise {
   id: string;
@@ -26,6 +28,7 @@ interface Exercise {
 }
 
 interface WorkoutProps {
+  userId: string;
   workout: {
     id: string;
     name: string;
@@ -35,7 +38,7 @@ interface WorkoutProps {
   };
 }
 
-export function WorkoutClient({ workout }: WorkoutProps) {
+export function WorkoutClient({ workout, userId }: WorkoutProps) {
   const router = useRouter();
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
@@ -66,8 +69,27 @@ export function WorkoutClient({ workout }: WorkoutProps) {
     return () => clearTimeout(timer);
   }, [isResting, restTime]);
 
-  const handleSetComplete = () => {
-    setIsResting(true);
+  const handleSetComplete = async () => {
+    if (completedReps === 0) {
+      toast.error("Please enter completed reps");
+      return;
+    }
+
+    const exercise = workout.exercises[currentExercise];
+    const result = await saveCompletedReps({
+      workoutExerciseId: exercise.id,
+      userId: userId,
+      completedReps,
+      setNumber: currentSet,
+    });
+
+    if (result?.data?.success) {
+      setIsResting(true);
+    } else {
+      toast.error("Error saving completed reps", {
+        description: result?.data?.error,
+      });
+    }
   };
 
   const handleNextSet = useCallback(() => {
@@ -194,19 +216,13 @@ export function WorkoutClient({ workout }: WorkoutProps) {
                         <div className="flex gap-2">
                           <Input
                             type="number"
-                            name="completedReps"
+                            value={completedReps || ""}
+                            onChange={(e) =>
+                              setCompletedReps(Number(e.target.value))
+                            }
                             className="text-lg h-12"
                             placeholder="Reps completed"
                           />
-                          <Button
-                            size="icon"
-                            className="h-12 w-20"
-                            onClick={() => {
-                              // Save completed reps logic here
-                            }}
-                          >
-                            <CheckCircle className="h-5 w-5" />
-                          </Button>
                         </div>
                       </div>
                     </div>
