@@ -16,6 +16,7 @@ import {
 import { format, startOfWeek, addDays } from "date-fns";
 import { ProgressComponent } from "./progress-component";
 import { WorkoutSummary } from "./workout-summary";
+import { StartWorkout } from "./start-workout";
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start from Monday
@@ -133,7 +134,9 @@ export async function WeeklyMenu() {
                         />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-10" />}>
-                        <FinishButton />
+                        <StartWorkout
+                          workoutId={workoutsByDay[day.value]?.id}
+                        />
                       </Suspense>
                     </div>
                   </TabsContent>
