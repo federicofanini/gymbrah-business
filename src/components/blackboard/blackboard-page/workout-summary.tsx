@@ -39,20 +39,20 @@ export async function WorkoutSummary({
   }
 
   return (
-    <Card className="w-full p-6 bg-gradient-to-br from-background to-muted/50">
-      <CardContent>
-        <div className="flex items-center gap-2 mb-6">
+    <Card className="w-full bg-gradient-to-br from-background to-muted/50">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-2 mb-4">
           <Dumbbell className="h-5 w-5 text-primary" />
           <h3 className="font-semibold text-lg">
             Workout ({exercises.length} exercises)
           </h3>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {exercises.map((exercise) => (
             <div
               key={exercise.id}
-              className="p-4 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
+              className="p-2 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
             >
               <div className="flex items-center justify-between">
                 <h4 className="font-medium text-base">{exercise.name}</h4>

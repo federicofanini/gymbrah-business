@@ -87,7 +87,7 @@ export function ProgressComponent() {
   }, []);
 
   return (
-    <Card className="w-full p-2.5 sm:p-4 space-y-2.5 sm:space-y-4">
+    <Card className="w-full p-2.5 sm:p-4 space-y-2.5 sm:space-y-4 border-none">
       <div className="space-y-1 sm:space-y-2">
         <h2 className="text-sm sm:text-xl font-semibold">Progress Overview</h2>
         <p className="text-xs sm:text-sm text-muted-foreground">
