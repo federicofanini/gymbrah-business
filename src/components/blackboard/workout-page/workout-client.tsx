@@ -2,12 +2,14 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useCallback } from "react";
 import { Progress } from "@/components/ui/progress";
 import { FinishButton } from "@/components/blackboard/blackboard-page/finish-button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 interface Exercise {
   id: string;
@@ -40,6 +42,7 @@ export function WorkoutClient({ workout }: WorkoutProps) {
   const [isResting, setIsResting] = useState(false);
   const [restTime, setRestTime] = useState(3);
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false);
+  const [completedReps, setCompletedReps] = useState<number>(0);
 
   const totalSets = workout.exercises.reduce((acc, ex) => acc + ex.sets, 0);
   const completedSets =
@@ -77,93 +80,162 @@ export function WorkoutClient({ workout }: WorkoutProps) {
     } else {
       setIsWorkoutComplete(true);
     }
+    setCompletedReps(0);
   }, [currentExercise, currentSet, workout.exercises]);
 
   const exercise = workout.exercises[currentExercise];
 
   return (
-    <div className="min-h-[100dvh] flex flex-col p-4 bg-background">
-      <Card className="flex-1 p-6 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <Button variant="ghost" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <div className="text-sm text-muted-foreground">
-            {completedSets}/{totalSets} sets completed
+    <div className="min-h-[80dvh] flex flex-col p-2 sm:p-4 md:p-6 bg-background">
+      <Card className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="mr-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-xl sm:text-2xl font-bold">{workout.name}</h1>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Progress value={progress} className="w-24 sm:w-32" />
+            <span>{Math.round(progress)}%</span>
           </div>
         </div>
-        <div className="mb-4">
-          <h1 className="text-2xl font-semibold">{workout.name}</h1>
-          <Progress value={progress} className="mt-2" />
-        </div>
 
-        <Separator className="my-4" />
+        <Separator className="mb-8" />
 
+        {/* Main Content */}
         {!isWorkoutComplete ? (
-          <div className="flex-1 flex flex-col justify-center items-center text-center space-y-6">
+          <div className="flex-1 flex flex-col">
+            {/* Exercise Progress */}
+            <div className="mb-6 flex items-center justify-between text-sm text-muted-foreground">
+              <span>
+                Exercise {currentExercise + 1}/{workout.exercises.length}
+              </span>
+              <span>
+                {completedSets}/{totalSets} sets completed
+              </span>
+            </div>
+
             {isResting ? (
-              <div className="space-y-4">
-                <h2 className="text-xl font-medium">Rest Time</h2>
-                <div className="text-4xl font-bold">{restTime}s</div>
+              <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+                <div className="text-center space-y-4">
+                  <h2 className="text-2xl font-medium">Rest Time</h2>
+                  <div className="text-6xl font-bold text-primary">
+                    {restTime}s
+                  </div>
+                  <p className="text-muted-foreground">
+                    Get ready for your next set!
+                  </p>
+                </div>
               </div>
             ) : (
-              <>
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-medium">{exercise.name}</h2>
-                  <p className="text-muted-foreground">{exercise.category}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-6 text-lg">
-                  <div>
-                    <div className="font-medium">Set</div>
-                    <div className="text-2xl">
-                      {currentSet}/{exercise.sets}
+              <div className="flex-1 grid md:grid-cols-2 gap-8 items-center">
+                {/* Exercise Info */}
+                <div className="space-y-8">
+                  <div className="space-y-3">
+                    <h2 className="text-3xl font-bold">{exercise.name}</h2>
+                    <div className="flex flex-wrap gap-2">
+                      <p className="text-lg text-muted-foreground">
+                        {exercise.category}
+                      </p>
+                      {exercise.muscles.map((muscle) => (
+                        <Badge
+                          key={muscle}
+                          className="text-md"
+                          variant="secondary"
+                        >
+                          {muscle}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
-                  <div>
-                    <div className="font-medium">Reps</div>
-                    <div className="text-2xl">{exercise.reps}</div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="bg-secondary/50 p-4 rounded-lg text-center">
+                      <div className="text-sm font-medium mb-1">Set</div>
+                      <div className="text-3xl font-bold">
+                        {currentSet}/{exercise.sets}
+                      </div>
+                    </div>
+                    <div className="bg-secondary/50 p-4 rounded-lg text-center">
+                      <div className="text-sm font-medium mb-1">
+                        Target Reps
+                      </div>
+                      <div className="text-3xl font-bold">{exercise.reps}</div>
+                    </div>
+                    {exercise.weight && (
+                      <div className="bg-secondary/50 p-4 rounded-lg text-center">
+                        <div className="text-sm font-medium mb-1">Weight</div>
+                        <div className="text-3xl font-bold">
+                          {exercise.weight}kg
+                        </div>
+                      </div>
+                    )}
+                    {exercise.duration && (
+                      <div className="bg-secondary/50 p-4 rounded-lg text-center">
+                        <div className="text-sm font-medium mb-1">Duration</div>
+                        <div className="text-3xl font-bold">
+                          {exercise.duration}s
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  {exercise.weight && (
-                    <div>
-                      <div className="font-medium">Weight</div>
-                      <div className="text-2xl">{exercise.weight}kg</div>
-                    </div>
-                  )}
-                  {exercise.duration && (
-                    <div>
-                      <div className="font-medium">Duration</div>
-                      <div className="text-2xl">{exercise.duration}s</div>
-                    </div>
-                  )}
                 </div>
 
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {exercise.muscles.map((muscle) => (
-                    <span
-                      key={muscle}
-                      className="bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-sm"
+                {/* Action */}
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-1">
+                        <label className="text-sm font-medium mb-2 block">
+                          Completed Reps
+                        </label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            name="completedReps"
+                            className="text-lg h-12"
+                            placeholder="Reps completed"
+                          />
+                          <Button
+                            size="icon"
+                            className="h-12 w-20"
+                            onClick={() => {
+                              // Save completed reps logic here
+                            }}
+                          >
+                            <CheckCircle className="h-5 w-5" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <Button
+                      size="lg"
+                      className="w-full text-lg h-16"
+                      onClick={handleSetComplete}
                     >
-                      {muscle}
-                    </span>
-                  ))}
+                      <CheckCircle className="h-6 w-6 mr-2" />
+                      Complete Set
+                      <ChevronRight className="h-5 w-5 ml-2" />
+                    </Button>
+                  </div>
                 </div>
-
-                <Button
-                  size="lg"
-                  className="w-full max-w-sm mt-8"
-                  onClick={handleSetComplete}
-                >
-                  <CheckCircle className="h-5 w-5 mr-2" />
-                  Complete Set
-                </Button>
-              </>
+              </div>
             )}
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center">
-            <div className="w-full max-w-sm">
+            <div className="w-full max-w-md space-y-6 text-center">
+              <h2 className="text-3xl font-bold">Workout Complete!</h2>
+              <p className="text-muted-foreground">
+                Great job! You&apos;ve completed all exercises.
+              </p>
               <FinishButton onClick={() => router.push("/blackboard")} />
             </div>
           </div>

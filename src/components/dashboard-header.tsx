@@ -17,10 +17,22 @@ export function DashboardHeader() {
   const segments = pathname
     .split("/")
     .filter(Boolean)
-    .map((segment) => ({
-      label: segment.charAt(0).toUpperCase() + segment.slice(1),
-      href: `/${segment}`,
-    }));
+    .map((segment) => {
+      // Check if segment matches UUID pattern
+      const isUUID =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          segment
+        );
+
+      const label = isUUID
+        ? `${segment.slice(0, 2)}...${segment.slice(-2)}`
+        : segment.charAt(0).toUpperCase() + segment.slice(1);
+
+      return {
+        label,
+        href: `/${segment}`,
+      };
+    });
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2">
