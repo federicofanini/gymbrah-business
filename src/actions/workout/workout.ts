@@ -119,6 +119,7 @@ export const createWorkout = createSafeActionClient()
 
       // Revalidate the cache for the user's selected workout
       revalidateTag(`selected-workout-${user.id}`);
+      revalidateTag(`workouts-by-day-${user.id}`);
       revalidatePath("/blackboard/workout");
 
       return {

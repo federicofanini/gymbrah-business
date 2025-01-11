@@ -15,6 +15,7 @@ import {
 } from "@/actions/workout/cached-workout";
 import { format, startOfWeek, addDays } from "date-fns";
 import { ProgressComponent } from "./progress-component";
+import { WorkoutSummary } from "./workout-summary";
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start from Monday
@@ -71,6 +72,8 @@ export async function WeeklyMenu() {
 
   const workoutsByDay = workoutsResponse.success ? workoutsResponse.data : {};
 
+  console.log(workoutsByDay);
+
   return (
     <Card className="w-full max-w-[100vw] px-2 sm:px-4 border-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -125,7 +128,9 @@ export async function WeeklyMenu() {
                         <WorkoutCard workoutData={workoutsByDay[day.value]} />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-24" />}>
-                        <DailyWorkout workoutData={workoutsByDay[day.value]} />
+                        <WorkoutSummary
+                          workoutData={workoutsByDay[day.value]}
+                        />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-10" />}>
                         <FinishButton />
