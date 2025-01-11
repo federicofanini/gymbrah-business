@@ -44,14 +44,23 @@ export const deleteWorkout = createSafeActionClient()
         };
       }
 
-      // First delete all associated workout exercises
+      // Delete all completed sets for the workout exercises
+      await prisma.completed_set.deleteMany({
+        where: {
+          workout_exercise: {
+            workout_id: input.parsedInput.workoutId,
+          },
+        },
+      });
+
+      // Delete all workout exercises
       await prisma.workout_exercise.deleteMany({
         where: {
           workout_id: input.parsedInput.workoutId,
         },
       });
 
-      // Then delete the workout
+      // Finally delete the workout
       await prisma.workout.delete({
         where: {
           id: input.parsedInput.workoutId,
