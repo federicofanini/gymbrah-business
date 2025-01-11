@@ -89,21 +89,16 @@ export function WorkoutClient({ workout }: WorkoutProps) {
     <div className="min-h-[80dvh] flex flex-col p-2 sm:p-4 md:p-6 bg-background">
       <Card className="flex-1 p-4 sm:p-6 md:p-8 flex flex-col">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center">
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="mr-4"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center justify-between">
             <h1 className="text-xl sm:text-2xl font-bold">{workout.name}</h1>
+            <Button variant="secondary" onClick={() => router.back()}>
+              Exit
+            </Button>
           </div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Progress value={progress} className="w-24 sm:w-32" />
-            <span>{Math.round(progress)}%</span>
+            <Progress value={progress} className="w-full sm:w-32" />
+            <span className="whitespace-nowrap">{Math.round(progress)}%</span>
           </div>
         </div>
 
