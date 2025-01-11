@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Circle, CheckCircle } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useState } from "react";
-import { awardWorkoutPoints } from "@/actions/workout-page/workout-points";
+import { awardWorkoutPoints } from "@/actions/gamification/workout-points";
 import { toast } from "sonner";
 
 interface FinishButtonProps {

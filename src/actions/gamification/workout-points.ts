@@ -3,7 +3,9 @@
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { revalidateTag } from "next/cache";
 import type { ActionResponse } from "../types/action-response";
+import { getUser } from "@/utils/supabase/database/cached-queries";
 
 const WORKOUT_POINTS = 100;
 
@@ -59,6 +61,9 @@ export const awardWorkoutPoints = createSafeActionClient()
         },
       });
 
+      // Revalidate the gamification data cache
+      revalidateTag(`gamification-${userId}`);
+
       return {
         success: true,
         data: updatedGamification,
@@ -70,3 +75,49 @@ export const awardWorkoutPoints = createSafeActionClient()
       };
     }
   });
+
+export const getPoints = createSafeActionClient().action(
+  async (): Promise<ActionResponse> => {
+    try {
+      const user = await getUser();
+
+      if (!user) {
+        return {
+          success: false,
+          error: "User not found",
+        };
+      }
+
+      const gamification = await prisma.gamification.findUnique({
+        where: {
+          user_id: user.id,
+        },
+        select: {
+          points: true,
+          level: true,
+          streak_days: true,
+          longest_streak: true,
+          workouts_completed: true,
+          last_workout_date: true,
+        },
+      });
+
+      if (!gamification) {
+        return {
+          success: false,
+          error: "Gamification data not found",
+        };
+      }
+
+      return {
+        success: true,
+        data: gamification,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: "Failed to fetch points",
+      };
+    }
+  }
+);
