@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,24 +21,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-// Mock data - Replace with real data from your backend
-const weeklyProgress = [
-  { day: "Mon", completed: 4, total: 5 },
-  { day: "Tue", completed: 5, total: 5 },
-  { day: "Wed", completed: 3, total: 5 },
-  { day: "Thu", completed: 5, total: 5 },
-  { day: "Fri", completed: 4, total: 5 },
-  { day: "Sat", completed: 2, total: 5 },
-  { day: "Sun", completed: 0, total: 5 },
-];
-
-const monthlyTrend = [
-  { week: "W1", workouts: 15 },
-  { week: "W2", workouts: 18 },
-  { week: "W3", workouts: 12 },
-  { week: "W4", workouts: 20 },
-];
+import { getCompletedSetsAnalytics } from "@/actions/gamification/analytics/progress-stats";
 
 const achievements = [
   {
@@ -67,7 +51,41 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+// Helper function to get week number
+function getWeekNumber(date: Date) {
+  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+  const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+  return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+}
+
+interface GamificationData {
+  workouts_completed: number;
+  points: number;
+  level: number;
+  streak_days: number;
+  longest_streak: number;
+  last_workout_date: string;
+}
+
 export function ProgressComponent() {
+  const [weeklyProgress, setWeeklyProgress] = useState([]);
+  const [monthlyTrend, setMonthlyTrend] = useState([]);
+  const [gamification, setGamification] = useState<GamificationData | null>(
+    null
+  );
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await getCompletedSetsAnalytics();
+      if (response.success) {
+        setWeeklyProgress(response.data.weeklyProgress);
+        setMonthlyTrend(response.data.monthlyTrend);
+        setGamification(response.data.gamification);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <Card className="w-full p-2.5 sm:p-4 space-y-2.5 sm:space-y-4">
       <div className="space-y-1 sm:space-y-2">
@@ -128,14 +146,16 @@ export function ProgressComponent() {
               <p className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Weekly Target
               </p>
-              <p className="text-base sm:text-2xl font-bold">23/35</p>
+              <p className="text-base sm:text-2xl font-bold">
+                {gamification?.workouts_completed || 0}/35
+              </p>
             </div>
             <Badge
               variant="secondary"
               className="flex gap-1 text-[10px] sm:text-xs"
             >
               <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span>Week 32</span>
+              <span>Week {getWeekNumber(new Date())}</span>
             </Badge>
           </div>
         </TabsContent>
@@ -184,7 +204,9 @@ export function ProgressComponent() {
                 Monthly Progress
               </p>
               <div className="flex items-center gap-2">
-                <p className="text-base sm:text-2xl font-bold">65</p>
+                <p className="text-base sm:text-2xl font-bold">
+                  {gamification?.workouts_completed || 0}
+                </p>
                 <Badge
                   variant="secondary"
                   className="flex gap-1 text-[10px] sm:text-xs"
