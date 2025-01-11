@@ -44,7 +44,7 @@ export function WorkoutClient({ workout, userId }: WorkoutProps) {
   const [currentExercise, setCurrentExercise] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
   const [isResting, setIsResting] = useState(false);
-  const [restTime, setRestTime] = useState(3);
+  const [restTime, setRestTime] = useState(60);
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false);
   const [completedReps, setCompletedReps] = useState<number>(0);
 
@@ -64,7 +64,7 @@ export function WorkoutClient({ workout, userId }: WorkoutProps) {
       }, 1000);
     } else if (isResting && restTime === 0) {
       setIsResting(false);
-      setRestTime(3);
+      setRestTime(60);
       handleNextSet();
     }
     return () => clearTimeout(timer);
