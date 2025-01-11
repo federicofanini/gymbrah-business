@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dumbbell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,7 +40,7 @@ export async function WorkoutSummary({
 
   return (
     <Card className="w-full p-6 bg-gradient-to-br from-background to-muted/50">
-      <ScrollArea className="h-[600px] pr-4">
+      <CardContent>
         <div className="flex items-center gap-2 mb-6">
           <Dumbbell className="h-5 w-5 text-primary" />
           <h3 className="font-semibold text-lg">
@@ -94,7 +94,7 @@ export async function WorkoutSummary({
             </div>
           ))}
         </div>
-      </ScrollArea>
+      </CardContent>
     </Card>
   );
 }

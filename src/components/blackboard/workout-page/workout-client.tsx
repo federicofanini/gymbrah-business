@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { saveCompletedReps } from "@/actions/workout-page/reps-completed";
 import { toast } from "sonner";
+import { WorkoutStats } from "./workout-stats";
 
 interface Exercise {
   id: string;
@@ -247,7 +248,11 @@ export function WorkoutClient({ workout, userId }: WorkoutProps) {
               <p className="text-muted-foreground">
                 Great job! You&apos;ve completed all exercises.
               </p>
-              <FinishButton onClick={() => router.push("/blackboard")} />
+              <WorkoutStats workoutId={workout.id} userId={userId} />
+              <FinishButton
+                onClick={() => router.push("/blackboard")}
+                userId={userId}
+              />
             </div>
           </div>
         )}
