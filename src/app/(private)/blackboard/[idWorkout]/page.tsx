@@ -15,6 +15,7 @@ interface Exercise {
   outcomes: string[];
   exercise_id: string;
   workout_id: string;
+  round: string; // Added missing round property
 }
 
 interface Workout {

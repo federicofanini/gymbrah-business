@@ -24,6 +24,7 @@ interface SelectedExercise extends Exercise {
   reps: number;
   weight?: number;
   duration?: number;
+  round?: string;
 }
 
 interface ConfigureWorkoutProps {
@@ -54,19 +55,25 @@ export function ConfigureWorkout({
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>(["1"]);
+  const [rounds, setRounds] = useState(1);
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
+      const exercisesWithRounds = selectedExercises.map((exercise, index) => ({
+        exercise_id: exercise.id,
+        sets: exercise.sets,
+        reps: exercise.reps,
+        weight: exercise.weight || null,
+        duration: exercise.duration || null,
+        round: Math.floor(
+          index / (selectedExercises.length / rounds)
+        ).toString(),
+      }));
+
       const result = await createWorkout({
         name: workoutName,
-        exercises: selectedExercises.map((exercise) => ({
-          exercise_id: exercise.id,
-          sets: exercise.sets,
-          reps: exercise.reps,
-          weight: exercise.weight || null,
-          duration: exercise.duration || null,
-        })),
+        exercises: exercisesWithRounds,
         frequency: selectedDays.join(",") as
           | "1"
           | "2"
@@ -96,7 +103,7 @@ export function ConfigureWorkout({
     <Card className="border-none">
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="workout-name">Workout Name</Label>
               <Input
@@ -104,6 +111,20 @@ export function ConfigureWorkout({
                 value={workoutName}
                 onChange={(e) => onWorkoutNameChange(e.target.value)}
                 placeholder="Enter workout name"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="rounds">Number of Rounds</Label>
+              <Input
+                id="rounds"
+                type="number"
+                min={1}
+                value={rounds}
+                onChange={(e) =>
+                  setRounds(Math.max(1, parseInt(e.target.value) || 1))
+                }
                 className="w-full"
               />
             </div>
@@ -167,6 +188,12 @@ export function ConfigureWorkout({
                   </div>
                   <span className="font-medium text-center col-span-4">
                     {exercise.name}
+                    <span className="ml-2 text-sm text-muted-foreground">
+                      (Round{" "}
+                      {Math.floor(index / (selectedExercises.length / rounds)) +
+                        1}
+                      )
+                    </span>
                   </span>
                   <div className="flex justify-end sm:hidden col-span-1">
                     <Button
