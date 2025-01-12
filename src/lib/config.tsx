@@ -203,6 +203,10 @@ export const siteConfig = {
         icon: <Icons.bsky className="h-5 w-5" />,
         url: "https://bsky.app/profile/gymbrah.com",
       },
+      {
+        icon: <Icons.discord className="h-5 w-5" />,
+        url: "https://discord.gg/f7fSp6vQcK",
+      },
     ],
     links: [
       { text: "Terms", url: "/terms" },
