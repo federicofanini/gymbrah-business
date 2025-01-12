@@ -4,6 +4,35 @@ import { siteConfig } from "@/lib/config";
 import Link from "next/link";
 import OutlinedButton from "../ui/outlined-button";
 import Image from "next/image";
+import AvatarCircles from "../ui/avatar-circles";
+import { unstable_cache } from "next/cache";
+import { prisma } from "@/lib/db";
+
+const getAvatarUrls = unstable_cache(
+  async () => {
+    const users = await prisma.user.findMany({
+      select: {
+        avatar_url: true,
+      },
+      where: {
+        avatar_url: {
+          not: null,
+        },
+      },
+      take: 10,
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    return users.map((user) => ({
+      imageUrl: user.avatar_url as string,
+      profileUrl: "#", // Added profileUrl to match Avatar type
+    }));
+  },
+  ["avatar-urls"],
+  { revalidate: 3600 * 3 } // Cache for 3 hours
+);
 
 function HeroPill() {
   return (
@@ -31,16 +60,25 @@ function HeroPill() {
 
 function HeroTitles() {
   return (
-    <div className="flex w-full max-w-3xl flex-col overflow-hidden pt-8">
-      <h1 className="text-left text-4xl font-semibold leading-tighter text-foreground sm:text-5xl md:text-6xl tracking-tighter">
+    <div className="flex w-full max-w-3xl flex-col overflow-hidden pt-8 text-center">
+      <h1 className="text-center text-4xl font-semibold leading-tighter text-foreground sm:text-4xl md:text-5xl tracking-tighter mb-8">
         <span className="inline-block text-balance">
           <AuroraText className="leading-normal">
-            {siteConfig.hero.title}
+            Build your dream body with habits that last
           </AuroraText>
         </span>
       </h1>
-      <p className="text-left max-w-xl leading-normal text-muted-foreground sm:text-lg sm:leading-normal text-balance">
-        {siteConfig.hero.description}
+      <p className="text-center mx-auto leading-normal text-muted-foreground sm:text-lg sm:leading-normal text-balance">
+        Designed to help{" "}
+        <span className="font-semibold text-primary">busy founders</span> and{" "}
+        <span className="font-semibold text-primary">fitness enthusiasts</span>{" "}
+        achieve
+        <span className="font-semibold text-primary"> sustainable results</span>
+        . <span className="font-semibold text-primary">Track workouts</span>{" "}
+        intelligently, build{" "}
+        <span className="font-semibold text-primary">personalized habits</span>{" "}
+        that stick, and stay on top of your{" "}
+        <span className="font-semibold text-primary">goals</span>.
       </p>
     </div>
   );
@@ -49,35 +87,46 @@ function HeroTitles() {
 function HeroCTA() {
   return (
     <div className="relative mt-6">
-      <div className="flex w-full max-w-2xl flex-col items-start justify-start space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
+      <div className="flex w-full max-w-2xl flex-col items-center justify-center space-y-4 sm:flex-row  sm:space-y-0">
         <Link href="/login" className="text-sm text-secondary underline">
           <OutlinedButton>{siteConfig.hero.cta}</OutlinedButton>
         </Link>
       </div>
-      <p className="mt-8 text-xs text-muted-foreground text-left font-mono">
+      <p className="mt-8 text-xs text-muted-foreground text-center font-mono">
         {siteConfig.hero.ctaDescription}
       </p>
     </div>
   );
 }
 
-export function Hero() {
+async function Avatars() {
+  const avatarUrls = await getAvatarUrls();
+  return (
+    <div className="mt-8 flex flex-col items-center justify-center">
+      <AvatarCircles numPeople={10} avatarUrls={avatarUrls} />
+      <p className="mt-4 text-xs text-muted-foreground text-center font-mono">
+        <br />
+        Get{" "}
+        <span className="font-semibold text-primary">
+          lifetime access for $49
+        </span>
+        . <br />
+        <br />
+        <span className="font-semibold text-primary">Free </span>during beta.
+      </p>
+    </div>
+  );
+}
+
+export async function Hero() {
   return (
     <Section id="hero">
-      <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-x-8 w-full p-6 lg:p-12 border-x overflow-hidden">
-        <div className="flex flex-col justify-start items-start lg:col-span-1">
+      <div className="relative w-full p-6 lg:p-12 border-x overflow-hidden flex justify-center items-center">
+        <div className="flex flex-col justify-center items-center max-w-4xl mx-auto">
           <HeroPill />
           <HeroTitles />
           <HeroCTA />
-        </div>
-        <div className="relative lg:col-span-1 hidden lg:flex items-end justify-end">
-          <Image
-            src="/hero.png"
-            alt="Hero Image"
-            width={500}
-            height={500}
-            className="h-[350px] w-auto object-cover"
-          />
+          <Avatars />
         </div>
       </div>
     </Section>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export function Features() {
   const services = siteConfig.features;
   return (
-    <Section id="features" title="What you get">
+    <Section id="features" title="How it works">
       <div className="border-x border-t">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {services.map(({ name, description, icon: Icon }, index) => (

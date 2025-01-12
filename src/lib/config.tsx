@@ -19,7 +19,7 @@ export const BLUR_FADE_DELAY = 0.15;
 export const siteConfig = {
   name: "GymBrah",
   description: "Build better tiny habits to get fit and healthy.",
-  cta: "Sign in",
+  cta: "Start now",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   keywords: [
     "tiny habits",
@@ -45,47 +45,105 @@ export const siteConfig = {
     instagram: "https://instagram.com/gymbrah",
   },
   hero: {
-    title: "Build tiny habits",
+    title: "Build your dream body with habits that last",
     description:
-      "Every achievement counts. Track your fitness journey, keep yourself accountable, and stay motivated every step of the way.",
-    cta: "Ready to level up?",
-    ctaDescription: "Claim $49 lifetime deal, free during beta.",
+      "Transform your fitness journey with GymBrah's intelligent workout tracking, personalized habit building, and AI-powered accountability coaching. Join thousands building sustainable fitness habits that last.",
+    cta: "Start your fitness journey",
+    ctaDescription: "10+ founders are building tiny habits",
   },
   features: [
     {
       name: "Fitness Tracking",
-      description:
-        "Track your workouts, set goals, and monitor your progress across multiple metrics — whether it’s strength, endurance, or overall fitness. ",
+      description: (
+        <span>
+          Track your{" "}
+          <span className="font-semibold text-primary">workouts</span>, set{" "}
+          <span className="font-semibold text-primary">goals</span>, and monitor
+          your <span className="font-semibold text-primary">progress</span>{" "}
+          across multiple metrics — whether it&apos;s{" "}
+          <span className="font-semibold text-primary">strength</span>,{" "}
+          <span className="font-semibold text-primary">endurance</span>, or
+          overall fitness.
+        </span>
+      ),
       icon: <AudioLines className="h-6 w-6" />,
     },
     {
       name: "Progress Insights",
-      description:
-        "Set personalized fitness goals and get insights into your performance. Celebrate milestones in your fitness journey to stay motivated and on track.",
+      description: (
+        <span>
+          Set{" "}
+          <span className="font-semibold text-primary">
+            personalized fitness goals
+          </span>{" "}
+          and get insights into your performance. Celebrate{" "}
+          <span className="font-semibold text-primary">milestones</span> in your
+          fitness journey to stay{" "}
+          <span className="font-semibold text-primary">motivated</span> and on
+          track.
+        </span>
+      ),
       icon: <Loader className="h-6 w-6" />,
     },
     {
       name: "Customizable Workouts",
-      description:
-        "Create your own workouts, follow predefined fitness plans, or customize routines to fit your needs. Adapts to your personal fitness level and evolves with your goals.",
+      description: (
+        <span>
+          Create your own{" "}
+          <span className="font-semibold text-primary">workouts</span>, follow
+          predefined{" "}
+          <span className="font-semibold text-primary">fitness plans</span>, or
+          customize routines to fit your needs. Adapts to your{" "}
+          <span className="font-semibold text-primary">
+            personal fitness level
+          </span>{" "}
+          and evolves with your goals.
+        </span>
+      ),
       icon: <Dumbbell className="h-6 w-6" />,
     },
     {
       name: "Real-Time Accountability",
-      description:
-        "Stay accountable to your fitness goals with regular updates, reminders, and progress tracking. Gymbrah ensures you’re always moving forward with encouragement at every step.",
+      description: (
+        <span>
+          Stay <span className="font-semibold text-primary">accountable</span>{" "}
+          to your fitness goals with regular{" "}
+          <span className="font-semibold text-primary">updates</span>,
+          <span className="font-semibold text-primary">reminders</span>, and{" "}
+          <span className="font-semibold text-primary">progress tracking</span>.
+          Gymbrah ensures you&apos;re always moving forward with encouragement
+          at every step.
+        </span>
+      ),
       icon: <Timer className="h-6 w-6" />,
     },
     {
       name: "Community Support",
-      description:
-        "Connect with like-minded individuals in the Gymbrah community. Share your progress, cheer on others, and get inspired to push harder as you grow alongside a supportive network.",
+      description: (
+        <span>
+          Connect with{" "}
+          <span className="font-semibold text-primary">
+            like-minded individuals
+          </span>{" "}
+          in the Gymbrah community. Share your progress,{" "}
+          <span className="font-semibold text-primary">cheer on others</span>,
+          and get inspired to push harder as you grow alongside a{" "}
+          <span className="font-semibold text-primary">supportive network</span>
+          .
+        </span>
+      ),
       icon: <Handshake className="h-6 w-6" />,
     },
     {
       name: "Community Driven",
-      description:
-        "Gymbrah is built with transparency in mind. As a fully open-source project, you can contribute, improve, and share your experience with the growing Gymbrah community.",
+      description: (
+        <span>
+          Gymbrah is built with{" "}
+          <span className="font-semibold text-primary">transparency</span> in
+          mind. Share your experience with the growing{" "}
+          <span className="font-semibold text-primary">Gymbrah community</span>.
+        </span>
+      ),
       icon: <SmilePlus className="h-6 w-6" />,
     },
   ],
@@ -137,10 +195,14 @@ export const siteConfig = {
   ],
   footer: {
     socialLinks: [
-      // {
-      //   icon: <Icons.twitter className="h-5 w-5" />,
-      //   url: "#",
-      // },
+      {
+        icon: <Icons.twitter className="size-4" />,
+        url: "https://x.com/GymBrah_com",
+      },
+      {
+        icon: <Icons.bsky className="h-5 w-5" />,
+        url: "https://bsky.app/profile/gymbrah.com",
+      },
     ],
     links: [
       { text: "Terms", url: "/terms" },

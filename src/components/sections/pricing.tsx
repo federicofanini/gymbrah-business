@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { useState } from "react";
+import OutlinedButton from "../ui/outlined-button";
+import Link from "next/link";
 
 interface TabsProps {
   activeTab: string;
@@ -184,13 +186,27 @@ export function Pricing() {
               Simple pricing for everyone.
             </h2>
 
-            <p className="mt-6 text-balance text-muted-foreground">
-              Choose an <strong>affordable plan</strong> that&apos;s packed with
-              the best features for engaging your audience, creating customer
-              loyalty, and driving sales.
+            <p className="mt-4 text-md sm:text-lg text-muted-foreground text-center font-mono">
+              <br />
+              Get{" "}
+              <span className="font-semibold text-primary space-y-8">
+                lifetime access for{" "}
+                <Badge className="bg-primary text-lg text-primary-foreground">
+                  $49
+                </Badge>
+              </span>
+              <br />
+              <br />
+              <span className="font-semibold text-primary">Free </span>during
+              beta.
             </p>
           </div>
-          <Tabs
+          <div className="flex items-center justify-center">
+            <Link href="/login">
+              <OutlinedButton>Start for free</OutlinedButton>
+            </Link>
+          </div>
+          {/* <Tabs
             activeTab={billingCycle}
             setActiveTab={handleTabChange}
             className="mx-auto w-full max-w-md"
@@ -214,14 +230,14 @@ export function Pricing() {
                 ))}
               </TabsList>
             )}
-          </Tabs>
+          </Tabs>*/}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3">
           {siteConfig.pricing.map((tier, index) => (
             <PricingTier key={index} tier={tier} billingCycle={billingCycle} />
           ))}
-        </div>
+        </div> */}
       </div>
     </Section>
   );
