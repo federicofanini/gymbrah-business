@@ -1,3 +1,9 @@
+import { LeaderboardTable } from "@/components/blackboard/leaderboard/leaderboard-table";
+
 export default function LeaderboardPage() {
-  return <div>Leaderboard</div>;
+  return (
+    <div>
+      <LeaderboardTable />
+    </div>
+  );
 }

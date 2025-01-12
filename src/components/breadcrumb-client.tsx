@@ -29,7 +29,7 @@ export function BreadcrumbClient() {
     });
 
   return (
-    <Breadcrumb className="hidden md:block">
+    <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
