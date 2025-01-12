@@ -12,16 +12,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+} from "@/components/ui/sidebar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface Exercise {
   id: string;
@@ -44,6 +55,7 @@ export function ExercisesTable({
   selectedExercises,
   onExerciseSelect,
 }: ExercisesTableProps) {
+  const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByName, setSortByName] = useState(true);
@@ -69,116 +81,185 @@ export function ExercisesTable({
     startIndex + exercisesPerPage
   );
 
+  const CategoryMenu = () => (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          asChild
+          isActive={!selectedCategory}
+          onClick={() => setSelectedCategory(null)}
+        >
+          <a href="#">All Categories</a>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+      {uniqueCategories.map((category) => (
+        <SidebarMenuItem key={category}>
+          <SidebarMenuButton
+            asChild
+            isActive={selectedCategory === category}
+            onClick={() => setSelectedCategory(category)}
+          >
+            <a href="#">{category}</a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="w-full sm:flex-1">
-          <Label htmlFor="category">Category</Label>
-          <Select
-            onValueChange={(value) => {
-              setSelectedCategory(value || null);
-              setCurrentPage(1);
-            }}
-            value={selectedCategory || undefined}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {uniqueCategories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {category}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm">Select Exercises</Button>
+      </DialogTrigger>
+      <DialogContent className="overflow-hidden p-0 h-[100dvh] w-full max-w-full md:h-[700px] md:max-w-[900px] lg:max-w-[1000px]">
+        <DialogTitle className="sr-only">Select Exercises</DialogTitle>
+        <DialogDescription className="sr-only">
+          Select exercises for your workout
+        </DialogDescription>
+        <SidebarProvider className="items-start">
+          {/* Desktop Sidebar */}
+          <Sidebar collapsible="none" className="hidden md:flex">
+            <SidebarContent>
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <CategoryMenu />
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+          </Sidebar>
 
-        <div className="w-full sm:flex-1">
-          <Label htmlFor="search">Search</Label>
-          <Input
-            id="search"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Search exercises..."
-          />
-        </div>
-      </div>
-
-      <div className="overflow-x-auto -mx-4 sm:mx-0">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[30px]"></TableHead>
-              <TableHead
-                className="cursor-pointer whitespace-nowrap"
-                onClick={() => setSortByName(!sortByName)}
-              >
-                Name <ArrowUpDown className="inline h-4 w-4" />
-              </TableHead>
-              <TableHead className="whitespace-nowrap">Category</TableHead>
-              <TableHead className="whitespace-nowrap">Muscles</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {paginatedExercises.map((exercise) => (
-              <TableRow key={exercise.id}>
-                <TableCell>
-                  <Checkbox
-                    checked={selectedExercises.some(
-                      (e) => e.id === exercise.id
-                    )}
-                    onCheckedChange={() => onExerciseSelect(exercise)}
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{exercise.name}</TableCell>
-                <TableCell>{exercise.category}</TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {exercise.muscles.map((muscle) => (
-                      <Badge key={muscle} variant="outline">
-                        {muscle}
-                      </Badge>
-                    ))}
+          <main className="flex h-full flex-1 flex-col overflow-hidden">
+            <div className="flex items-center gap-2 p-4 border-b">
+              {/* Mobile Category Menu */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="md:hidden">
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[240px] p-0">
+                  <div className="py-4">
+                    <CategoryMenu />
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+                </SheetContent>
+              </Sheet>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-muted-foreground text-center sm:text-left">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(startIndex + exercisesPerPage, filteredExercises.length)} of{" "}
-          {filteredExercises.length} exercises
-        </div>
-        <div className="flex justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
+              <Input
+                id="search"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
+                placeholder="Search exercises..."
+                className="flex-1"
+              />
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-2 md:px-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[30px]"></TableHead>
+                    <TableHead
+                      className="cursor-pointer whitespace-nowrap"
+                      onClick={() => setSortByName(!sortByName)}
+                    >
+                      Name <ArrowUpDown className="inline h-4 w-4" />
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell whitespace-nowrap">
+                      Category
+                    </TableHead>
+                    <TableHead className="hidden md:table-cell whitespace-nowrap">
+                      Muscles
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedExercises.map((exercise) => (
+                    <TableRow key={exercise.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedExercises.some(
+                            (e) => e.id === exercise.id
+                          )}
+                          onCheckedChange={() => onExerciseSelect(exercise)}
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div>
+                          {exercise.name}
+                          <div className="md:hidden text-sm text-muted-foreground">
+                            {exercise.category}
+                          </div>
+                          <div className="flex flex-wrap gap-1 md:hidden mt-1">
+                            {exercise.muscles.map((muscle) => (
+                              <Badge
+                                key={muscle}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {muscle}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {exercise.category}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex flex-wrap gap-1">
+                          {exercise.muscles.map((muscle) => (
+                            <Badge key={muscle} variant="outline">
+                              {muscle}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            <div className="flex flex-col md:flex-row md:items-center justify-between border-t p-4 gap-4">
+              <div className="text-sm text-muted-foreground order-2 md:order-1">
+                Showing {startIndex + 1} to{" "}
+                {Math.min(
+                  startIndex + exercisesPerPage,
+                  filteredExercises.length
+                )}{" "}
+                of {filteredExercises.length} exercises
+              </div>
+              <div className="flex gap-2 order-1 md:order-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="flex-1 md:flex-none"
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="flex-1 md:flex-none"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </main>
+        </SidebarProvider>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -87,6 +87,7 @@ model workout_exercise {
   sets           Int?
   weight         Float?
   duration       Int?
+  round          String?
   workout_id     String
   workout        workout         @relation(fields: [workout_id], references: [id])
   created_at     DateTime        @default(now())

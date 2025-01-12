@@ -3,14 +3,24 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { ExercisesTable } from "./exercises/exercises-table";
-import { ConfigureWorkout } from "./create-workout";
 import { WorkoutInstructions } from "./workout-instructions";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { createWorkout } from "@/actions/workout/workout";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface Exercise {
   id: string;
@@ -32,133 +42,536 @@ interface SelectedExercise extends Exercise {
   duration?: number;
 }
 
-const saveWorkoutSchema = z.object({
-  name: z.string().min(1),
-  exercises: z.array(
-    z.object({
-      exerciseId: z.string(),
-      sets: z.number().min(1),
-      reps: z.number().min(1),
-      weight: z.number().optional(),
-      duration: z.number().optional(),
-    })
-  ),
-});
-
-const saveWorkout = createSafeActionClient()
-  .schema(saveWorkoutSchema)
-  .action(async ({ parsedInput }): Promise<ActionResponse> => {
-    try {
-      // Add your save workout logic here
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error as string };
-    }
-  });
+interface WorkoutExercise {
+  exercise_id: string;
+  sets: number;
+  reps: number;
+  weight?: number | null;
+  duration?: number | null;
+  round: string; // Changed from number to string
+}
 
 export function WorkoutFormClient({
   exercises,
   uniqueCategories,
 }: WorkoutFormClientProps) {
-  const [step, setStep] = useState(1);
+  const [rounds, setRounds] = useState<SelectedExercise[][]>([[]]);
   const [workoutName, setWorkoutName] = useState("");
-  const [selectedExercises, setSelectedExercises] = useState<
-    SelectedExercise[]
-  >([]);
+  const [frequency, setFrequency] = useState<string[]>([]);
 
-  const handleExerciseSelect = (exercise: Exercise) => {
-    if (!selectedExercises.some((e) => e.id === exercise.id)) {
-      setSelectedExercises([
-        ...selectedExercises,
-        { ...exercise, sets: 3, reps: 10 },
-      ]);
+  const handleExerciseSelect = (exercise: Exercise, roundIndex: number) => {
+    const updatedRounds = [...rounds];
+    const currentRound = updatedRounds[roundIndex];
+    if (!currentRound.some((e) => e.id === exercise.id)) {
+      updatedRounds[roundIndex] = [
+        ...currentRound,
+        { ...exercise, sets: 1, reps: 10 },
+      ];
+      setRounds(updatedRounds);
     }
   };
 
-  const handleRemoveExercise = (index: number) => {
-    setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
+  const handleRemoveExercise = (roundIndex: number, exerciseIndex: number) => {
+    const updatedRounds = [...rounds];
+    updatedRounds[roundIndex] = updatedRounds[roundIndex].filter(
+      (_, i) => i !== exerciseIndex
+    );
+    setRounds(updatedRounds);
   };
 
   const handleExerciseUpdate = (
-    index: number,
+    roundIndex: number,
+    exerciseIndex: number,
     field: keyof SelectedExercise,
     value: number
   ) => {
-    const updatedExercises = [...selectedExercises];
-    updatedExercises[index] = { ...updatedExercises[index], [field]: value };
-    setSelectedExercises(updatedExercises);
+    const updatedRounds = [...rounds];
+    updatedRounds[roundIndex][exerciseIndex] = {
+      ...updatedRounds[roundIndex][exerciseIndex],
+      [field]: value,
+    };
+    setRounds(updatedRounds);
   };
 
-  const moveExercise = (index: number, direction: "up" | "down") => {
-    const newIndex = direction === "up" ? index - 1 : index + 1;
-    if (newIndex >= 0 && newIndex < selectedExercises.length) {
-      const updatedExercises = [...selectedExercises];
-      [updatedExercises[index], updatedExercises[newIndex]] = [
-        updatedExercises[newIndex],
-        updatedExercises[index],
-      ];
-      setSelectedExercises(updatedExercises);
+  const addNewRound = () => {
+    setRounds([...rounds, []]);
+  };
+
+  const removeRound = (roundIndex: number) => {
+    const updatedRounds = rounds.filter((_, index) => index !== roundIndex);
+    setRounds(updatedRounds);
+  };
+
+  const addRestAfterExercise = (roundIndex: number, exerciseIndex: number) => {
+    const updatedRounds = [...rounds];
+    const currentRound = updatedRounds[roundIndex];
+    const restExercise = exercises.find(
+      (e) => e.id === "fe42d7da-af15-416e-83d1-0cfe46253f86"
+    );
+
+    if (restExercise) {
+      const newRound = [...currentRound];
+      newRound.splice(exerciseIndex + 1, 0, {
+        ...restExercise,
+        sets: 1,
+        reps: 1,
+        duration: 60,
+      });
+      updatedRounds[roundIndex] = newRound;
+      setRounds(updatedRounds);
     }
   };
 
   const handleSaveWorkout = async () => {
-    await saveWorkout({
-      name: workoutName,
-      exercises: selectedExercises.map((exercise) => ({
-        exerciseId: exercise.id,
-        sets: exercise.sets,
-        reps: exercise.reps,
-        weight: exercise.weight,
-        duration: exercise.duration,
-      })),
-    });
+    try {
+      if (!workoutName) {
+        toast.error("Please enter a workout name");
+        return;
+      }
+
+      if (frequency.length === 0) {
+        toast.error("Please select workout frequency");
+        return;
+      }
+
+      if (rounds.some((round) => round.length === 0)) {
+        toast.error("Please add at least one exercise to each round");
+        return;
+      }
+
+      // Flatten exercises from all rounds into a single array and convert round to string
+      const exercises: WorkoutExercise[] = rounds.flatMap((round, roundIndex) =>
+        round.map((exercise) => ({
+          exercise_id: exercise.id,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight: exercise.weight || null,
+          duration: exercise.duration || null,
+          round: String(roundIndex + 1), // Convert to string
+        }))
+      );
+
+      const result = await createWorkout({
+        name: workoutName,
+        frequency: frequency.join(","),
+        exercises: exercises as any,
+      });
+
+      if (!result?.data?.success) {
+        toast.error(result?.data?.error || "Failed to save workout");
+        return;
+      }
+
+      toast.success("Workout saved successfully");
+
+      // Reset form
+      setWorkoutName("");
+      setFrequency([]);
+      setRounds([[]]);
+    } catch (error) {
+      console.error("Save workout error:", error);
+      toast.error("Failed to save workout");
+    }
   };
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      <div className="px-2 md:px-0">
-        <WorkoutInstructions />
+    <div className="space-y-3 md:space-y-6 max-w-full px-4 md:px-6">
+      <div className="space-y-4">
+        <input
+          type="text"
+          placeholder="Give your workout a name"
+          value={workoutName}
+          onChange={(e) => setWorkoutName(e.target.value)}
+          className="w-full p-3 border rounded text-base md:text-lg"
+        />
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Workout Frequency</label>
+          <ToggleGroup
+            type="multiple"
+            value={frequency}
+            onValueChange={setFrequency}
+            className="justify-start"
+          >
+            {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
+              <ToggleGroupItem
+                key={i}
+                value={String(i + 1)}
+                aria-label={`Day ${day}`}
+                className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+              >
+                {day}
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
+        </div>
       </div>
 
-      <Separator className="mx-2 md:mx-0" />
+      <div className="flex items-center justify-between">
+        <span className="text-base md:text-lg font-medium">
+          Rounds: {rounds.length}
+        </span>
+        <Button onClick={addNewRound} className="text-sm md:text-base">
+          Add Round
+        </Button>
+      </div>
 
-      {/* Step 1: Select Exercises */}
-      {step === 1 && (
-        <Card className="border-none mx-2 md:mx-0">
-          <CardContent className="p-2 md:p-6">
-            <ExercisesTable
-              exercises={exercises}
-              uniqueCategories={uniqueCategories}
-              selectedExercises={selectedExercises}
-              onExerciseSelect={handleExerciseSelect}
-            />
+      {rounds.map((round, roundIndex) => (
+        <Card key={roundIndex} className="border-none">
+          <CardContent className="p-3 md:p-6">
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                <span className="text-base md:text-lg font-medium">
+                  Round {roundIndex + 1}
+                </span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => removeRound(roundIndex)}
+                  className="w-full md:w-auto"
+                >
+                  Remove Round
+                </Button>
+              </div>
 
-            {selectedExercises.length > 0 && (
-              <Button
-                className="w-full mt-4 text-sm md:text-base"
-                onClick={() => setStep(2)}
-              >
-                Next Step <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            )}
+              <ExercisesTable
+                exercises={exercises}
+                uniqueCategories={uniqueCategories}
+                selectedExercises={round}
+                onExerciseSelect={(exercise) =>
+                  handleExerciseSelect(exercise, roundIndex)
+                }
+              />
+
+              {round.length > 0 && (
+                <div className="w-full">
+                  <div className="hidden md:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[120px]">
+                            Exercise
+                          </TableHead>
+                          {/* Only show sets/reps/weight for non-rest exercises */}
+                          <TableHead className="w-20">Sets</TableHead>
+                          <TableHead className="w-20">Reps</TableHead>
+                          <TableHead className="w-24">Weight</TableHead>
+                          <TableHead className="w-24">Duration</TableHead>
+                          <TableHead className="w-32"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {round.map((exercise, exerciseIndex) => (
+                          <TableRow key={exerciseIndex}>
+                            <TableCell className="min-w-[120px]">
+                              <div className="space-y-1">
+                                <div className="font-medium text-sm md:text-base">
+                                  {exercise.name}
+                                </div>
+                                {exercise.id !==
+                                  "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
+                                  <>
+                                    <div className="text-xs md:text-sm text-muted-foreground">
+                                      {exercise.category}
+                                    </div>
+                                    <div className="flex flex-wrap gap-1">
+                                      {exercise.muscles.map((muscle) => (
+                                        <Badge
+                                          key={muscle}
+                                          variant="outline"
+                                          className="text-xs whitespace-nowrap"
+                                        >
+                                          {muscle}
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </TableCell>
+                            {exercise.id !==
+                            "fe42d7da-af15-416e-83d1-0cfe46253f86" ? (
+                              <>
+                                <TableCell>
+                                  <Input
+                                    type="number"
+                                    value={exercise.sets}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "sets",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-16 md:w-20 text-sm"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Input
+                                    type="number"
+                                    value={exercise.reps}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "reps",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-16 md:w-20 text-sm"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Input
+                                    type="number"
+                                    value={exercise.weight || ""}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "weight",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-16 md:w-20 text-sm"
+                                    placeholder="kg"
+                                  />
+                                </TableCell>
+                              </>
+                            ) : (
+                              <>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                              </>
+                            )}
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={exercise.duration || ""}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "duration",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-16 md:w-20 text-sm"
+                                placeholder="sec"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleRemoveExercise(
+                                      roundIndex,
+                                      exerciseIndex
+                                    )
+                                  }
+                                  className="text-xs whitespace-nowrap"
+                                >
+                                  Remove
+                                </Button>
+                                {exercise.id !==
+                                  "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                      addRestAfterExercise(
+                                        roundIndex,
+                                        exerciseIndex
+                                      )
+                                    }
+                                    className="text-xs whitespace-nowrap"
+                                  >
+                                    Add Rest
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  <div className="md:hidden space-y-4">
+                    {round.map((exercise, exerciseIndex) => (
+                      <Card key={exerciseIndex}>
+                        <CardContent className="p-4 space-y-4">
+                          {exercise.id ===
+                          "fe42d7da-af15-416e-83d1-0cfe46253f86" ? (
+                            <div className="flex justify-between items-center">
+                              <div className="font-medium">{exercise.name}</div>
+                              <div className="w-24">
+                                <Input
+                                  type="number"
+                                  value={exercise.duration || ""}
+                                  onChange={(e) =>
+                                    handleExerciseUpdate(
+                                      roundIndex,
+                                      exerciseIndex,
+                                      "duration",
+                                      parseInt(e.target.value)
+                                    )
+                                  }
+                                  className="w-full text-sm"
+                                  placeholder="sec"
+                                />
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="space-y-2">
+                                <div className="font-medium">
+                                  {exercise.name}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {exercise.category}
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {exercise.muscles.map((muscle) => (
+                                    <Badge
+                                      key={muscle}
+                                      variant="outline"
+                                      className="text-xs whitespace-nowrap"
+                                    >
+                                      {muscle}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">
+                                    Sets
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    value={exercise.sets}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "sets",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-full text-sm"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">
+                                    Reps
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    value={exercise.reps}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "reps",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-full text-sm"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">
+                                    Weight (kg)
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    value={exercise.weight || ""}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "weight",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-full text-sm"
+                                    placeholder="kg"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">
+                                    Duration (sec)
+                                  </label>
+                                  <Input
+                                    type="number"
+                                    value={exercise.duration || ""}
+                                    onChange={(e) =>
+                                      handleExerciseUpdate(
+                                        roundIndex,
+                                        exerciseIndex,
+                                        "duration",
+                                        parseInt(e.target.value)
+                                      )
+                                    }
+                                    className="w-full text-sm"
+                                    placeholder="sec"
+                                  />
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() =>
+                                handleRemoveExercise(roundIndex, exerciseIndex)
+                              }
+                              className="flex-1 text-xs"
+                            >
+                              Remove
+                            </Button>
+                            {exercise.id !==
+                              "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  addRestAfterExercise(
+                                    roundIndex,
+                                    exerciseIndex
+                                  )
+                                }
+                                className="flex-1 text-xs"
+                              >
+                                Add Rest
+                              </Button>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
-      )}
+      ))}
 
-      {step === 2 && (
-        <div className="px-2 md:px-0">
-          <ConfigureWorkout
-            selectedExercises={selectedExercises}
-            workoutName={workoutName}
-            onWorkoutNameChange={setWorkoutName}
-            onExerciseUpdate={handleExerciseUpdate}
-            onRemoveExercise={handleRemoveExercise}
-            onMoveExercise={moveExercise}
-            onBack={() => setStep(1)}
-            onSave={handleSaveWorkout}
-          />
-        </div>
-      )}
+      <Button
+        className="w-full py-4 text-base md:text-lg font-medium"
+        onClick={handleSaveWorkout}
+      >
+        Save Workout
+      </Button>
     </div>
   );
 }

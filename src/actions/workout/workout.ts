@@ -14,6 +14,7 @@ const exerciseSchema = z.object({
   reps: z.number().min(1),
   weight: z.number().nullable(),
   duration: z.number().nullable(),
+  round: z.string().nullable(),
 });
 
 const schema = z.object({
@@ -102,6 +103,7 @@ export const createWorkout = createSafeActionClient()
               sets: exercise.sets,
               reps: exercise.reps,
               weight: exercise.weight,
+              round: exercise.round || null,
               duration: exercise.duration,
               created_at: new Date(),
               updated_at: new Date(),
