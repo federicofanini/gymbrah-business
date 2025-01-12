@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   SquareTerminal,
   BookOpen,
@@ -19,6 +20,7 @@ import {
   HeaterIcon,
   HeartPulse,
   Code,
+  Dot,
 } from "lucide-react";
 
 export const sidebarItems = {
@@ -54,14 +56,20 @@ export const sidebarItems = {
   ],
   navSecondary: [
     {
+      title: "Leaderboard",
+      url: "/blackboard/leaderboard",
+      icon: Trophy,
+      badge: (
+        <Badge className="ml-auto flex items-center gap-2" variant="outline">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          new
+        </Badge>
+      ),
+    },
+    {
       title: "Feedback",
       url: "/blackboard/feedback",
       icon: Feather,
-    },
-    {
-      title: "Contribute",
-      url: "https://github.com/federicofanini/gymbrah.com",
-      icon: Github,
     },
   ],
   fitness: [

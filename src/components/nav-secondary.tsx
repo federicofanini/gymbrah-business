@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sidebar";
 
 import { sidebarItems } from "@/lib/sidebar-item";
+import { Badge } from "./ui/badge";
 
 export function NavSecondary({
   ...props
@@ -39,9 +40,10 @@ export function NavSecondary({
                       : ""
                   }
                 >
-                  <Link href={item.url}>
+                  <Link href={item.url} className="flex items-center gap-2">
                     <IconComponent className="h-4 w-4" />
                     <span>{item.title}</span>
+                    {item.badge && item.badge}
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
