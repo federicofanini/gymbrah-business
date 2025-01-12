@@ -3,10 +3,10 @@ import { Section } from "@/components/section";
 import { siteConfig } from "@/lib/config";
 import Link from "next/link";
 import OutlinedButton from "../ui/outlined-button";
-import Image from "next/image";
 import AvatarCircles from "../ui/avatar-circles";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
+import { Check } from "lucide-react";
 
 const getAvatarUrls = unstable_cache(
   async () => {
@@ -64,22 +64,46 @@ function HeroTitles() {
       <h1 className="text-center text-4xl font-semibold leading-tighter text-foreground sm:text-4xl md:text-5xl tracking-tighter mb-8">
         <span className="inline-block text-balance">
           <AuroraText className="leading-normal">
-            Build your dream body with habits that last
+            Build your dream <br />
+            body with habits that last
           </AuroraText>
         </span>
       </h1>
-      <p className="text-center mx-auto leading-normal text-muted-foreground sm:text-lg sm:leading-normal text-balance">
-        Designed to help{" "}
-        <span className="font-semibold text-primary">busy founders</span> and{" "}
-        <span className="font-semibold text-primary">fitness enthusiasts</span>{" "}
-        achieve
-        <span className="font-semibold text-primary"> sustainable results</span>
-        . <span className="font-semibold text-primary">Track workouts</span>{" "}
-        intelligently, build{" "}
-        <span className="font-semibold text-primary">personalized habits</span>{" "}
-        that stick, and stay on top of your{" "}
-        <span className="font-semibold text-primary">goals</span>.
-      </p>
+      <ul className="flex flex-col gap-2 text-muted-foreground max-w-lg mx-auto sm:text-lg sm:leading-normal text-balance">
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            Get{" "}
+            <span className="font-semibold text-primary">
+              sustainable results
+            </span>
+          </span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            <span className="font-semibold text-primary">Track workouts</span>{" "}
+            intelligently
+          </span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            Build{" "}
+            <span className="font-semibold text-primary">
+              personalized habits
+            </span>{" "}
+            that stick
+          </span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            Stay on top of your{" "}
+            <span className="font-semibold text-primary">goals</span>
+          </span>
+        </li>
+      </ul>
     </div>
   );
 }
@@ -93,7 +117,8 @@ function HeroCTA() {
         </Link>
       </div>
       <p className="mt-8 text-xs text-muted-foreground text-center font-mono">
-        {siteConfig.hero.ctaDescription}
+        Join <span className="font-semibold text-primary">10+</span> startup
+        founders
       </p>
     </div>
   );
@@ -102,28 +127,28 @@ function HeroCTA() {
 async function Avatars() {
   const avatarUrls = await getAvatarUrls();
   return (
-    <div className="mt-8 flex flex-col items-center justify-center">
+    <div className="mt-4 flex flex-col items-center justify-center">
       <AvatarCircles numPeople={10} avatarUrls={avatarUrls} />
       <p className="mt-4 text-xs text-muted-foreground text-center font-mono">
-        <br />
-        Get{" "}
-        <span className="font-semibold text-primary">
-          lifetime access for $49
-        </span>
-        . <br />
-        <br />
         <span className="font-semibold text-primary">Free </span>during beta.
       </p>
     </div>
   );
 }
 
+// <br />
+// Get{" "}
+// span className="font-semibold text-primary">
+//  lifetime access for $49
+// </span>*/}
+// . <br />
+// <br />
+
 export async function Hero() {
   return (
     <Section id="hero">
       <div className="relative w-full p-6 lg:p-12 border-x overflow-hidden flex justify-center items-center">
         <div className="flex flex-col justify-center items-center max-w-4xl mx-auto">
-          <HeroPill />
           <HeroTitles />
           <HeroCTA />
           <Avatars />
