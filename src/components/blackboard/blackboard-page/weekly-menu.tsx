@@ -78,7 +78,7 @@ export async function WeeklyMenu() {
   return (
     <Card className="w-full max-w-[100vw] px-2 sm:px-4 border-none">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3 lg:mt-8">
           <Tabs defaultValue={defaultDay} className="w-full">
             <TabsList className="w-full flex justify-between px-1">
               {WEEKDAYS.map((day) => (
@@ -145,9 +145,9 @@ export async function WeeklyMenu() {
             </div>
           </Tabs>
         </div>
-        <div>
+        {/* <div>
           <ProgressComponent />
-        </div>
+        </div> */}
       </div>
     </Card>
   );

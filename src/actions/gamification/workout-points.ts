@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { revalidateTag } from "next/cache";
 import type { ActionResponse } from "../types/action-response";
 import { getUser } from "@/utils/supabase/database/cached-queries";
+import { appErrors } from "../types/errors";
 
 const WORKOUT_POINTS = 100;
 
@@ -84,7 +85,7 @@ export const getPoints = createSafeActionClient().action(
       if (!user) {
         return {
           success: false,
-          error: "User not found",
+          error: appErrors.UNAUTHORIZED,
         };
       }
 
@@ -99,13 +100,31 @@ export const getPoints = createSafeActionClient().action(
           longest_streak: true,
           workouts_completed: true,
           last_workout_date: true,
+          achievements: true,
+          badges: true,
+          created_at: true,
+          updated_at: true,
         },
       });
 
       if (!gamification) {
+        // Create default gamification record if none exists
+        const defaultGamification = await prisma.gamification.create({
+          data: {
+            user_id: user.id,
+            points: 0,
+            level: 1,
+            streak_days: 0,
+            longest_streak: 0,
+            workouts_completed: 0,
+            achievements: [],
+            badges: [],
+          },
+        });
+
         return {
-          success: false,
-          error: "Gamification data not found",
+          success: true,
+          data: defaultGamification,
         };
       }
 
@@ -116,7 +135,7 @@ export const getPoints = createSafeActionClient().action(
     } catch (error) {
       return {
         success: false,
-        error: "Failed to fetch points",
+        error: appErrors.UNEXPECTED_ERROR,
       };
     }
   }

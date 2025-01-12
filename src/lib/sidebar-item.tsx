@@ -75,11 +75,11 @@ export const sidebarItems = {
       url: "/blackboard/workouts",
       icon: Dumbbell,
     },
-    // {
-    //   name: "Achievements",
-    //   url: "/blackboard/achievements",
-    //   icon: Trophy,
-    // },
+    {
+      name: "Achievements",
+      url: "/blackboard/achievements",
+      icon: Trophy,
+    },
     {
       name: "Health Profile",
       url: "/blackboard/health-profile",

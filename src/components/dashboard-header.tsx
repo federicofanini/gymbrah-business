@@ -1,12 +1,6 @@
 import { Separator } from "./ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
-import { PointsDisplay } from "./blackboard/points";
 import { BreadcrumbClient } from "./breadcrumb-client";
-
-interface Segment {
-  label: string;
-  href: string;
-}
 
 export async function DashboardHeader() {
   return (
@@ -15,9 +9,6 @@ export async function DashboardHeader() {
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <BreadcrumbClient />
-      </div>
-      <div className="px-4">
-        <PointsDisplay />
       </div>
     </header>
   );
