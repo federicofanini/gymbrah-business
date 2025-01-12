@@ -19,6 +19,7 @@ interface Exercise {
   category: string;
   muscles: string[];
   outcomes: string[];
+  round: string;
 }
 
 interface CachedExercise {
@@ -93,74 +94,124 @@ export async function SavedWorkouts() {
     <div className="w-full px-4 sm:px-6">
       <h2 className="text-xl sm:text-2xl font-bold mb-4">Your workouts</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {workouts.map((workout) => (
-          <Card key={workout.id} className="w-full">
-            <CardHeader className="p-4">
-              <div className="flex flex-row sm:items-center justify-between gap-4">
-                <CardTitle className="text-base sm:text-lg">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div className="w-fit text-xs flex flex-col gap-1 text-muted-foreground">
-                      <span className="truncate text-sm sm:text-base text-primary uppercase">
-                        {workout.name}
-                      </span>
+        {workouts.map((workout) => {
+          // Group exercises by round
+          const exercisesByRound = workout.exercises.reduce((acc, exercise) => {
+            const round = exercise.round || "1";
+            if (!acc[round]) {
+              acc[round] = [];
+            }
+            acc[round].push(exercise);
+            return acc;
+          }, {} as Record<string, Exercise[]>);
+
+          // Sort rounds numerically
+          const sortedRounds = Object.keys(exercisesByRound).sort(
+            (a, b) => parseInt(a) - parseInt(b)
+          );
+
+          if (sortedRounds.length === 0) {
+            return null;
+          }
+
+          return (
+            <Card key={workout.id} className="w-full">
+              <CardHeader className="p-4">
+                <div className="flex flex-row sm:items-center justify-between gap-4">
+                  <CardTitle className="text-base sm:text-lg">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <div className="w-fit text-xs flex flex-col gap-1 text-muted-foreground">
+                        <span className="truncate text-sm sm:text-base text-primary uppercase">
+                          {workout.name}
+                        </span>
+                      </div>
+                      <div className="flex gap-2 flex-wrap">
+                        <Badge
+                          variant="outline"
+                          className="w-fit text-xs flex flex-row gap-1 items-center"
+                        >
+                          <Calendar className="h-3 w-3" />
+                          {workout.frequency
+                            ? workout.frequency
+                                .split(",")
+                                .map((day) => dayMap[day])
+                                .join(", ")
+                            : "No days set"}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="flex gap-2 flex-wrap">
-                      <Badge
-                        variant="outline"
-                        className="w-fit text-xs flex flex-row gap-1 items-center"
-                      >
-                        <Calendar className="h-3 w-3" />
-                        {workout.frequency
-                          ? workout.frequency
-                              .split(",")
-                              .map((day) => dayMap[day])
-                              .join(", ")
-                          : "No days set"}
-                      </Badge>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      {new Date(workout.created_at)
+                        .toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                        .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
+                          const num = parseInt(match);
+                          const suffix = ["th", "st", "nd", "rd"][
+                            num % 10 > 3 || (num % 100) - (num % 10) == 10
+                              ? 0
+                              : num % 10
+                          ];
+                          return num + suffix;
+                        })}
                     </div>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {new Date(workout.created_at)
-                      .toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })
-                      .replace(/(\d+)(?=(,\s\d{4}))/, (match) => {
-                        const num = parseInt(match);
-                        const suffix = ["th", "st", "nd", "rd"][
-                          num % 10 > 3 || (num % 100) - (num % 10) == 10
-                            ? 0
-                            : num % 10
-                        ];
-                        return num + suffix;
-                      })}
-                  </div>
-                </CardTitle>
-                <WorkoutActions workout={workout} />
-              </div>
-            </CardHeader>
-            <CardContent className="grid gap-3 p-4">
-              {workout.exercises.map((exercise) => (
-                <div key={exercise.id} className="flex items-start space-x-3">
-                  <div className="bg-primary/10 p-2 rounded-lg shrink-0">
-                    <Dumbbell className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm sm:text-base truncate">
-                      {exercise.name}
-                    </p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {exercise.sets} sets × {exercise.reps} reps
-                      {exercise.weight && ` @ ${exercise.weight}kg`}
-                      {exercise.duration && ` for ${exercise.duration}s`}
-                    </p>
-                  </div>
+                  </CardTitle>
+                  <WorkoutActions workout={workout} />
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
+              </CardHeader>
+              <CardContent className="space-y-4 p-3">
+                <div className="flex items-center gap-2 mb-4">
+                  <Dumbbell className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold text-lg">
+                    Workout ({workout.exercises.length} exercises)
+                  </h3>
+                </div>
+
+                <div className="space-y-4">
+                  {sortedRounds.map((round) => (
+                    <div key={round} className="space-y-2">
+                      {exercisesByRound[round].map((exercise) => (
+                        <div
+                          key={exercise.id}
+                          className="p-2 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium text-base">
+                              {exercise.name}
+                            </h4>
+                            <div className="flex gap-2">
+                              {exercise.sets && exercise.reps && (
+                                <Badge
+                                  variant="secondary"
+                                  className="font-mono"
+                                >
+                                  {exercise.sets} × {exercise.reps}
+                                  {exercise.weight
+                                    ? ` @ ${exercise.weight}kg`
+                                    : ""}
+                                </Badge>
+                              )}
+                              {exercise.duration && (
+                                <Badge
+                                  variant="secondary"
+                                  className="font-mono"
+                                >
+                                  {exercise.duration} sec
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
         {workouts.length === 0 && (
           <Card className="sm:col-span-2 lg:col-span-3">
             <CardContent className="flex flex-col items-center gap-4 py-6 sm:py-8">

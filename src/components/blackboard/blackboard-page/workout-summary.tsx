@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Dumbbell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Exercise {
   id: string;

@@ -1,12 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "../../ui/separator";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WorkoutCard } from "./workout-card";
-import { DailyWorkout } from "./daily-workout";
-import { FinishButton } from "./finish-button";
 import { SetFrequencyDialog } from "./set-frequency-dialog";
 import { EditScheduleButton } from "./set-frequency-dialog";
 import {
@@ -14,7 +11,6 @@ import {
   getCachedWorkoutsByDay,
 } from "@/actions/workout/cached-workout";
 import { format, startOfWeek, addDays } from "date-fns";
-import { ProgressComponent } from "./progress-component";
 import { WorkoutSummary } from "./workout-summary";
 import { StartWorkout } from "./start-workout";
 
