@@ -151,6 +151,7 @@ export const getCachedWorkoutsByDay = cache(
                   sets: true,
                   reps: true,
                   weight: true,
+                  round: true,
                   duration: true,
                   exercise: {
                     select: {
@@ -190,6 +191,7 @@ export const getCachedWorkoutsByDay = cache(
                 reps: exercise.reps,
                 weight: exercise.weight,
                 duration: exercise.duration,
+                round: exercise.round,
                 category: exercise.exercise.category,
                 muscles: exercise.exercise.muscles,
                 outcomes: exercise.exercise.outcomes,

@@ -87,7 +87,7 @@ export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
     estimatedTime = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
   }
 
-  const points = 500;
+  const points = 100;
 
   // Get unique muscle groups
   const muscleGroups = Array.from(

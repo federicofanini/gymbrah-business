@@ -4,11 +4,11 @@ import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 
 // Constants for time calculations
-const TIME_PER_REP = 3; // seconds
-const REST_BETWEEN_SETS = 60; // seconds
-const REST_BETWEEN_EXERCISES = 90; // seconds
-const WARMUP_TIME = 300; // 5 minutes in seconds
-const COOLDOWN_TIME = 300; // 5 minutes in seconds
+const TIME_PER_REP = 5; // seconds
+const REST_BETWEEN_SETS = 0; // seconds
+const REST_BETWEEN_EXERCISES = 60; // seconds
+const WARMUP_TIME = 0; // 5 minutes in seconds
+const COOLDOWN_TIME = 0; // 5 minutes in seconds
 
 interface Exercise {
   exercise_id: string;
