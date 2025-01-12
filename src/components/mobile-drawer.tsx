@@ -10,8 +10,9 @@ import {
 import { siteConfig } from "@/lib/config";
 import Image from "next/image";
 import Link from "next/link";
-import { IoMenuSharp } from "react-icons/io5";
+import { IoMenuSharp, IoTrophyOutline } from "react-icons/io5";
 import OutlinedButton from "./ui/outlined-button";
+import { Trophy } from "lucide-react";
 
 export function MobileDrawer() {
   return (
@@ -39,7 +40,14 @@ export function MobileDrawer() {
             {siteConfig.description}
           </DrawerDescription>
         </DrawerHeader>
-        <DrawerFooter className="flex justify-center">
+        <DrawerFooter className="flex flex-col gap-4 items-center">
+          <Link
+            href="/leaderboard"
+            className="text-sm hover:text-primary font-mono mb-8 transition-colors flex items-center gap-2"
+          >
+            <Trophy className="size-4" />
+            Leaderboard
+          </Link>
           <Link
             href="/login"
             className="text-sm text-secondary underline mx-auto"

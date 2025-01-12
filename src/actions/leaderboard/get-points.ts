@@ -3,21 +3,11 @@
 import { createSafeActionClient } from "next-safe-action";
 import { prisma } from "@/lib/db";
 import type { ActionResponse } from "../types/action-response";
-import { getUser } from "@/utils/supabase/database/cached-queries";
 import { appErrors } from "../types/errors";
 
 export const getPoints = createSafeActionClient().action(
   async (): Promise<ActionResponse> => {
     try {
-      const user = await getUser();
-
-      if (!user) {
-        return {
-          success: false,
-          error: appErrors.UNAUTHORIZED,
-        };
-      }
-
       // Get all users first
       const users = await prisma.user.findMany({
         select: {
