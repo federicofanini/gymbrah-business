@@ -34,7 +34,7 @@ export const exerciseFetchCron = new Cron(
 
         await prisma.$transaction(
           batch.map((exercise: any) =>
-            prisma.exercises.upsert({
+            prisma.exercise_db.upsert({
               where: { id: exercise.id },
               update: {
                 name: exercise.name,
