@@ -175,3 +175,20 @@ model completed_set {
   @@index([workout_exercise_id])
   @@index([user_id])
 }
+
+model exercise_db {
+  id                String   @id
+  name              String
+  body_part         String
+  equipment         String
+  gif_url           String
+  target            String
+  secondary_muscles String[]
+  instructions      String[]
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  @@index([body_part])
+  @@index([target])
+  @@index([equipment])
+}

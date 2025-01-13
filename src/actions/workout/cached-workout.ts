@@ -8,6 +8,7 @@ import { getSelectedWorkout } from "./get-workouts";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
+import { EXERCISE_API_CONFIG } from "@/app/api/exercises/config";
 
 export const getCachedExercises = cache(async (): Promise<ActionResponse> => {
   const supabase = await createClient();
@@ -27,13 +28,10 @@ export const getCachedExercises = cache(async (): Promise<ActionResponse> => {
     async () => {
       return getExercises(supabase);
     },
-    // Use a single global key for all exercises
     ["exercises"],
     {
-      // Use a single global tag for all exercises
       tags: ["exercises"],
-      // 30 minutes, jwt expires in 1 hour
-      revalidate: 1800,
+      revalidate: 86400, // 24 hours
     }
   )();
 });

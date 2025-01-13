@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { ExercisesTable } from "./exercises/exercises-table";
+import type { Exercise } from "./exercises/exercises-table";
 import { WorkoutInstructions } from "./workout-instructions";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -21,14 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-interface Exercise {
-  id: string;
-  name: string;
-  category: string;
-  muscles: string[];
-  outcomes: string[];
-}
 
 interface WorkoutFormClientProps {
   exercises: Exercise[];
@@ -48,7 +41,7 @@ interface WorkoutExercise {
   reps: number;
   weight?: number | null;
   duration?: number | null;
-  round: string; // Changed from number to string
+  round: string;
 }
 
 export function WorkoutFormClient({
@@ -102,26 +95,6 @@ export function WorkoutFormClient({
     setRounds(updatedRounds);
   };
 
-  const addRestAfterExercise = (roundIndex: number, exerciseIndex: number) => {
-    const updatedRounds = [...rounds];
-    const currentRound = updatedRounds[roundIndex];
-    const restExercise = exercises.find(
-      (e) => e.id === "fe42d7da-af15-416e-83d1-0cfe46253f86"
-    );
-
-    if (restExercise) {
-      const newRound = [...currentRound];
-      newRound.splice(exerciseIndex + 1, 0, {
-        ...restExercise,
-        sets: 1,
-        reps: 1,
-        duration: 60,
-      });
-      updatedRounds[roundIndex] = newRound;
-      setRounds(updatedRounds);
-    }
-  };
-
   const handleSaveWorkout = async () => {
     try {
       if (!workoutName) {
@@ -139,7 +112,6 @@ export function WorkoutFormClient({
         return;
       }
 
-      // Flatten exercises from all rounds into a single array and convert round to string
       const exercises: WorkoutExercise[] = rounds.flatMap((round, roundIndex) =>
         round.map((exercise) => ({
           exercise_id: exercise.id,
@@ -147,7 +119,7 @@ export function WorkoutFormClient({
           reps: exercise.reps,
           weight: exercise.weight || null,
           duration: exercise.duration || null,
-          round: String(roundIndex + 1), // Convert to string
+          round: String(roundIndex + 1),
         }))
       );
 
@@ -236,11 +208,11 @@ export function WorkoutFormClient({
 
               <ExercisesTable
                 exercises={exercises}
-                uniqueCategories={uniqueCategories}
                 selectedExercises={round}
-                onExerciseSelect={(exercise) =>
+                onExerciseSelect={(exercise: Exercise & { gif_url?: string }) =>
                   handleExerciseSelect(exercise, roundIndex)
                 }
+                roundIndex={roundIndex}
               />
 
               {round.length > 0 && (
@@ -252,7 +224,6 @@ export function WorkoutFormClient({
                           <TableHead className="min-w-[120px]">
                             Exercise
                           </TableHead>
-                          {/* Only show sets/reps/weight for non-rest exercises */}
                           <TableHead className="w-20">Sets</TableHead>
                           <TableHead className="w-20">Reps</TableHead>
                           <TableHead className="w-24">Weight</TableHead>
@@ -268,84 +239,68 @@ export function WorkoutFormClient({
                                 <div className="font-medium text-sm md:text-base">
                                   {exercise.name}
                                 </div>
-                                {exercise.id !==
-                                  "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
-                                  <>
-                                    <div className="text-xs md:text-sm text-muted-foreground">
-                                      {exercise.category}
-                                    </div>
-                                    <div className="flex flex-wrap gap-1">
-                                      {exercise.muscles.map((muscle) => (
-                                        <Badge
-                                          key={muscle}
-                                          variant="outline"
-                                          className="text-xs whitespace-nowrap"
-                                        >
-                                          {muscle}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </>
-                                )}
+                                <div className="text-xs md:text-sm text-muted-foreground">
+                                  {exercise.target}
+                                </div>
+                                <div className="flex flex-wrap gap-1">
+                                  {exercise.secondary_muscles.map((muscle) => (
+                                    <Badge
+                                      key={muscle}
+                                      variant="outline"
+                                      className="text-xs whitespace-nowrap"
+                                    >
+                                      {muscle}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             </TableCell>
-                            {exercise.id !==
-                            "fe42d7da-af15-416e-83d1-0cfe46253f86" ? (
-                              <>
-                                <TableCell>
-                                  <Input
-                                    type="number"
-                                    value={exercise.sets}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "sets",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 md:w-20 text-sm"
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  <Input
-                                    type="number"
-                                    value={exercise.reps}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "reps",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 md:w-20 text-sm"
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  <Input
-                                    type="number"
-                                    value={exercise.weight || ""}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "weight",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-16 md:w-20 text-sm"
-                                    placeholder="kg"
-                                  />
-                                </TableCell>
-                              </>
-                            ) : (
-                              <>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                              </>
-                            )}
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={exercise.sets}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "sets",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-16 md:w-20 text-sm"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={exercise.reps}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "reps",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-16 md:w-20 text-sm"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                value={exercise.weight || ""}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "weight",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-16 md:w-20 text-sm"
+                                placeholder="kg"
+                              />
+                            </TableCell>
                             <TableCell>
                               <Input
                                 type="number"
@@ -363,37 +318,19 @@ export function WorkoutFormClient({
                               />
                             </TableCell>
                             <TableCell>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleRemoveExercise(
-                                      roundIndex,
-                                      exerciseIndex
-                                    )
-                                  }
-                                  className="text-xs whitespace-nowrap"
-                                >
-                                  Remove
-                                </Button>
-                                {exercise.id !==
-                                  "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() =>
-                                      addRestAfterExercise(
-                                        roundIndex,
-                                        exerciseIndex
-                                      )
-                                    }
-                                    className="text-xs whitespace-nowrap"
-                                  >
-                                    Add Rest
-                                  </Button>
-                                )}
-                              </div>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                  handleRemoveExercise(
+                                    roundIndex,
+                                    exerciseIndex
+                                  )
+                                }
+                                className="text-xs whitespace-nowrap"
+                              >
+                                Remove
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -405,156 +342,111 @@ export function WorkoutFormClient({
                     {round.map((exercise, exerciseIndex) => (
                       <Card key={exerciseIndex}>
                         <CardContent className="p-4 space-y-4">
-                          {exercise.id ===
-                          "fe42d7da-af15-416e-83d1-0cfe46253f86" ? (
-                            <div className="flex justify-between items-center">
-                              <div className="font-medium">{exercise.name}</div>
-                              <div className="w-24">
-                                <Input
-                                  type="number"
-                                  value={exercise.duration || ""}
-                                  onChange={(e) =>
-                                    handleExerciseUpdate(
-                                      roundIndex,
-                                      exerciseIndex,
-                                      "duration",
-                                      parseInt(e.target.value)
-                                    )
-                                  }
-                                  className="w-full text-sm"
-                                  placeholder="sec"
-                                />
-                              </div>
+                          <div className="space-y-2">
+                            <div className="font-medium">{exercise.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {exercise.target}
                             </div>
-                          ) : (
-                            <>
-                              <div className="space-y-2">
-                                <div className="font-medium">
-                                  {exercise.name}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  {exercise.category}
-                                </div>
-                                <div className="flex flex-wrap gap-1">
-                                  {exercise.muscles.map((muscle) => (
-                                    <Badge
-                                      key={muscle}
-                                      variant="outline"
-                                      className="text-xs whitespace-nowrap"
-                                    >
-                                      {muscle}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
+                            <div className="flex flex-wrap gap-1">
+                              {exercise.secondary_muscles.map((muscle) => (
+                                <Badge
+                                  key={muscle}
+                                  variant="outline"
+                                  className="text-xs whitespace-nowrap"
+                                >
+                                  {muscle}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
 
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Sets
-                                  </label>
-                                  <Input
-                                    type="number"
-                                    value={exercise.sets}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "sets",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-full text-sm"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Reps
-                                  </label>
-                                  <Input
-                                    type="number"
-                                    value={exercise.reps}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "reps",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-full text-sm"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Weight (kg)
-                                  </label>
-                                  <Input
-                                    type="number"
-                                    value={exercise.weight || ""}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "weight",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-full text-sm"
-                                    placeholder="kg"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <label className="text-sm font-medium">
-                                    Duration (sec)
-                                  </label>
-                                  <Input
-                                    type="number"
-                                    value={exercise.duration || ""}
-                                    onChange={(e) =>
-                                      handleExerciseUpdate(
-                                        roundIndex,
-                                        exerciseIndex,
-                                        "duration",
-                                        parseInt(e.target.value)
-                                      )
-                                    }
-                                    className="w-full text-sm"
-                                    placeholder="sec"
-                                  />
-                                </div>
-                              </div>
-                            </>
-                          )}
-
-                          <div className="flex gap-2">
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() =>
-                                handleRemoveExercise(roundIndex, exerciseIndex)
-                              }
-                              className="flex-1 text-xs"
-                            >
-                              Remove
-                            </Button>
-                            {exercise.id !==
-                              "fe42d7da-af15-416e-83d1-0cfe46253f86" && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  addRestAfterExercise(
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">
+                                Sets
+                              </label>
+                              <Input
+                                type="number"
+                                value={exercise.sets}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
                                     roundIndex,
-                                    exerciseIndex
+                                    exerciseIndex,
+                                    "sets",
+                                    parseInt(e.target.value)
                                   )
                                 }
-                                className="flex-1 text-xs"
-                              >
-                                Add Rest
-                              </Button>
-                            )}
+                                className="w-full text-sm"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">
+                                Reps
+                              </label>
+                              <Input
+                                type="number"
+                                value={exercise.reps}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "reps",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-full text-sm"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">
+                                Weight (kg)
+                              </label>
+                              <Input
+                                type="number"
+                                value={exercise.weight || ""}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "weight",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-full text-sm"
+                                placeholder="kg"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">
+                                Duration (sec)
+                              </label>
+                              <Input
+                                type="number"
+                                value={exercise.duration || ""}
+                                onChange={(e) =>
+                                  handleExerciseUpdate(
+                                    roundIndex,
+                                    exerciseIndex,
+                                    "duration",
+                                    parseInt(e.target.value)
+                                  )
+                                }
+                                className="w-full text-sm"
+                                placeholder="sec"
+                              />
+                            </div>
                           </div>
+
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() =>
+                              handleRemoveExercise(roundIndex, exerciseIndex)
+                            }
+                            className="w-full text-xs"
+                          >
+                            Remove
+                          </Button>
                         </CardContent>
                       </Card>
                     ))}
