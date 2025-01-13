@@ -127,6 +127,9 @@ export async function SavedWorkouts() {
       }),
     }));
 
+  // Remove duplicates based on workout ID
+  workouts = Array.from(new Map(workouts.map((w) => [w.id, w])).values());
+
   return (
     <div className="w-full px-4 sm:px-6">
       <h2 className="text-xl sm:text-2xl font-bold mb-4">Your workouts</h2>
@@ -211,7 +214,7 @@ export async function SavedWorkouts() {
                     <div key={round} className="space-y-2">
                       {exercisesByRound[round].map((exercise) => (
                         <div
-                          key={exercise.id}
+                          key={`${workout.id}-${exercise.id}`}
                           className="p-2 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
                         >
                           <div className="flex items-center justify-between">
