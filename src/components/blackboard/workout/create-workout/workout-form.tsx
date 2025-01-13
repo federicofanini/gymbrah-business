@@ -1,9 +1,8 @@
-import { getExercises } from "@/actions/workout/get-exercises";
+import { getCachedExercises } from "@/actions/workout/cached-workout";
 import { WorkoutFormClient } from "./workout-form-client";
 import { LogEvents } from "@/utils/events/events";
 import { setupAnalytics } from "@/utils/events/server";
 import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
-import { createClient } from "@/utils/supabase/server";
 
 interface Exercise {
   id: string;
@@ -17,8 +16,7 @@ interface Exercise {
 }
 
 export async function WorkoutForm() {
-  const supabase = await createClient();
-  const result = await getExercises(supabase);
+  const result = await getCachedExercises();
   const exercises = result.success ? (result.data as Exercise[]) : [];
 
   // Group exercises by body part

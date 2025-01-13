@@ -38,13 +38,7 @@ export const exerciseFetchCron = new Cron(
             prisma.exercises.upsert({
               where: { id: exercise.id },
               update: {
-                name: exercise.name,
-                body_part: exercise.bodyPart,
-                equipment: exercise.equipment,
                 gif_url: exercise.gifUrl,
-                target: exercise.target,
-                secondary_muscles: exercise.secondaryMuscles,
-                instructions: exercise.instructions,
                 updated_at: new Date(),
               },
               create: {
