@@ -192,3 +192,7 @@ model exercise_db {
   @@index([target])
   @@index([equipment])
 }
+
+model test {
+  id String @id @default(uuid())
+}
