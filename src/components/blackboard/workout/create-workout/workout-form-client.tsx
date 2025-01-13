@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import type { ActionResponse } from "@/actions/types/action-response";
-import { ExercisesTable, capitalize } from "./exercises/exercises-table";
+import { ExercisesTable } from "./exercises/exercises-table";
 import type { Exercise } from "./exercises/exercises-table";
 import { WorkoutInstructions } from "./workout-instructions";
 import { Separator } from "@/components/ui/separator";
@@ -22,7 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import Image from "next/image";
 
 interface WorkoutFormClientProps {
   exercises: Exercise[];
@@ -225,7 +224,6 @@ export function WorkoutFormClient({
                           <TableHead className="min-w-[120px]">
                             Exercise
                           </TableHead>
-                          <TableHead className="w-24">Demo</TableHead>
                           <TableHead className="w-20">Sets</TableHead>
                           <TableHead className="w-20">Reps</TableHead>
                           <TableHead className="w-24">Weight</TableHead>
@@ -239,10 +237,10 @@ export function WorkoutFormClient({
                             <TableCell className="min-w-[120px]">
                               <div className="space-y-1">
                                 <div className="font-medium text-sm md:text-base">
-                                  {capitalize(exercise.name)}
+                                  {exercise.name}
                                 </div>
                                 <div className="text-xs md:text-sm text-muted-foreground">
-                                  {capitalize(exercise.target)}
+                                  {exercise.target}
                                 </div>
                                 <div className="flex flex-wrap gap-1">
                                   {exercise.secondary_muscles.map((muscle) => (
@@ -251,23 +249,11 @@ export function WorkoutFormClient({
                                       variant="outline"
                                       className="text-xs whitespace-nowrap"
                                     >
-                                      {capitalize(muscle)}
+                                      {muscle}
                                     </Badge>
                                   ))}
                                 </div>
                               </div>
-                            </TableCell>
-                            <TableCell>
-                              {exercise.gif_url && (
-                                <div className="relative w-20 h-20">
-                                  <Image
-                                    src={exercise.gif_url}
-                                    alt={exercise.name}
-                                    fill
-                                    className="object-cover rounded"
-                                  />
-                                </div>
-                              )}
                             </TableCell>
                             <TableCell>
                               <Input
@@ -357,11 +343,9 @@ export function WorkoutFormClient({
                       <Card key={exerciseIndex}>
                         <CardContent className="p-4 space-y-4">
                           <div className="space-y-2">
-                            <div className="font-medium">
-                              {capitalize(exercise.name)}
-                            </div>
+                            <div className="font-medium">{exercise.name}</div>
                             <div className="text-sm text-muted-foreground">
-                              {capitalize(exercise.target)}
+                              {exercise.target}
                             </div>
                             <div className="flex flex-wrap gap-1">
                               {exercise.secondary_muscles.map((muscle) => (
@@ -370,20 +354,10 @@ export function WorkoutFormClient({
                                   variant="outline"
                                   className="text-xs whitespace-nowrap"
                                 >
-                                  {capitalize(muscle)}
+                                  {muscle}
                                 </Badge>
                               ))}
                             </div>
-                            {exercise.gif_url && (
-                              <div className="relative w-20 h-20">
-                                <Image
-                                  src={exercise.gif_url}
-                                  alt={exercise.name}
-                                  fill
-                                  className="object-cover rounded"
-                                />
-                              </div>
-                            )}
                           </div>
 
                           <div className="grid grid-cols-2 gap-4">
