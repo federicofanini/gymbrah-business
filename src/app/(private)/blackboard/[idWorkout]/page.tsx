@@ -11,11 +11,15 @@ interface Exercise {
   weight: number | null;
   duration: number | null;
   category: string;
-  muscles: string[];
-  outcomes: string[];
+  bodyPart: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondaryMuscles: string[];
+  instructions: string[];
+  gifUrl: string | null;
   exercise_id: string;
   workout_id: string;
-  round: string; // Added missing round property
+  round: string;
 }
 
 interface Workout {

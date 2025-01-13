@@ -30,8 +30,12 @@ interface Exercise {
   weight: number | null;
   duration: number | null;
   category: string;
-  muscles: string[];
-  outcomes: string[];
+  bodyPart: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondaryMuscles: string[];
+  instructions: string[];
+  gifUrl: string | null;
   exercise_id: string;
   workout_id: string;
   round: string;
@@ -58,6 +62,8 @@ export function WorkoutClient({ workout, userId }: WorkoutProps) {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
 
   const exercise = workout.exercises[currentExercise];
+
+  console.log(exercise.gifUrl);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -126,11 +132,11 @@ export function WorkoutClient({ workout, userId }: WorkoutProps) {
           {/* Left Column - Exercise Preview */}
           <div className="relative w-full h-full rounded-xl overflow-hidden bg-muted">
             <Image
-              src="/placeholder-exercise.png"
+              src={exercise.gifUrl || "/placeholder-exercise.png"}
               alt="Exercise tutorial"
               fill
               className="object-cover"
-              priority
+              unoptimized
             />
           </div>
 

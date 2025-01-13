@@ -8,7 +8,6 @@ import { getSelectedWorkout } from "./get-workouts";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
-import { EXERCISE_API_CONFIG } from "@/app/api/exercises/config";
 
 export const getCachedExercises = cache(async (): Promise<ActionResponse> => {
   const supabase = await createClient();
@@ -31,7 +30,7 @@ export const getCachedExercises = cache(async (): Promise<ActionResponse> => {
     ["exercises"],
     {
       tags: ["exercises"],
-      revalidate: 86400, // 24 hours
+      revalidate: 21600, // 6 hours
     }
   )();
 });
@@ -155,9 +154,12 @@ export const getCachedWorkoutsByDay = cache(
                     select: {
                       id: true,
                       name: true,
-                      category: true,
-                      muscles: true,
-                      outcomes: true,
+                      body_part: true,
+                      equipment: true,
+                      target: true,
+                      secondary_muscles: true,
+                      instructions: true,
+                      gif_url: true,
                     },
                   },
                 },
@@ -190,9 +192,12 @@ export const getCachedWorkoutsByDay = cache(
                 weight: exercise.weight,
                 duration: exercise.duration,
                 round: exercise.round,
-                category: exercise.exercise.category,
-                muscles: exercise.exercise.muscles,
-                outcomes: exercise.exercise.outcomes,
+                body_part: exercise.exercise.body_part,
+                equipment: exercise.exercise.equipment,
+                gif_url: exercise.exercise.gif_url,
+                target: exercise.exercise.target,
+                secondary_muscles: exercise.exercise.secondary_muscles,
+                instructions: exercise.exercise.instructions,
                 exercise_id: exercise.exercise.id,
                 workout_id: workout.id,
               })),

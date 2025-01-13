@@ -10,15 +10,20 @@ import {
 interface Exercise {
   id: string;
   name: string;
-  reps: number;
   sets: number;
-  weight?: number | null;
-  duration?: number | null;
-  workout_id: string;
-  exercise_id: string;
+  reps: number;
+  weight: number | null;
+  duration: number | null;
   category: string;
-  muscles: string[];
-  outcomes: string[];
+  bodyPart: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondaryMuscles: string[];
+  instructions: string[];
+  gifUrl: string | null;
+  exercise_id: string;
+  workout_id: string;
+  round: string;
 }
 
 interface Workout {
@@ -89,19 +94,20 @@ export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
 
   const points = 100;
 
-  // Get unique muscle groups
+  // Get unique muscle groups from target and secondary muscles
   const muscleGroups = Array.from(
-    new Set(
-      selectedWorkout.exercises.flatMap(
-        (exercise: Exercise) => exercise.muscles
-      )
-    )
+    new Set([
+      ...selectedWorkout.exercises.map((e) => e.target).filter(Boolean),
+      ...selectedWorkout.exercises.flatMap((e) => e.secondaryMuscles),
+    ])
   ) as string[];
 
-  // Get unique equipment (categories)
+  // Get unique equipment
   const equipment = Array.from(
     new Set(
-      selectedWorkout.exercises.map((exercise: Exercise) => exercise.category)
+      selectedWorkout.exercises
+        .map((exercise: Exercise) => exercise.equipment)
+        .filter(Boolean)
     )
   ).join(", ");
 

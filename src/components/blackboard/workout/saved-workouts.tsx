@@ -10,24 +10,30 @@ import { createClient } from "@/utils/supabase/server";
 interface Exercise {
   id: string;
   name: string;
-  reps: number;
-  sets: number;
-  weight?: number | null;
-  duration?: number | null;
+  reps: number | null;
+  sets: number | null;
+  weight: number | null;
+  duration: number | null;
+  round: string | null;
   workout_id: string;
   exercise_id: string;
-  category: string;
-  muscles: string[];
-  outcomes: string[];
-  round: string;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
 }
 
 interface CachedExercise {
   id: string;
-  name: string;
-  category: string;
-  muscles: string[];
-  outcomes: string[];
+  name: string | null;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
 }
 
 interface Workout {
@@ -36,7 +42,7 @@ interface Workout {
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
-  frequency: string;
+  frequency: string | null;
 }
 
 const dayMap: Record<string, string> = {
@@ -81,9 +87,12 @@ export async function SavedWorkouts() {
           ? {
               ...exercise,
               name: cachedExercise.name,
-              category: cachedExercise.category,
-              muscles: cachedExercise.muscles,
-              outcomes: cachedExercise.outcomes,
+              body_part: cachedExercise.body_part,
+              equipment: cachedExercise.equipment,
+              target: cachedExercise.target,
+              secondary_muscles: cachedExercise.secondary_muscles,
+              instructions: cachedExercise.instructions,
+              gif_url: cachedExercise.gif_url,
             }
           : exercise;
       }),
@@ -178,9 +187,16 @@ export async function SavedWorkouts() {
                           className="p-2 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
                         >
                           <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-base">
-                              {exercise.name}
-                            </h4>
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={exercise.gif_url || ""}
+                                alt={exercise.name || ""}
+                                className="h-8 w-8 rounded-md object-cover"
+                              />
+                              <h4 className="font-medium text-base">
+                                {exercise.name}
+                              </h4>
+                            </div>
                             <div className="flex gap-2">
                               {exercise.sets && exercise.reps && (
                                 <Badge

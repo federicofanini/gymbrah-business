@@ -4,13 +4,20 @@ import { Badge } from "@/components/ui/badge";
 
 interface Exercise {
   id: string;
-  name: string;
-  sets: number;
-  reps: number;
-  weight?: number | null;
-  duration?: number | null;
-  category: string;
-  round: string;
+  name: string | null;
+  reps: number | null;
+  sets: number | null;
+  weight: number | null;
+  duration: number | null;
+  round: string | null;
+  workout_id: string;
+  exercise_id: string;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
 }
 
 interface Workout {
@@ -73,7 +80,13 @@ export async function WorkoutSummary({
                   className="p-2 rounded-lg bg-card/50 border border-border/50 hover:border-primary/20 transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-base">{exercise.name}</h4>
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={exercise.gif_url || ""}
+                        className="h-8 w-8 rounded-sm object-cover"
+                      />
+                      <h4 className="font-medium text-base">{exercise.name}</h4>
+                    </div>
                     <div className="flex gap-2">
                       {exercise.sets && exercise.reps && (
                         <Badge variant="secondary" className="font-mono">

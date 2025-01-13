@@ -6,6 +6,7 @@ import type { ActionResponse } from "../types/action-response";
 import { createClient } from "@/utils/supabase/server";
 import { getExercises } from "./get-exercises";
 import { revalidateTag } from "next/cache";
+import { getUser } from "@/utils/supabase/database/cached-queries";
 
 // Create a cron job that runs at 12:00 PM CST every day
 export const exerciseFetchCron = new Cron(
@@ -34,7 +35,7 @@ export const exerciseFetchCron = new Cron(
 
         await prisma.$transaction(
           batch.map((exercise: any) =>
-            prisma.exercise_db.upsert({
+            prisma.exercises.upsert({
               where: { id: exercise.id },
               update: {
                 name: exercise.name,
@@ -47,7 +48,7 @@ export const exerciseFetchCron = new Cron(
                 updated_at: new Date(),
               },
               create: {
-                id: exercise.id,
+                id: crypto.randomUUID(),
                 name: exercise.name,
                 body_part: exercise.bodyPart,
                 equipment: exercise.equipment,
@@ -66,8 +67,12 @@ export const exerciseFetchCron = new Cron(
 
       // Update cached exercises
       const supabase = await createClient();
+      const user = await getUser();
       await getExercises(supabase);
       revalidateTag("exercises");
+      if (user) {
+        revalidateTag(`workouts-by-day-${user.id}`);
+      }
 
       return {
         success: true,

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addExercise } from "@/actions/admin/add-exercise";
+import { seedExercises } from "@/actions/workout/get-exercises";
 import type { ActionResponse } from "@/actions/types/action-response";
 
 interface ExerciseFormData {
@@ -48,34 +48,28 @@ export function AddExerciseForm() {
     e.preventDefault();
 
     try {
-      const result = await addExercise(formData);
+      const result = await seedExercises();
 
-      if (!result) {
-        throw new Error("No response from server");
+      if (!result.success) {
+        toast.error(result.error || "Failed to add exercises");
+        return;
       }
 
-      if (result.data) {
-        const response = result.data as ActionResponse;
-        if (response.success) {
-          toast.success("Exercise added successfully");
-          // Reset form
-          setFormData({
-            category: "",
-            name: "",
-            muscles: [],
-            outcomes: [],
-            reps: undefined,
-            sets: undefined,
-            duration: undefined,
-            weight: undefined,
-          });
-        } else {
-          toast.error(response.error || "Failed to add exercise");
-        }
-      }
+      toast.success("Successfully added all exercises to the database");
+      // Reset form
+      setFormData({
+        category: "",
+        name: "",
+        muscles: [],
+        outcomes: [],
+        reps: undefined,
+        sets: undefined,
+        duration: undefined,
+        weight: undefined,
+      });
     } catch (error) {
       console.error("Exercise creation error:", error);
-      toast.error("Failed to add exercise");
+      toast.error("Failed to add exercises");
     }
   };
 
