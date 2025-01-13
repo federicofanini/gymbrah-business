@@ -26,27 +26,29 @@ interface Workout {
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
-  frequency: string;
+  frequency: string | null;
 }
 
 export async function WorkoutSummary({
   workoutData,
 }: {
-  workoutData?: Workout;
+  workoutData?: Workout | null;
 }) {
   if (!workoutData) {
     return null;
   }
 
   // Group exercises by round
-  const exercisesByRound = workoutData.exercises.reduce((acc, exercise) => {
+  const exercisesByRound = workoutData.exercises.reduce<
+    Record<string, Exercise[]>
+  >((acc, exercise) => {
     const round = exercise.round || "1";
     if (!acc[round]) {
       acc[round] = [];
     }
     acc[round].push(exercise);
     return acc;
-  }, {} as Record<string, Exercise[]>);
+  }, {});
 
   // Sort rounds numerically
   const sortedRounds = Object.keys(exercisesByRound).sort(

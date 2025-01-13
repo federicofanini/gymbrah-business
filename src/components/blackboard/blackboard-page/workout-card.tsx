@@ -2,28 +2,23 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, Dumbbell, PersonStanding, Zap } from "lucide-react";
 import { estimateWorkoutTime } from "@/actions/workout/time-estimation";
-import {
-  getCachedSelectedWorkout,
-  getCachedWorkoutFrequency,
-} from "@/actions/workout/cached-workout";
 
 interface Exercise {
   id: string;
-  name: string;
-  sets: number;
-  reps: number;
+  name: string | null;
+  reps: number | null;
+  sets: number | null;
   weight: number | null;
   duration: number | null;
-  category: string;
-  bodyPart: string | null;
+  round: string | null;
+  workout_id: string;
+  exercise_id: string;
+  body_part: string | null;
   equipment: string | null;
   target: string | null;
-  secondaryMuscles: string[];
+  secondary_muscles: string[];
   instructions: string[];
-  gifUrl: string | null;
-  exercise_id: string;
-  workout_id: string;
-  round: string;
+  gif_url: string | null;
 }
 
 interface Workout {
@@ -32,56 +27,24 @@ interface Workout {
   created_at: Date;
   exercises: Exercise[];
   selected: boolean;
-  frequency: string;
+  frequency: string | null;
 }
 
-export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
-  // Get current day of week (1-7, Monday = 1)
-  const today = new Date().getDay();
-  const dayNumber = today === 0 ? "7" : today.toString();
-
-  let selectedWorkout: Workout;
-
-  if (workoutData) {
-    selectedWorkout = workoutData;
-  } else {
-    // Get user's workout frequency
-    const frequencyResponse = await getCachedWorkoutFrequency();
-
-    if (!frequencyResponse.success || !frequencyResponse.data) {
-      return null;
-    }
-
-    // Get user's workout days
-    const userWorkoutDays = frequencyResponse.data.frequency?.split(",") || [];
-
-    // Get selected workout
-    const workoutResponse = await getCachedSelectedWorkout();
-
-    if (!workoutResponse.success || !workoutResponse.data) {
-      return null;
-    }
-
-    selectedWorkout = workoutResponse.data;
-
-    // Get workout's frequency days
-    const workoutFrequencyDays = selectedWorkout.frequency?.split(",") || [];
-
-    // Check if today matches both user's frequency and workout's frequency
-    if (
-      !userWorkoutDays.includes(dayNumber) ||
-      !workoutFrequencyDays.includes(dayNumber)
-    ) {
-      return null;
-    }
+export async function WorkoutCard({
+  workoutData,
+}: {
+  workoutData?: Workout | null;
+}) {
+  if (!workoutData) {
+    return null;
   }
 
   // Estimate workout time
   const timeResponse = await estimateWorkoutTime(
-    selectedWorkout.exercises.map((e: Exercise) => ({
+    workoutData.exercises.map((e) => ({
       exercise_id: e.exercise_id,
-      sets: e.sets,
-      reps: e.reps,
+      sets: e.sets || 0,
+      reps: e.reps || 0,
       duration: e.duration || null,
     }))
   );
@@ -97,16 +60,16 @@ export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
   // Get unique muscle groups from target and secondary muscles
   const muscleGroups = Array.from(
     new Set([
-      ...selectedWorkout.exercises.map((e) => e.target).filter(Boolean),
-      ...selectedWorkout.exercises.flatMap((e) => e.secondaryMuscles),
+      ...workoutData.exercises.map((e) => e.target).filter(Boolean),
+      ...workoutData.exercises.flatMap((e) => e.secondary_muscles),
     ])
   ) as string[];
 
   // Get unique equipment
   const equipment = Array.from(
     new Set(
-      selectedWorkout.exercises
-        .map((exercise: Exercise) => exercise.equipment)
+      workoutData.exercises
+        .map((exercise) => exercise.equipment)
         .filter(Boolean)
     )
   ).join(", ");
@@ -116,7 +79,7 @@ export async function WorkoutCard({ workoutData }: { workoutData?: Workout }) {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1.5 sm:gap-4">
         <div className="space-y-1.5 sm:space-y-3 flex justify-between gap-2 items-center">
           <h2 className="text-base sm:text-2xl font-semibold line-clamp-2 uppercase">
-            {selectedWorkout.name}
+            {workoutData.name}
           </h2>
           <div className="flex flex-wrap gap-2 sm:gap-4 text-[11px] sm:text-sm text-gray-300">
             <div className="flex items-center gap-1 sm:gap-2">

@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Dumbbell } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
-import { getWorkouts } from "@/actions/workout/get-workouts";
-import { getCachedExercises } from "@/actions/workout/cached-workout";
+import {
+  getCachedWorkoutsByDay,
+  getCachedExercises,
+} from "@/actions/workout/cached-workout";
 import { WorkoutActions } from "./create-workout/workout-actions";
-import { createClient } from "@/utils/supabase/server";
 
 interface Exercise {
   id: string;
@@ -45,6 +45,15 @@ interface Workout {
   frequency: string | null;
 }
 
+interface WorkoutFromDB {
+  id: string;
+  name: string;
+  created_at: Date;
+  exercises: Array<Omit<Exercise, "name"> & { name: string | null }>;
+  selected: boolean;
+  frequency: string | null;
+}
+
 const dayMap: Record<string, string> = {
   "1": "Mon",
   "2": "Tue",
@@ -56,48 +65,67 @@ const dayMap: Record<string, string> = {
 };
 
 export async function SavedWorkouts() {
-  const supabase = await createClient();
   const [workoutsResponse, exercisesResponse] = await Promise.all([
-    getWorkouts(supabase),
+    getCachedWorkoutsByDay(),
     getCachedExercises(),
   ]);
 
   let workouts: Workout[] = [];
 
   if (
-    workoutsResponse.success &&
-    workoutsResponse.data &&
-    exercisesResponse?.success &&
-    exercisesResponse?.data
+    !workoutsResponse.success ||
+    !workoutsResponse.data ||
+    !exercisesResponse.success ||
+    !exercisesResponse.data
   ) {
-    // Create a map of exercise details for quick lookup
-    const exerciseMap = new Map<string, CachedExercise>(
-      exercisesResponse.data.map((exercise: CachedExercise) => [
-        exercise.id,
-        exercise,
-      ])
+    return (
+      <Card className="sm:col-span-2 lg:col-span-3">
+        <CardContent className="flex flex-col items-center gap-4 py-6 sm:py-8">
+          <div className="space-y-1 sm:space-y-2 text-center px-4">
+            <h3 className="font-semibold text-sm sm:text-base">
+              Error loading workouts
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Please try again later
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     );
+  }
 
-    // Enrich workout exercises with cached exercise details
-    workouts = workoutsResponse.data.map((workout: Workout) => ({
+  const workoutsByDay = workoutsResponse.data;
+
+  // Create a map of exercise details for quick lookup
+  const exerciseMap = new Map<string, CachedExercise>(
+    exercisesResponse.data.map((exercise: CachedExercise) => [
+      exercise.id,
+      exercise,
+    ])
+  );
+
+  // Get all non-null workouts and enrich them with exercise details
+  workouts = Object.values(workoutsByDay)
+    .filter((w): w is WorkoutFromDB => w !== null)
+    .map((workout) => ({
       ...workout,
       exercises: workout.exercises.map((exercise) => {
         const cachedExercise = exerciseMap.get(exercise.exercise_id);
-        return cachedExercise
-          ? {
-              ...exercise,
-              name: cachedExercise.name,
-              body_part: cachedExercise.body_part,
-              equipment: cachedExercise.equipment,
-              target: cachedExercise.target,
-              secondary_muscles: cachedExercise.secondary_muscles,
-              instructions: cachedExercise.instructions,
-              gif_url: cachedExercise.gif_url,
-            }
-          : exercise;
+        if (!cachedExercise?.name) {
+          throw new Error(`Missing exercise name for ${exercise.exercise_id}`);
+        }
+        return {
+          ...exercise,
+          name: cachedExercise.name,
+          body_part: cachedExercise.body_part,
+          equipment: cachedExercise.equipment,
+          target: cachedExercise.target,
+          secondary_muscles: cachedExercise.secondary_muscles,
+          instructions: cachedExercise.instructions,
+          gif_url: cachedExercise.gif_url,
+        };
       }),
     }));
-  }
 
   return (
     <div className="w-full px-4 sm:px-6">

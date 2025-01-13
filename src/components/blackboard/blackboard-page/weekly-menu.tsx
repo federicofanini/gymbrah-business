@@ -9,10 +9,67 @@ import { EditScheduleButton } from "./set-frequency-dialog";
 import {
   getCachedWorkoutFrequency,
   getCachedWorkoutsByDay,
+  getCachedExercises,
 } from "@/actions/workout/cached-workout";
 import { format, startOfWeek, addDays } from "date-fns";
 import { WorkoutSummary } from "./workout-summary";
 import { StartWorkout } from "./start-workout";
+
+interface Exercise {
+  id: string;
+  name: string | null;
+  reps: number | null;
+  sets: number | null;
+  weight: number | null;
+  duration: number | null;
+  round: string | null;
+  workout_id: string;
+  exercise_id: string;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
+}
+
+interface CachedExercise {
+  id: string;
+  name: string | null;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
+}
+
+interface Workout {
+  id: string;
+  name: string;
+  created_at: Date;
+  exercises: Exercise[];
+  selected: boolean;
+  frequency: string | null;
+}
+
+interface WorkoutFromDB {
+  id: string;
+  name: string;
+  created_at: Date;
+  exercises: Array<{
+    id: string;
+    exercise_id: string;
+    reps: number | null;
+    sets: number | null;
+    weight: number | null;
+    duration: number | null;
+    round: string | null;
+    workout_id: string;
+  }>;
+  selected: boolean;
+  frequency: string | null;
+}
 
 const today = new Date();
 const weekStart = startOfWeek(today, { weekStartsOn: 1 }); // Start from Monday
@@ -48,8 +105,12 @@ const WEEKDAYS = [
 ];
 
 export async function WeeklyMenu() {
-  const frequencyResponse = await getCachedWorkoutFrequency();
-  const workoutsResponse = await getCachedWorkoutsByDay();
+  const [frequencyResponse, workoutsResponse, exercisesResponse] =
+    await Promise.all([
+      getCachedWorkoutFrequency(),
+      getCachedWorkoutsByDay(),
+      getCachedExercises(),
+    ]);
 
   if (!frequencyResponse.success || !frequencyResponse.data) {
     return <SetFrequencyDialog />;
@@ -67,9 +128,65 @@ export async function WeeklyMenu() {
     return <SetFrequencyDialog />;
   }
 
-  const workoutsByDay = workoutsResponse.success ? workoutsResponse.data : {};
+  if (
+    !workoutsResponse.success ||
+    !workoutsResponse.data ||
+    !exercisesResponse.success ||
+    !exercisesResponse.data
+  ) {
+    return (
+      <Card className="w-full">
+        <div className="p-4 text-center">
+          <p>Error loading workouts</p>
+        </div>
+      </Card>
+    );
+  }
 
-  console.log(workoutsByDay);
+  // Create a map of exercise details for quick lookup
+  const exerciseMap = new Map<string, CachedExercise>(
+    exercisesResponse.data.map((exercise: CachedExercise) => [
+      exercise.id,
+      exercise,
+    ])
+  );
+
+  // Enrich workouts with exercise details
+  const enrichedWorkoutsByDay = Object.entries(workoutsResponse.data).reduce<
+    Record<string, Workout | null>
+  >((acc, [day, workout]) => {
+    if (!workout) {
+      acc[day] = null;
+      return acc;
+    }
+
+    const typedWorkout = workout as WorkoutFromDB;
+
+    acc[day] = {
+      id: typedWorkout.id,
+      name: typedWorkout.name,
+      created_at: typedWorkout.created_at,
+      selected: typedWorkout.selected,
+      frequency: typedWorkout.frequency,
+      exercises: typedWorkout.exercises.map((exercise) => {
+        const cachedExercise = exerciseMap.get(exercise.exercise_id);
+        if (!cachedExercise?.name) {
+          throw new Error(`Missing exercise name for ${exercise.exercise_id}`);
+        }
+        return {
+          ...exercise,
+          name: cachedExercise.name,
+          body_part: cachedExercise.body_part,
+          equipment: cachedExercise.equipment,
+          target: cachedExercise.target,
+          secondary_muscles: cachedExercise.secondary_muscles,
+          instructions: cachedExercise.instructions,
+          gif_url: cachedExercise.gif_url,
+        };
+      }),
+    };
+    return acc;
+  }, {});
 
   return (
     <Card className="w-full max-w-[100vw] px-2 sm:px-4 border-none">
@@ -122,16 +239,18 @@ export async function WeeklyMenu() {
                     <Separator className="my-2" />
                     <div className="space-y-4">
                       <Suspense fallback={<Skeleton className="w-full h-32" />}>
-                        <WorkoutCard workoutData={workoutsByDay[day.value]} />
+                        <WorkoutCard
+                          workoutData={enrichedWorkoutsByDay[day.value]}
+                        />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-24" />}>
                         <WorkoutSummary
-                          workoutData={workoutsByDay[day.value]}
+                          workoutData={enrichedWorkoutsByDay[day.value]}
                         />
                       </Suspense>
                       <Suspense fallback={<Skeleton className="w-full h-10" />}>
                         <StartWorkout
-                          workoutId={workoutsByDay[day.value]?.id}
+                          workoutId={enrichedWorkoutsByDay[day.value]?.id ?? ""}
                         />
                       </Suspense>
                     </div>
@@ -141,9 +260,6 @@ export async function WeeklyMenu() {
             </div>
           </Tabs>
         </div>
-        {/* <div>
-          <ProgressComponent />
-        </div> */}
       </div>
     </Card>
   );

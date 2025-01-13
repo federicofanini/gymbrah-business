@@ -1,25 +1,38 @@
 import { Card } from "@/components/ui/card";
-import { getCachedWorkoutsByDay } from "@/actions/workout/cached-workout";
+import {
+  getCachedWorkoutsByDay,
+  getCachedExercises,
+} from "@/actions/workout/cached-workout";
 import { WorkoutClient } from "@/components/blackboard/workout-page/workout-client";
 import { getUser } from "@/utils/supabase/database/cached-queries";
 
 interface Exercise {
   id: string;
   name: string;
-  sets: number;
-  reps: number;
+  reps: number | null;
+  sets: number | null;
   weight: number | null;
   duration: number | null;
-  category: string;
-  bodyPart: string | null;
+  round: string | null;
+  workout_id: string;
+  exercise_id: string;
+  body_part: string | null;
   equipment: string | null;
   target: string | null;
-  secondaryMuscles: string[];
+  secondary_muscles: string[];
   instructions: string[];
-  gifUrl: string | null;
-  exercise_id: string;
-  workout_id: string;
-  round: string;
+  gif_url: string | null;
+}
+
+interface CachedExercise {
+  id: string;
+  name: string | null;
+  body_part: string | null;
+  equipment: string | null;
+  target: string | null;
+  secondary_muscles: string[];
+  instructions: string[];
+  gif_url: string | null;
 }
 
 interface Workout {
@@ -34,8 +47,9 @@ interface Workout {
 type PageParams = { idWorkout: string } & Promise<any>;
 
 export default async function WorkoutPage({ params }: { params: PageParams }) {
-  const [workoutsResponse, user] = await Promise.all([
+  const [workoutsResponse, exercisesResponse, user] = await Promise.all([
     getCachedWorkoutsByDay(),
+    getCachedExercises(),
     getUser(),
   ]);
 
@@ -54,7 +68,12 @@ export default async function WorkoutPage({ params }: { params: PageParams }) {
     );
   }
 
-  if (!workoutsResponse.success || !workoutsResponse.data) {
+  if (
+    !workoutsResponse.success ||
+    !workoutsResponse.data ||
+    !exercisesResponse.success ||
+    !exercisesResponse.data
+  ) {
     return (
       <div className="container max-w-2xl mx-auto p-4">
         <Card className="p-6">
@@ -69,7 +88,15 @@ export default async function WorkoutPage({ params }: { params: PageParams }) {
 
   const workoutsByDay = workoutsResponse.data;
 
-  // Find workout by ID from workoutsByDay
+  // Create a map of exercise details for quick lookup
+  const exerciseMap = new Map<string, CachedExercise>(
+    exercisesResponse.data.map((exercise: CachedExercise) => [
+      exercise.id,
+      exercise,
+    ])
+  );
+
+  // Find workout by ID from workoutsByDay and enrich with exercise details
   const workout = Object.values(workoutsByDay).find(
     (w) => w !== null && (w as Workout)?.id === params.idWorkout
   ) as Workout | undefined;
@@ -89,5 +116,25 @@ export default async function WorkoutPage({ params }: { params: PageParams }) {
     );
   }
 
-  return <WorkoutClient workout={workout} userId={user.id} />;
+  // Enrich workout exercises with cached exercise details
+  const enrichedWorkout = {
+    ...workout,
+    exercises: workout.exercises.map((exercise) => {
+      const cachedExercise = exerciseMap.get(exercise.exercise_id);
+      return cachedExercise
+        ? {
+            ...exercise,
+            name: cachedExercise.name,
+            body_part: cachedExercise.body_part,
+            equipment: cachedExercise.equipment,
+            target: cachedExercise.target,
+            secondary_muscles: cachedExercise.secondary_muscles,
+            instructions: cachedExercise.instructions,
+            gif_url: cachedExercise.gif_url,
+          }
+        : exercise;
+    }),
+  };
+
+  return <WorkoutClient workout={enrichedWorkout} userId={user.id} />;
 }
