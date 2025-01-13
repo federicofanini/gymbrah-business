@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { IoMenuSharp, IoTrophyOutline } from "react-icons/io5";
 import OutlinedButton from "./ui/outlined-button";
-import { Trophy } from "lucide-react";
+import { Dock, Trophy } from "lucide-react";
 
 export function MobileDrawer() {
   return (
@@ -47,6 +47,13 @@ export function MobileDrawer() {
           >
             <Trophy className="size-4" />
             Leaderboard
+          </Link>
+          <Link
+            href="/mobile"
+            className="text-sm hover:text-primary font-mono mb-8 transition-colors flex items-center gap-2"
+          >
+            <Dock className="size-4" />
+            Mobile app
           </Link>
           <Link
             href="/login"

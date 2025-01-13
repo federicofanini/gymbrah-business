@@ -6,7 +6,7 @@ import Link from "next/link";
 import OutlinedButton from "../ui/outlined-button";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Trophy } from "lucide-react";
+import { Dock, Trophy } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
@@ -37,6 +37,17 @@ export function Header() {
             <span className="flex items-center gap-2">
               <Trophy className="size-4" />
               Leaderboard
+            </span>
+          </Link>
+          <Link
+            href="/mobile"
+            className={`text-sm hidden lg:block hover:text-primary font-mono transition-colors ${
+              pathname === "/mobile" ? "underline underline-offset-8" : ""
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <Dock className="size-4" />
+              Mobile app
             </span>
           </Link>
           <div className="hidden lg:block">
