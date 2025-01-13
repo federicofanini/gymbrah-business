@@ -42,6 +42,25 @@ export function Footer() {
         </div>
       </div>
       <SubscribeInput />
+      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+        <span className="flex items-center gap-2">
+          Made with ☕️ and 🥐 by
+          <Image
+            src="/ff.jpg"
+            alt="Federico"
+            width={24}
+            height={24}
+            className="rounded-full"
+          />
+          <Link
+            href="https://x.com/FedericoFan"
+            target="_blank"
+            className="font-semibold"
+          >
+            Federico
+          </Link>
+        </span>
+      </div>
       <BorderText
         text={siteConfig.footer.brandText}
         className="text-[clamp(3rem,15vw,10rem)] overflow-hidden font-mono tracking-tighter font-medium"
