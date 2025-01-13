@@ -9,11 +9,11 @@ import { getUser } from "@/utils/supabase/database/cached-queries";
 interface Exercise {
   id: string;
   name: string;
-  reps: number | null;
-  sets: number | null;
+  reps: number;
+  sets: number;
   weight: number | null;
   duration: number | null;
-  round: string | null;
+  round: string;
   workout_id: string;
   exercise_id: string;
   body_part: string | null;
@@ -26,7 +26,7 @@ interface Exercise {
 
 interface CachedExercise {
   id: string;
-  name: string | null;
+  name: string;
   body_part: string | null;
   equipment: string | null;
   target: string | null;
@@ -121,18 +121,18 @@ export default async function WorkoutPage({ params }: { params: PageParams }) {
     ...workout,
     exercises: workout.exercises.map((exercise) => {
       const cachedExercise = exerciseMap.get(exercise.exercise_id);
-      return cachedExercise
-        ? {
-            ...exercise,
-            name: cachedExercise.name,
-            body_part: cachedExercise.body_part,
-            equipment: cachedExercise.equipment,
-            target: cachedExercise.target,
-            secondary_muscles: cachedExercise.secondary_muscles,
-            instructions: cachedExercise.instructions,
-            gif_url: cachedExercise.gif_url,
-          }
-        : exercise;
+      if (!cachedExercise?.name) return exercise;
+
+      return {
+        ...exercise,
+        name: cachedExercise.name, // Now guaranteed to be string
+        body_part: cachedExercise.body_part,
+        equipment: cachedExercise.equipment,
+        target: cachedExercise.target,
+        secondary_muscles: cachedExercise.secondary_muscles,
+        instructions: cachedExercise.instructions,
+        gif_url: cachedExercise.gif_url,
+      };
     }),
   };
 
