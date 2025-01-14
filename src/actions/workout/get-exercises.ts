@@ -4,7 +4,7 @@ import { Client } from "@/utils/supabase/type";
 import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { prisma } from "@/lib/db";
-import { EXERCISE_API_CONFIG } from "@/app/api/config";
+import { EXERCISE_API_CONFIG } from "@/app/exercises/config";
 import { createClient } from "@/utils/supabase/server";
 import { revalidateTag } from "next/cache";
 import { getUser } from "@/utils/supabase/database/cached-queries";

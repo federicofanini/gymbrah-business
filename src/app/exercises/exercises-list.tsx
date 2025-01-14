@@ -1,243 +1,120 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import Image from "next/image";
-import { BODY_PARTS, type BodyPart } from "@/app/api/config";
-import { capitalize } from "@/components/blackboard/workout/create-workout/exercises/exercises-table";
 import { getExercises } from "./actions";
+import {
+  ExercisesTable,
+  type Exercise,
+} from "@/components/blackboard/workout/create-workout/exercises/exercises-table";
+import { useQueryState } from "nuqs";
+import { BODY_PARTS } from "./config";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
-interface Exercise {
-  id: string;
-  name: string;
-  bodyPart: string;
-  target: string;
-  equipment: string;
-  gifUrl: string;
-  secondaryMuscles: string[];
-  instructions: string[];
-}
+const ITEMS_PER_PAGE = 20;
 
 export function ExercisesList({
   initialExercises,
 }: {
   initialExercises: Exercise[];
 }) {
-  const [exercises, setExercises] = useState(initialExercises);
-  const [selectedBodyPart, setSelectedBodyPart] = useState<BodyPart>(
-    BODY_PARTS.BACK
-  );
-  const [offset, setOffset] = useState(10);
+  const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-    null
-  );
-  const [isFetching, setIsFetching] = useState(false);
+  const [bodyPart, setBodyPart] = useQueryState("bodyPart", {
+    defaultValue: BODY_PARTS.BACK,
+  });
+  const offset = useRef(0);
 
-  // Debounce function
-  const debounce = (func: Function, delay: number) => {
-    let timeout: NodeJS.Timeout;
-    return (...args: any[]) => {
-      if (timeout) clearTimeout(timeout);
-      timeout = setTimeout(() => func(...args), delay);
-    };
-  };
+  const loadExercises = useCallback(async () => {
+    if (isLoading || !hasMore) return;
 
-  async function fetchExercises(bodyPart: BodyPart, currentOffset: number) {
-    setIsFetching(true);
+    setIsLoading(true);
     try {
       const result = await getExercises({
         bodyPart,
-        limit: 10,
-        offset: currentOffset,
+        limit: ITEMS_PER_PAGE,
+        offset: offset.current,
       });
 
-      if (!result?.data?.success || !result?.data?.data) {
+      if (!result?.data?.success || !result.data?.data) {
         throw new Error(result?.data?.error || "Failed to load exercises");
       }
 
-      const newExercises = result.data.data;
+      const { data, metadata } = result?.data.data;
 
-      if (newExercises.length < 10) {
-        setHasMore(false);
-      }
+      const transformedExercises = data?.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name,
+        body_part: exercise.body_part,
+        target: exercise.target,
+        equipment: exercise.equipment,
+        gif_url: exercise.gif_url,
+        secondary_muscles: exercise.secondary_muscles,
+        instructions: exercise.instructions,
+      }));
 
-      if (currentOffset === 0) {
-        setExercises(newExercises);
-      } else {
-        setExercises((prev) => [...prev, ...newExercises]);
-      }
-
-      setOffset(currentOffset + 10);
+      setExercises((prev) => [...prev, ...(transformedExercises ?? [])]);
+      setHasMore(metadata?.hasMore ?? false);
+      offset.current += ITEMS_PER_PAGE;
     } catch (error) {
-      console.error("Error fetching exercises:", error);
+      console.error("Error loading exercises:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to load exercises"
+      );
     } finally {
-      setIsFetching(false);
+      setIsLoading(false);
     }
-  }
+  }, [bodyPart, isLoading, hasMore]);
 
-  const debouncedFetchExercises = debounce(
-    (bodyPart: BodyPart, currentOffset: number) => {
-      fetchExercises(bodyPart, currentOffset);
-    },
-    300
-  );
-
-  const loadMoreExercises = useCallback(() => {
-    if (!isFetching) {
-      debouncedFetchExercises(selectedBodyPart, offset);
-    }
-  }, [isFetching, selectedBodyPart, offset, debouncedFetchExercises]);
-
-  async function handleBodyPartChange(bodyPart: BodyPart) {
-    setSelectedBodyPart(bodyPart);
-    setOffset(0);
+  const refreshExercises = useCallback(async () => {
+    setExercises([]);
     setHasMore(true);
-    await fetchExercises(bodyPart, 0);
-  }
+    offset.current = 0;
+    await loadExercises();
+  }, [loadExercises]);
 
-  const filteredExercises = exercises.filter((exercise) =>
-    exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    refreshExercises();
+  }, [bodyPart, refreshExercises]);
 
   return (
-    <div className="flex gap-6">
-      <aside className="hidden md:block w-48 space-y-2">
-        <h3 className="font-semibold mb-4">Body Parts</h3>
-        {Object.values(BODY_PARTS).map((bodyPart) => (
-          <button
-            key={bodyPart}
-            onClick={() => handleBodyPartChange(bodyPart)}
-            className={`block w-full text-left px-3 py-2 rounded hover:bg-muted ${
-              selectedBodyPart === bodyPart ? "bg-muted" : ""
-            }`}
+    <div>
+      <div className="flex flex-wrap gap-2 mb-6">
+        {Object.values(BODY_PARTS).map((part) => (
+          <Button
+            key={part}
+            variant={bodyPart === part ? "default" : "outline"}
+            onClick={() => setBodyPart(part)}
+            className="capitalize"
           >
-            {capitalize(bodyPart)}
-          </button>
+            {part.replace("_", " ")}
+          </Button>
         ))}
-      </aside>
+      </div>
 
-      <div className="flex-1">
-        <Input
-          placeholder="Search exercises..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-4"
-        />
-
+      <div id="scrollableDiv" className="h-[600px] overflow-auto">
         <InfiniteScroll
           dataLength={exercises.length}
-          next={loadMoreExercises}
-          hasMore={hasMore && !isFetching}
+          next={loadExercises}
+          hasMore={hasMore}
+          scrollableTarget="scrollableDiv"
           loader={
-            <div className="text-center py-4">Loading more exercises...</div>
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
           }
           endMessage={
-            <div className="text-center py-4">No more exercises to load.</div>
+            exercises.length > 0 && (
+              <p className="text-center py-4 text-muted-foreground">
+                You&apos;ve seen all exercises for this body part
+              </p>
+            )
           }
         >
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Exercise</TableHead>
-                <TableHead>Target</TableHead>
-                <TableHead className="hidden md:table-cell">
-                  Equipment
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredExercises.map((exercise) => (
-                <TableRow
-                  key={exercise.id}
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => setSelectedExercise(exercise)}
-                >
-                  <TableCell>
-                    <div className="flex items-center gap-4">
-                      <Image
-                        src={exercise.gifUrl}
-                        alt={exercise.name}
-                        width={80}
-                        height={80}
-                        className="rounded object-cover"
-                        unoptimized
-                      />
-                      <div>
-                        <div className="font-medium">
-                          {capitalize(exercise.name)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {capitalize(exercise.bodyPart)}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{capitalize(exercise.target)}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {capitalize(exercise.equipment)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <ExercisesTable exercises={exercises} selectedExercises={[]} />
         </InfiniteScroll>
-
-        <Dialog
-          open={!!selectedExercise}
-          onOpenChange={() => setSelectedExercise(null)}
-        >
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-            {selectedExercise && (
-              <>
-                <DialogTitle>{capitalize(selectedExercise.name)}</DialogTitle>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <Image
-                    src={selectedExercise.gifUrl}
-                    alt={selectedExercise.name}
-                    width={400}
-                    height={400}
-                    className="rounded-lg"
-                    unoptimized
-                  />
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold mb-2">Target Muscles</h3>
-                      <div className="flex flex-wrap gap-1">
-                        <Badge>{capitalize(selectedExercise.target)}</Badge>
-                        {selectedExercise.secondaryMuscles.map((muscle) => (
-                          <Badge key={muscle} variant="secondary">
-                            {capitalize(muscle)}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">Instructions</h3>
-                      <ol className="list-decimal list-inside space-y-2">
-                        {selectedExercise.instructions.map((instruction, i) => (
-                          <li key={i}>{instruction}</li>
-                        ))}
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   );

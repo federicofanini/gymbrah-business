@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,6 +33,13 @@ import {
 } from "@/components/ui/sidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
+import { useQueryState } from "nuqs";
+import { BODY_PARTS } from "@/app/exercises/config";
+import { getExercises } from "@/app/exercises/actions";
+import { toast } from "sonner";
+import InfiniteScroll from "react-infinite-scroll-component";
+
+const ITEMS_PER_PAGE = 20;
 
 export interface Exercise {
   id: string;
@@ -64,24 +71,99 @@ export function ExercisesTable({
   roundIndex = 0,
 }: ExercisesTableProps) {
   const [open, setOpen] = useState(false);
-  const [selectedBodyPart, setSelectedBodyPart] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortByName, setSortByName] = useState(true);
-  const [exercises] = useState<Exercise[]>(initialExercises);
   const [selectedExerciseDetails, setSelectedExerciseDetails] =
     useState<Exercise | null>(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [bodyPart, setBodyPart] = useQueryState("bodyPart", {
+    defaultValue: BODY_PARTS.BACK,
+  });
+  const offset = useRef(0);
+  const isInitialMount = useRef(true);
+  const loadingRef = useRef(false);
 
-  // Get unique body parts
-  const uniqueBodyParts = Array.from(
-    new Set(exercises.map((exercise) => exercise.body_part))
-  );
+  const loadExercises = useCallback(async () => {
+    // Use ref to prevent multiple simultaneous requests
+    if (loadingRef.current || !hasMore) return;
+
+    loadingRef.current = true;
+    setIsLoading(true);
+
+    try {
+      const result = await getExercises({
+        bodyPart,
+        limit: ITEMS_PER_PAGE,
+        offset: offset.current,
+      });
+
+      if (!result?.data?.success || !result.data?.data) {
+        throw new Error(result?.data?.error || "Failed to load exercises");
+      }
+
+      const { data, metadata } = result.data.data;
+
+      const transformedExercises = data?.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name,
+        body_part: exercise.body_part,
+        target: exercise.target,
+        equipment: exercise.equipment,
+        gif_url: exercise.gif_url,
+        secondary_muscles: exercise.secondary_muscles,
+        instructions: exercise.instructions,
+      }));
+
+      setExercises((prev: Exercise[]) => {
+        // Only append if offset > 0, otherwise replace
+        return offset.current === 0
+          ? transformedExercises ?? []
+          : [...prev, ...(transformedExercises ?? [])];
+      });
+
+      // Only update hasMore if we received fewer items than requested
+      const receivedCount = transformedExercises?.length ?? 0;
+      setHasMore(
+        receivedCount >= ITEMS_PER_PAGE && (metadata?.hasMore ?? false)
+      );
+
+      if (receivedCount > 0) {
+        offset.current += ITEMS_PER_PAGE;
+      }
+    } catch (error) {
+      console.error("Error loading exercises:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to load exercises"
+      );
+    } finally {
+      setIsLoading(false);
+      // Add small delay before allowing next request
+      setTimeout(() => {
+        loadingRef.current = false;
+      }, 500);
+    }
+  }, [bodyPart, hasMore]);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Reset state when body part changes
+    setExercises([]);
+    setHasMore(true);
+    offset.current = 0;
+    loadingRef.current = false;
+    loadExercises();
+  }, [bodyPart, loadExercises]);
 
   const filteredExercises = exercises
-    .filter(
-      (exercise) =>
-        (!selectedBodyPart || exercise.body_part === selectedBodyPart) &&
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter((exercise) =>
+      exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) =>
       sortByName
@@ -89,25 +171,34 @@ export function ExercisesTable({
         : a.body_part.localeCompare(b.body_part)
     );
 
+  const exercisesByBodyPart = filteredExercises.reduce((acc, exercise) => {
+    const bodyPart = exercise.body_part;
+    if (!acc[bodyPart]) {
+      acc[bodyPart] = [];
+    }
+    acc[bodyPart].push(exercise);
+    return acc;
+  }, {} as Record<string, Exercise[]>);
+
   const CategoryMenu = () => (
     <SidebarMenu>
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
-          isActive={!selectedBodyPart}
-          onClick={() => setSelectedBodyPart(null)}
+          isActive={bodyPart === BODY_PARTS.BACK}
+          onClick={() => setBodyPart(BODY_PARTS.BACK)}
         >
           <a href="#">All Body Parts</a>
         </SidebarMenuButton>
       </SidebarMenuItem>
-      {uniqueBodyParts.map((bodyPart) => (
-        <SidebarMenuItem key={bodyPart}>
+      {Object.values(BODY_PARTS).map((part) => (
+        <SidebarMenuItem key={part}>
           <SidebarMenuButton
             asChild
-            isActive={selectedBodyPart === bodyPart}
-            onClick={() => setSelectedBodyPart(bodyPart)}
+            isActive={bodyPart === part}
+            onClick={() => setBodyPart(part)}
           >
-            <a href="#">{capitalize(bodyPart)}</a>
+            <a href="#">{capitalize(part)}</a>
           </SidebarMenuButton>
         </SidebarMenuItem>
       ))}
@@ -160,89 +251,115 @@ export function ExercisesTable({
                 />
               </div>
 
-              <div className="flex-1 overflow-y-auto px-2 md:px-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[30px]"></TableHead>
-                      <TableHead className="w-[120px]"></TableHead>
-                      <TableHead
-                        className="cursor-pointer whitespace-nowrap"
-                        onClick={() => setSortByName(!sortByName)}
-                      >
-                        Name <ArrowUpDown className="inline h-4 w-4" />
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell whitespace-nowrap">
-                        Body Part
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell whitespace-nowrap">
-                        Target
-                      </TableHead>
-                      <TableHead className="hidden md:table-cell whitespace-nowrap">
-                        Equipment
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredExercises.map((exercise) => (
-                      <TableRow
-                        key={exercise.id}
-                        className="cursor-pointer hover:bg-muted/50"
-                        onClick={() => {
-                          setSelectedExerciseDetails(exercise);
-                          setShowDetails(true);
-                        }}
-                      >
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedExercises.some(
-                              (e) => e.id === exercise.id
-                            )}
-                            onCheckedChange={() => onExerciseSelect(exercise)}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Image
-                            width={80}
-                            height={80}
-                            src={exercise.gif_url}
-                            alt={exercise.name}
-                            className="size-20 object-cover rounded"
-                            unoptimized
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          <div>
-                            {capitalize(exercise.name)}
-                            <div className="md:hidden text-sm text-muted-foreground">
-                              {capitalize(exercise.body_part)}
-                            </div>
-                            <div className="flex flex-wrap gap-1 md:hidden mt-1">
-                              {exercise.secondary_muscles?.map((muscle) => (
-                                <Badge
-                                  key={muscle}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {capitalize(muscle)}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {capitalize(exercise.body_part)}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {capitalize(exercise.target)}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {capitalize(exercise.equipment)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              <div
+                className="flex-1 overflow-y-auto px-2 md:px-4"
+                id="scrollableDiv"
+              >
+                <InfiniteScroll
+                  dataLength={exercises.length}
+                  next={loadExercises}
+                  hasMore={hasMore}
+                  loader={
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  }
+                  scrollableTarget="scrollableDiv"
+                  endMessage={
+                    exercises.length > 0 && (
+                      <p className="text-center py-4 text-muted-foreground">
+                        You&apos;ve seen all exercises for this body part
+                      </p>
+                    )
+                  }
+                >
+                  {Object.entries(exercisesByBodyPart).map(
+                    ([bodyPart, exercises]) => (
+                      <div key={bodyPart} className="mb-8">
+                        <h2 className="text-lg font-semibold mb-4 capitalize">
+                          {bodyPart}
+                        </h2>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-[30px]"></TableHead>
+                              <TableHead className="w-[120px]"></TableHead>
+                              <TableHead
+                                className="cursor-pointer whitespace-nowrap"
+                                onClick={() => setSortByName(!sortByName)}
+                              >
+                                Name <ArrowUpDown className="inline h-4 w-4" />
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell whitespace-nowrap">
+                                Target
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell whitespace-nowrap">
+                                Equipment
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {exercises.map((exercise) => (
+                              <TableRow
+                                key={exercise.id}
+                                className="cursor-pointer hover:bg-muted/50"
+                                onClick={() => {
+                                  setSelectedExerciseDetails(exercise);
+                                  setShowDetails(true);
+                                }}
+                              >
+                                <TableCell onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    checked={selectedExercises.some(
+                                      (e) => e.id === exercise.id
+                                    )}
+                                    onCheckedChange={() =>
+                                      onExerciseSelect(exercise)
+                                    }
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Image
+                                    width={80}
+                                    height={80}
+                                    src={exercise.gif_url}
+                                    alt={exercise.name}
+                                    className="size-20 object-cover rounded"
+                                    unoptimized
+                                  />
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                  <div>
+                                    {capitalize(exercise.name)}
+                                    <div className="flex flex-wrap gap-1 md:hidden mt-1">
+                                      {exercise.secondary_muscles?.map(
+                                        (muscle) => (
+                                          <Badge
+                                            key={muscle}
+                                            variant="outline"
+                                            className="text-xs"
+                                          >
+                                            {capitalize(muscle)}
+                                          </Badge>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">
+                                  {capitalize(exercise.target)}
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">
+                                  {capitalize(exercise.equipment)}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )
+                  )}
+                </InfiniteScroll>
               </div>
             </main>
           </SidebarProvider>

@@ -1,24 +1,17 @@
-import { Cron } from "@/lib/cron";
+import { schedules } from "@trigger.dev/sdk/v3";
 import { prisma } from "@/lib/db";
 import { EXERCISE_API_CONFIG } from "@/app/exercises/config";
-import { appErrors } from "../types/errors";
-import type { ActionResponse } from "../types/action-response";
-import { createClient } from "@/utils/supabase/server";
-import { getExercises } from "./get-exercises";
-import { revalidateTag } from "next/cache";
-import { getUser } from "@/utils/supabase/database/cached-queries";
 
-// Create a cron job that runs at 12:00 PM CST every day
-export const exerciseFetchCron = new Cron(
-  "0 12 * * *",
-  "America/Chicago",
-  async (): Promise<ActionResponse> => {
+export const exerciseFetchTask = schedules.task({
+  id: "exercise-fetch-task",
+  run: async () => {
     try {
       // Fetch data directly from the API
       const response = await fetch(
         `${EXERCISE_API_CONFIG.baseUrl}/exercises?limit=0`,
         {
           headers: EXERCISE_API_CONFIG.headers,
+          cache: "no-store",
         }
       );
 
@@ -55,17 +48,16 @@ export const exerciseFetchCron = new Cron(
           )
         );
 
+        // Log progress after each batch
+        const totalStored = await prisma.exercises.count();
+        console.info(
+          `Processed batch ${
+            i / BATCH_SIZE + 1
+          }. Total exercises stored: ${totalStored}`
+        );
+
         // Add delay between batches to prevent rate limiting
         await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-
-      // Update cached exercises
-      const supabase = await createClient();
-      const user = await getUser();
-      await getExercises(supabase);
-      revalidateTag("exercises");
-      if (user) {
-        revalidateTag(`workouts-by-day-${user.id}`);
       }
 
       return {
@@ -73,13 +65,11 @@ export const exerciseFetchCron = new Cron(
         data: exercises,
       };
     } catch (error) {
+      console.error("Error fetching exercises:", error);
       return {
         success: false,
-        error: appErrors.UNEXPECTED_ERROR,
+        error: "Failed to fetch exercises",
       };
     }
-  }
-);
-
-// Start the cron job
-exerciseFetchCron.start();
+  },
+});

@@ -8,6 +8,7 @@ import type { Metadata, Viewport } from "next";
 import { Provider as Analytics } from "@/utils/events/client";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = constructMetadata({
   title: `${siteConfig.name} | ${siteConfig.description}`,
@@ -42,7 +43,7 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem={false}
         >
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
           <TailwindIndicator />
         </ThemeProvider>
         <Toaster />

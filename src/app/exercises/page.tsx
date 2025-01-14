@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { BODY_PARTS } from "@/app/api/config";
-import { ExercisesList } from "@/app/exercises/exercises-list";
-import { getExercises } from "./actions";
+import { ExercisesTable } from "@/components/blackboard/workout/create-workout/exercises/exercises-table";
+import { getExercises } from "@/app/exercises/actions";
+import { BODY_PARTS } from "./config";
 
 export async function generateMetadata() {
   return {
@@ -11,27 +11,25 @@ export async function generateMetadata() {
   };
 }
 
-async function getInitialExercises() {
-  try {
-    const result = await getExercises({
-      bodyPart: BODY_PARTS.BACK,
-      limit: 10,
-      offset: 0,
-    });
-
-    if (!result?.data?.success || !result?.data?.data) {
-      throw new Error(result?.data?.error || "Failed to fetch exercises");
-    }
-
-    return result.data.data;
-  } catch (error) {
-    console.error("Error fetching initial exercises:", error);
-    return []; // Return empty array as fallback
-  }
-}
-
 export default async function ExercisesPage() {
-  const initialExercises = await getInitialExercises();
+  // Prefetch initial exercises for SEO
+  const result = await getExercises({
+    bodyPart: BODY_PARTS.BACK,
+    limit: 20,
+    offset: 0,
+  });
+
+  const initialExercises =
+    result?.data?.data?.data?.map((exercise) => ({
+      id: exercise.id,
+      name: exercise.name,
+      body_part: exercise.body_part,
+      target: exercise.target,
+      equipment: exercise.equipment,
+      gif_url: exercise.gif_url,
+      secondary_muscles: exercise.secondary_muscles,
+      instructions: exercise.instructions,
+    })) ?? [];
 
   return (
     <div className="container py-8">
@@ -42,7 +40,7 @@ export default async function ExercisesPage() {
       </p>
 
       <Suspense fallback={<div>Loading exercises...</div>}>
-        <ExercisesList initialExercises={initialExercises} />
+        <ExercisesTable exercises={initialExercises} />
       </Suspense>
     </div>
   );
