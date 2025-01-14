@@ -40,6 +40,7 @@ import { toast } from "sonner";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 const ITEMS_PER_PAGE = 20;
+const DEBOUNCE_DELAY = 300;
 
 export interface Exercise {
   id: string;
@@ -62,6 +63,18 @@ interface ExercisesTableProps {
 export function capitalize(str: string): string {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// Debounce function
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeoutId: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
 }
 
 export function ExercisesTable({
@@ -87,7 +100,6 @@ export function ExercisesTable({
   const loadingRef = useRef(false);
 
   const loadExercises = useCallback(async () => {
-    // Use ref to prevent multiple simultaneous requests
     if (loadingRef.current || !hasMore) return;
 
     loadingRef.current = true;
@@ -118,13 +130,11 @@ export function ExercisesTable({
       }));
 
       setExercises((prev: Exercise[]) => {
-        // Only append if offset > 0, otherwise replace
         return offset.current === 0
           ? transformedExercises ?? []
           : [...prev, ...(transformedExercises ?? [])];
       });
 
-      // Only update hasMore if we received fewer items than requested
       const receivedCount = transformedExercises?.length ?? 0;
       setHasMore(
         receivedCount >= ITEMS_PER_PAGE && (metadata?.hasMore ?? false)
@@ -140,12 +150,19 @@ export function ExercisesTable({
       );
     } finally {
       setIsLoading(false);
-      // Add small delay before allowing next request
       setTimeout(() => {
         loadingRef.current = false;
-      }, 500);
+      }, DEBOUNCE_DELAY);
     }
   }, [bodyPart, hasMore]);
+
+  // Debounced version of loadExercises
+  const debouncedLoadExercises = useCallback(
+    debounce(() => {
+      loadExercises();
+    }, DEBOUNCE_DELAY),
+    [loadExercises]
+  );
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -153,13 +170,17 @@ export function ExercisesTable({
       return;
     }
 
-    // Reset state when body part changes
     setExercises([]);
     setHasMore(true);
     offset.current = 0;
     loadingRef.current = false;
-    loadExercises();
-  }, [bodyPart, loadExercises]);
+    debouncedLoadExercises();
+  }, [bodyPart, debouncedLoadExercises]);
+
+  // Debounced search handler
+  const handleSearch = debounce((value: string) => {
+    setSearchTerm(value);
+  }, DEBOUNCE_DELAY);
 
   const filteredExercises = exercises
     .filter((exercise) =>
