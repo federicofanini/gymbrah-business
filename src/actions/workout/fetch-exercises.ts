@@ -1,6 +1,6 @@
 import { Cron } from "@/lib/cron";
 import { prisma } from "@/lib/db";
-import { EXERCISE_API_CONFIG } from "@/app/api/exercises/config";
+import { EXERCISE_API_CONFIG } from "@/app/api/config";
 import { appErrors } from "../types/errors";
 import type { ActionResponse } from "../types/action-response";
 import { createClient } from "@/utils/supabase/server";
