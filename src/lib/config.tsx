@@ -211,6 +211,7 @@ export const siteConfig = {
     links: [
       { text: "Terms", url: "/terms" },
       { text: "Privacy", url: "/privacy" },
+      { text: "fed.fan", url: "https://fed.fan" },
     ],
     bottomText: "All rights reserved.",
     brandText: "GYMBRAH",
