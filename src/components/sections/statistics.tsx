@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Users } from "lucide-react";
 import { formatStars } from "./github-stars";
 import { getGithubStars } from "./github-stars";
-import { getUserCount } from "@/actions/user-count";
+import { getUserCount } from "@/actions/user/user-count";
 import { unstable_cache } from "next/cache";
 
 const getCachedStats = unstable_cache(
