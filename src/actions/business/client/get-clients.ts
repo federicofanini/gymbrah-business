@@ -225,3 +225,69 @@ export const getClientStats = createSafeActionClient().action(
     }
   }
 );
+
+export const getClientById = createSafeActionClient()
+  .schema(
+    z.object({
+      clientId: z.string(),
+    })
+  )
+  .action(async ({ parsedInput }): Promise<ActionResponse> => {
+    try {
+      const client = await prisma.client.findUnique({
+        where: {
+          id: parsedInput.clientId,
+        },
+        select: {
+          id: true,
+          user_id: true,
+          business_id: true,
+          name: true,
+          surname: true,
+          email: true,
+          phone: true,
+          birth_date: true,
+          gender: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+
+      if (!client) {
+        return {
+          success: false,
+          error: appErrors.NOT_FOUND,
+        };
+      }
+
+      // Fetch subscription information
+      const subscription = await prisma.business_client_subscription.findFirst({
+        where: {
+          client_id: parsedInput.clientId,
+          business_id: client.business_id,
+        },
+        select: {
+          id: true,
+          sub_type: true,
+          payment_date: true,
+          renewal_date: true,
+          months_paid: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+
+      return {
+        success: true,
+        data: {
+          ...client,
+          subscription: subscription || null,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: appErrors.UNEXPECTED_ERROR,
+      };
+    }
+  });

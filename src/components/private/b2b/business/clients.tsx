@@ -220,7 +220,7 @@ export function Clients() {
                               asChild
                               className="hidden sm:inline-flex whitespace-nowrap"
                             >
-                              <Link href={`/business/clients/${client.id}`}>
+                              <Link href={`/business/${client.id}`}>
                                 <UserIcon className="mr-2 size-4" />
                                 Client Page
                               </Link>
