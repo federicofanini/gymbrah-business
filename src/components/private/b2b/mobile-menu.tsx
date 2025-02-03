@@ -3,43 +3,25 @@
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   MdClose,
-  MdGraphicEq,
   MdMenu,
   MdOutlineBook,
   MdOutlineSettings,
-  MdOutlineStackedBarChart,
 } from "react-icons/md";
 import { UserMenu } from "./user-menu";
+import { sidebarItems } from "./sidebar-items";
 
 export function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const params = useParams();
   const pathname = usePathname();
 
-  const navigation = [
-    {
-      icon: MdOutlineStackedBarChart,
-      path: "/",
-      isActive: pathname.endsWith(`/${params.organization}/${params.project}`),
-      label: "Blackboard",
-    },
-    {
-      icon: MdGraphicEq,
-      path: "/tuning",
-      isActive: pathname.endsWith("/tuning"),
-      label: "Tuning",
-    },
-    {
-      icon: MdOutlineSettings,
-      path: "/settings",
-      isActive: pathname.endsWith("/settings"),
-      label: "Settings",
-    },
-  ];
+  const navigation = sidebarItems.map((item) => ({
+    ...item,
+    isActive: pathname === item.path,
+  }));
 
   useEffect(() => {
     if (isOpen) {
@@ -79,9 +61,9 @@ export function MobileMenu() {
                   transition={{ delay: index * 0.05 }}
                 >
                   <Link
-                    href={`/${params.organization}/${params.project}${item.path}`}
+                    href={item.path}
                     className={cn(
-                      "flex items-center gap-4 px-6 py-5 border-b border-border text-secondary",
+                      "flex items-center gap-4 px-6 py-5 border-b border-primary text-muted-foreground",
                       item.isActive && "text-primary"
                     )}
                     onClick={() => setIsOpen(false)}
@@ -92,7 +74,7 @@ export function MobileMenu() {
                 </motion.div>
               ))}
               <motion.div
-                className="mt-auto border-t border-border"
+                className="mt-auto border-t border-primary"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
@@ -100,7 +82,7 @@ export function MobileMenu() {
                   duration: 0.3,
                 }}
               >
-                <Link href="/docs">
+                <Link href="/business/settings">
                   <motion.div
                     className="flex items-center gap-4 px-6 py-5"
                     initial={{ opacity: 0, x: -20 }}
@@ -110,13 +92,13 @@ export function MobileMenu() {
                       duration: 0.2,
                     }}
                   >
-                    <MdOutlineBook className="size-6" />
-                    <span className="text-lg">Docs</span>
+                    <MdOutlineSettings className="size-6" />
+                    <span className="text-lg">Settings</span>
                   </motion.div>
                 </Link>
 
                 <motion.div
-                  className="flex items-center gap-4 px-6 py-5 border-t border-border"
+                  className="flex items-center gap-4 px-6 py-5 border-t border-primary"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{

@@ -19,48 +19,17 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import {
-  MdAirlineStops,
-  MdAutoFixHigh,
-  MdBallot,
-  MdBatchPrediction,
-  MdAccessibilityNew,
-  MdDashboard,
-  MdSportsGymnastics,
-} from "react-icons/md";
+import { usePathname } from "next/navigation";
 import { LogoIcon } from "@/components/logo";
-import { Dumbbell } from "lucide-react";
+import { sidebarItems } from "./sidebar-items";
 
 export function Sidebar() {
   const pathname = usePathname();
 
-  const navigation = [
-    {
-      icon: MdDashboard,
-      label: "Your Gym",
-      path: `/business`,
-      isActive: pathname === `/business`,
-    },
-    {
-      icon: MdSportsGymnastics,
-      label: "Athletes",
-      path: `/business/athletes`,
-      isActive: pathname === `/business/athletes`,
-    },
-    // {
-    //   icon: Dumbbell,
-    //   label: "Workouts",
-    //   path: `/business/workouts`,
-    //   isActive: pathname === `/business/workouts`,
-    // },
-    {
-      icon: MdBatchPrediction,
-      label: "Website",
-      path: `/business/website`,
-      isActive: pathname === `/business/website`,
-    },
-  ];
+  const navigation = sidebarItems.map((item) => ({
+    ...item,
+    isActive: pathname === item.path,
+  }));
 
   return (
     <div className="sticky top-0 h-screen z-10 md:flex hidden">
