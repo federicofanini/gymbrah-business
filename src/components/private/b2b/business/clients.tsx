@@ -26,6 +26,7 @@ import Link from "next/link";
 import { AddClientDialog } from "./add-client";
 import { getClients } from "@/actions/business/client/get-clients";
 import { GetClientsResponse } from "@/actions/business/client/get-clients";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function Clients() {
   const [page, setPage] = useQueryState("page", {
@@ -36,7 +37,11 @@ export function Clients() {
     defaultValue: "",
   });
 
-  const { execute: fetchClients, result: clientsData } = useAction(getClients);
+  const {
+    execute: fetchClients,
+    result: clientsData,
+    status,
+  } = useAction(getClients);
 
   useEffect(() => {
     fetchClients({
@@ -113,79 +118,108 @@ export function Clients() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clientsData?.data?.data?.clients?.map(
-                (client: GetClientsResponse) => {
-                  const expiration = client.subscription?.renewal_date
-                    ? getExpirationStatus(client.subscription.renewal_date)
-                    : { variant: "destructive", text: "No subscription" };
-
-                  return (
-                    <TableRow key={client.id}>
-                      <TableCell className="font-medium">
-                        {client.name} {client.surname}
+              {status === "executing"
+                ? // Loading skeleton rows
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        <Skeleton className="h-6 w-[120px]" />
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge variant="outline" className="whitespace-nowrap">
-                          {client.subscription?.sub_type || "No subscription"}
-                        </Badge>
+                        <Skeleton className="h-6 w-[100px]" />
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={expiration.variant as any}
-                          className="whitespace-nowrap"
-                        >
-                          {expiration.text}
-                        </Badge>
+                        <Skeleton className="h-6 w-[80px]" />
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        <Badge
-                          variant={
-                            client.subscription ? "success" : "destructive"
-                          }
-                          className="whitespace-nowrap"
-                        >
-                          {client.subscription ? (
-                            <CheckIcon className="size-3.5 mr-1" />
-                          ) : (
-                            <XIcon className="size-3.5 mr-1" />
-                          )}
-                          {client.subscription ? "Active" : "Inactive"}
-                        </Badge>
+                        <Skeleton className="h-6 w-[80px]" />
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          asChild
-                          className="sm:hidden"
-                        >
-                          <Link href={`/business/clients/${client.id}`}>
-                            <UserIcon className="size-4" />
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          asChild
-                          className="hidden sm:inline-flex whitespace-nowrap"
-                        >
-                          <Link href={`/business/clients/${client.id}`}>
-                            <UserIcon className="mr-2 size-4" />
-                            Client Page
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-destructive hover:text-destructive/90"
-                        >
-                          <TrashIcon className="size-4" />
-                        </Button>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Skeleton className="h-8 w-8 sm:hidden" />
+                          <Skeleton className="h-8 w-24 hidden sm:block" />
+                          <Skeleton className="h-8 w-8" />
+                        </div>
                       </TableCell>
                     </TableRow>
-                  );
-                }
-              )}
+                  ))
+                : clientsData?.data?.data?.clients?.map(
+                    (client: GetClientsResponse) => {
+                      const expiration = client.subscription?.renewal_date
+                        ? getExpirationStatus(client.subscription.renewal_date)
+                        : { variant: "destructive", text: "No subscription" };
+
+                      return (
+                        <TableRow key={client.id}>
+                          <TableCell className="font-medium">
+                            {client.name} {client.surname}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <Badge
+                              variant="outline"
+                              className="whitespace-nowrap"
+                            >
+                              {client.subscription?.sub_type ||
+                                "No subscription"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={expiration.variant as any}
+                              className="whitespace-nowrap"
+                            >
+                              {expiration.text}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <Badge
+                              variant={
+                                client.subscription ? "success" : "destructive"
+                              }
+                              className="whitespace-nowrap"
+                            >
+                              {client.subscription ? (
+                                <CheckIcon className="size-3.5 mr-1" />
+                              ) : (
+                                <XIcon className="size-3.5 mr-1" />
+                              )}
+                              {client.subscription ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              variant="outline"
+                              size="icon"
+                              asChild
+                              className="sm:hidden"
+                            >
+                              <Link href={`/business/clients/${client.id}`}>
+                                <UserIcon className="size-4" />
+                              </Link>
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                              className="hidden sm:inline-flex whitespace-nowrap"
+                            >
+                              <Link href={`/business/clients/${client.id}`}>
+                                <UserIcon className="mr-2 size-4" />
+                                Client Page
+                              </Link>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-destructive hover:text-destructive/90"
+                            >
+                              <TrashIcon className="size-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
             </TableBody>
           </Table>
 
