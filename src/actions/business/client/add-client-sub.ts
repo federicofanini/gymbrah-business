@@ -20,7 +20,6 @@ const schema = z.object({
   ]),
   paymentDate: z.string().transform((str) => new Date(str)),
   renewalDate: z.string().transform((str) => new Date(str)),
-  monthsPaid: z.string(),
 });
 
 export const addClientSubscription = createSafeActionClient()
@@ -70,6 +69,18 @@ export const addClientSubscription = createSafeActionClient()
         };
       }
 
+      // Calculate months based on subscription type
+      const monthsMap = {
+        monthly: 1,
+        bimestral: 2,
+        trimestral: 3,
+        quadrimestral: 4,
+        semestral: 6,
+        yearly: 12,
+      };
+
+      const calculatedMonths = monthsMap[input.parsedInput.subType].toString();
+
       const subscription = await prisma.business_client_subscription.create({
         data: {
           id: crypto.randomUUID(),
@@ -78,7 +89,7 @@ export const addClientSubscription = createSafeActionClient()
           sub_type: input.parsedInput.subType,
           payment_date: input.parsedInput.paymentDate,
           renewal_date: input.parsedInput.renewalDate,
-          months_paid: input.parsedInput.monthsPaid,
+          months_paid: calculatedMonths,
           created_at: new Date(),
           updated_at: new Date(),
         },

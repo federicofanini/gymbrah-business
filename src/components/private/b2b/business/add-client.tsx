@@ -90,7 +90,6 @@ export function AddClientDialog() {
         | "yearly",
       paymentDate: formData.get("paymentDate") as string,
       renewalDate: formData.get("renewalDate") as string,
-      monthsPaid: formData.get("monthsPaid") as string,
     });
   };
 
@@ -111,11 +110,29 @@ export function AddClientDialog() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" required />
+                <Input
+                  id="name"
+                  name="name"
+                  required
+                  onChange={(e) => {
+                    e.target.value =
+                      e.target.value.charAt(0).toUpperCase() +
+                      e.target.value.slice(1);
+                  }}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="surname">Surname</Label>
-                <Input id="surname" name="surname" required />
+                <Input
+                  id="surname"
+                  name="surname"
+                  required
+                  onChange={(e) => {
+                    e.target.value =
+                      e.target.value.charAt(0).toUpperCase() +
+                      e.target.value.slice(1);
+                  }}
+                />
               </div>
             </div>
 
@@ -189,16 +206,6 @@ export function AddClientDialog() {
             <div className="space-y-2">
               <Label htmlFor="renewalDate">Renewal Date</Label>
               <Input id="renewalDate" name="renewalDate" type="date" required />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="monthsPaid">Months Paid</Label>
-              <Input
-                id="monthsPaid"
-                name="monthsPaid"
-                placeholder="e.g. 1,2,3"
-                required
-              />
             </div>
 
             <div className="flex gap-2">
