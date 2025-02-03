@@ -1,5 +1,5 @@
-import { AthletesPage } from "@/components/private/b2b/athletes/athlethes-page";
+import { AthletesTable } from "@/components/private/b2b/athletes/athletes-table";
 
 export default function Athletes() {
-  return <AthletesPage />;
+  return <AthletesTable />;
 }

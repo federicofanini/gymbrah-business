@@ -19,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import Link from "next/link";
 
 const mockAthletes = [
   {
@@ -28,6 +29,7 @@ const mockAthletes = [
     gender: "M",
     age: 28,
     isActive: true,
+    link: "1",
   },
   {
     id: "2",
@@ -36,6 +38,7 @@ const mockAthletes = [
     gender: "F",
     age: 34,
     isActive: false,
+    link: "2",
   },
   {
     id: "3",
@@ -44,6 +47,7 @@ const mockAthletes = [
     gender: "M",
     age: 42,
     isActive: true,
+    link: "3",
   },
 ];
 
@@ -112,9 +116,11 @@ export function Athletes() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm">
-                    <UserIcon className="mr-2 size-4" />
-                    Athlete Page
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/business/athletes/${athlete.link}`}>
+                      <UserIcon className="mr-2 size-4" />
+                      Athlete Page
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"

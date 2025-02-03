@@ -48,12 +48,12 @@ export function Sidebar() {
       path: `/business/athletes`,
       isActive: pathname === `/business/athletes`,
     },
-    {
-      icon: Dumbbell,
-      label: "Workouts",
-      path: `/business/workouts`,
-      isActive: pathname === `/business/workouts`,
-    },
+    // {
+    //   icon: Dumbbell,
+    //   label: "Workouts",
+    //   path: `/business/workouts`,
+    //   isActive: pathname === `/business/workouts`,
+    // },
     {
       icon: MdBatchPrediction,
       label: "Website",
