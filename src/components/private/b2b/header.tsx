@@ -14,7 +14,11 @@ export function Header() {
         </Link>
       </div>
 
-      <div className="flex-1 flex justify-center"></div>
+      <div className="flex-1 flex justify-center">
+        <span className="text-sm text-muted-foreground bg-secondary px-3 py-1.5 rounded-xl border border-border font-mono m-4">
+          🏗️ Gymbrah is under construction
+        </span>
+      </div>
 
       <div className="flex justify-end items-center">
         <div className="flex space-x-8 items-center">
