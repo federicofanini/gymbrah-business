@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { useQueryState } from "nuqs";
 import {
   Table,
   TableBody,
@@ -19,46 +22,30 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import Link from "next/link";
 import { AddClientDialog } from "./add-client";
-
-const mockClients = [
-  {
-    id: "1",
-    fullName: "John Smith",
-    subscriptionType: "Monthly",
-    expirationDate: "2024-03-15",
-    isConnected: true,
-  },
-  {
-    id: "2",
-    fullName: "Sarah Johnson",
-    subscriptionType: "Quarterly",
-    expirationDate: "2025-05-03",
-    isConnected: false,
-  },
-  {
-    id: "3",
-    fullName: "Mike Wilson",
-    subscriptionType: "Annual",
-    expirationDate: "2025-02-07",
-    isConnected: true,
-  },
-];
+import { getClients } from "@/actions/business/client/get-clients";
+import { GetClientsResponse } from "@/actions/business/client/get-clients";
 
 export function Clients() {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredClients = mockClients.filter((client) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      client.fullName.toLowerCase().includes(searchLower) ||
-      client.subscriptionType.toLowerCase().includes(searchLower)
-    );
+  const [page, setPage] = useQueryState("page", {
+    defaultValue: 1,
+    parse: (value) => parseInt(value),
+  });
+  const [searchQuery, setSearchQuery] = useQueryState("search", {
+    defaultValue: "",
   });
 
-  const getExpirationStatus = (date: string) => {
+  const { execute: fetchClients, result: clientsData } = useAction(getClients);
+
+  useEffect(() => {
+    fetchClients({
+      page: page,
+      limit: 10,
+    });
+  }, [page, fetchClients]);
+
+  const getExpirationStatus = (date: Date) => {
     const expirationDate = new Date(date);
     const today = new Date();
     const daysUntilExpiration = Math.ceil(
@@ -126,75 +113,112 @@ export function Clients() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredClients.map((client) => {
-                const expiration = getExpirationStatus(client.expirationDate);
+              {clientsData?.data?.data?.clients?.map(
+                (client: GetClientsResponse) => {
+                  const expiration = client.subscription?.renewal_date
+                    ? getExpirationStatus(client.subscription.renewal_date)
+                    : { variant: "destructive", text: "No subscription" };
 
-                return (
-                  <TableRow key={client.id}>
-                    <TableCell className="font-medium">
-                      {client.fullName}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Badge variant="outline" className="whitespace-nowrap">
-                        {client.subscriptionType}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={expiration.variant as any}
-                        className="whitespace-nowrap"
-                      >
-                        {expiration.text}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Badge
-                        variant={client.isConnected ? "success" : "destructive"}
-                        className="whitespace-nowrap"
-                      >
-                        {client.isConnected ? (
-                          <CheckIcon className="size-3.5 mr-1" />
-                        ) : (
-                          <XIcon className="size-3.5 mr-1" />
-                        )}
-                        {client.isConnected ? "Connected" : "Not Connected"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        asChild
-                        className="sm:hidden"
-                      >
-                        <Link href={`/business/clients/${client.id}`}>
-                          <UserIcon className="size-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="hidden sm:inline-flex whitespace-nowrap"
-                      >
-                        <Link href={`/business/clients/${client.id}`}>
-                          <UserIcon className="mr-2 size-4" />
-                          Client Page
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:text-destructive/90"
-                      >
-                        <TrashIcon className="size-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                  return (
+                    <TableRow key={client.id}>
+                      <TableCell className="font-medium">
+                        {client.name} {client.surname}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge variant="outline" className="whitespace-nowrap">
+                          {client.subscription?.sub_type || "No subscription"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={expiration.variant as any}
+                          className="whitespace-nowrap"
+                        >
+                          {expiration.text}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Badge
+                          variant={
+                            client.subscription ? "success" : "destructive"
+                          }
+                          className="whitespace-nowrap"
+                        >
+                          {client.subscription ? (
+                            <CheckIcon className="size-3.5 mr-1" />
+                          ) : (
+                            <XIcon className="size-3.5 mr-1" />
+                          )}
+                          {client.subscription ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right space-x-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          asChild
+                          className="sm:hidden"
+                        >
+                          <Link href={`/business/clients/${client.id}`}>
+                            <UserIcon className="size-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          asChild
+                          className="hidden sm:inline-flex whitespace-nowrap"
+                        >
+                          <Link href={`/business/clients/${client.id}`}>
+                            <UserIcon className="mr-2 size-4" />
+                            Client Page
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:text-destructive/90"
+                        >
+                          <TrashIcon className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                }
+              )}
             </TableBody>
           </Table>
+
+          {clientsData?.data?.data?.pagination && (
+            <div className="flex items-center justify-end space-x-2 py-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+              >
+                Previous
+              </Button>
+              <div className="text-sm">
+                Page {page} of {clientsData?.data?.data?.pagination?.pages}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setPage(
+                    Math.min(
+                      clientsData?.data?.data?.pagination?.pages,
+                      page + 1
+                    )
+                  )
+                }
+                disabled={page === clientsData?.data?.data?.pagination?.pages}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
