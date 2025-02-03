@@ -8,6 +8,8 @@ import { prisma } from "@/lib/db";
 import { Sidebar } from "@/components/private/b2b/sidebar";
 import { Header } from "@/components/private/b2b/header";
 import { Toaster } from "@/components/ui/sonner";
+import { checkBusiness } from "@/actions/business/onboarding/check-business";
+import { checkPlan } from "@/actions/business/onboarding/check-plan";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -28,18 +30,27 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const userData = await prisma.user.findUnique({
-    where: {
-      id: data.user.id,
-    },
-    select: {
-      full_name: true,
-    },
-  });
+  const businessResponse = await checkBusiness({ user_id: data.user.id });
 
-  if (!userData?.full_name) {
-    redirect("/onboarding");
+  console.log("business exists", businessResponse?.data?.data?.exists);
+
+  if (
+    businessResponse?.data?.success &&
+    !businessResponse?.data?.data?.exists
+  ) {
+    redirect("/business-onboarding");
   }
+
+  const planResponse = await checkPlan({ user_id: data.user.id });
+
+  if (
+    planResponse?.data?.success &&
+    !planResponse?.data?.data?.hasActiveSubscription
+  ) {
+    redirect("/business-onboarding");
+  }
+
+  console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);
 
   return (
     <SidebarProvider>

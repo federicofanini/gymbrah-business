@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
-import { addClient } from "@/actions/client/add-client";
-import { addClientSubscription } from "@/actions/client/add-client-sub";
+import { addClient } from "@/actions/business/client/add-client";
+import { addClientSubscription } from "@/actions/business/client/add-client-sub";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

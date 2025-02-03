@@ -3,8 +3,8 @@
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { createClient } from "@/utils/supabase/server";
-import type { ActionResponse } from "../types/action-response";
-import { appErrors } from "../types/errors";
+import type { ActionResponse } from "../../types/action-response";
+import { appErrors } from "../../types/errors";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 
