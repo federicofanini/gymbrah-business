@@ -10,7 +10,7 @@ import { Check, GoalIcon, TargetIcon } from "lucide-react";
 import { Ripple } from "../ui/ripple";
 import FlickeringGrid from "../ui/flickering-grid";
 import Image from "next/image";
-import { getUserCount } from "@/actions/user-count";
+import { getUserCount } from "@/actions/user/user-count";
 
 const getAvatarUrls = unstable_cache(
   async () => {

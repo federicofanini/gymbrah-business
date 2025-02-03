@@ -84,16 +84,41 @@ model athlete {
   @@index([business_code])
 }
 
-model business_client {
-  id          String @id @default(uuid())
+model client {
+  id          String  @id @default(uuid())
+  user_id     String?
   business_id String
-  athlete_id  String
+
+  name    String
+  surname String
+  email   String
+  phone   String
+
+  birth_date DateTime
+  gender     String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@index([user_id])
   @@index([business_id])
-  @@index([athlete_id])
+}
+
+model business_client_subscription {
+  id          String @id @default(uuid())
+  client_id   String
+  business_id String
+
+  sub_type     String // e.g. "monthly", "yearly"
+  payment_date DateTime // date of payment 
+  renewal_date DateTime // date of renewal
+  months_paid  String // e.g. "1,2" to count how many months have been paid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([client_id])
+  @@index([business_id])
 }
 
 model waitlist {

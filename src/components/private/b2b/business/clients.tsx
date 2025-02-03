@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Link from "next/link";
+import { AddClientDialog } from "./add-client";
 
 const mockClients = [
   {
@@ -101,12 +102,7 @@ export function Clients() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button className="w-full sm:w-auto" variant="outline" size="sm">
-              <Link href="/business/add-client" className="flex items-center">
-                <PlusCircleIcon className="mr-2 size-4" />
-                Add Client
-              </Link>
-            </Button>
+            <AddClientDialog />
           </div>
         </div>
 

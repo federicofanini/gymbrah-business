@@ -1,7 +1,7 @@
 import { Section } from "@/components/section";
 import OutlinedButton from "../ui/outlined-button";
 import Link from "next/link";
-import { getUserCount } from "@/actions/user-count";
+import { getUserCount } from "@/actions/user/user-count";
 
 export async function CTA() {
   const response = await getUserCount();
