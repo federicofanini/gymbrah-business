@@ -73,13 +73,11 @@ function HeroTitles() {
         </span>
       </h1>
       <ul className="flex flex-col gap-2 text-muted-foreground max-w-lg mx-auto sm:text-lg sm:leading-normal text-balance">
-        <li className="flex items-center gap-2 text-primary">
-          <TargetIcon className="h-5 w-5 text-red-500 animate-pulse" />
-          <span>
+        <li className="grid items-center gap-2 text-center w-full mb-8">
+          <span className="text-center justify-center">
             The best solution for{" "}
-            <span className="font-semibold text-red-500">
-              gyms and athletes 🏆
-            </span>
+            <span className="font-semibold text-cyan-600">gyms</span> and{" "}
+            <span className="font-semibold text-cyan-600">athletes 🏆</span>
           </span>
         </li>
         <li className="flex items-center gap-2">
