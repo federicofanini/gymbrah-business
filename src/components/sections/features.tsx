@@ -8,59 +8,46 @@ import {
   Trophy,
   Flame,
 } from "lucide-react";
-import Image from "next/image";
+import { MdAnalytics, MdBarChart, MdSportsGymnastics } from "react-icons/md";
 
 const businessFeatures = [
   {
     name: "Member Management",
     description:
       "Track and manage your gym members with ease. Monitor attendance, progress and engagement.",
-    icon: <Users className="w-8 h-8" />,
-    image: "/features/members.png",
-    color: "from-blue-100 to-blue-50",
+    icon: <MdSportsGymnastics className="w-8 h-8 text-cyan-600" />,
   },
   {
     name: "Performance Analytics",
     description:
       "Get detailed insights into your gym's performance with comprehensive analytics and reporting.",
-    icon: <LineChart className="w-8 h-8" />,
-    image: "/features/analytics.png",
-    color: "from-green-100 to-green-50",
+    icon: <MdBarChart className="w-8 h-8 text-cyan-600" />,
   },
   {
-    name: "Equipment Tracking",
-    description:
-      "Keep track of your gym equipment, maintenance schedules and usage patterns.",
-    icon: <Dumbbell className="w-8 h-8" />,
-    image: "/features/equipment.png",
-    color: "from-purple-100 to-purple-50",
+    name: "Workouts & Routines",
+    description: "Create and manage your athletes workouts and routines.",
+    icon: <Dumbbell className="w-8 h-8 text-cyan-600" />,
   },
 ];
 
 const athleteFeatures = [
   {
-    name: "Goal Setting",
+    name: "No more workout notes",
     description:
-      "Set and track your fitness goals. Monitor your progress and stay motivated.",
-    icon: <Target className="w-8 h-8" />,
-    image: "/wheel.png",
-    color: "from-orange-100 to-orange-50",
+      "No more workout notes on your phone. Just log your workouts and get started.",
+    icon: <Target className="w-8 h-8 text-cyan-600" />,
   },
   {
     name: "Achievement Tracking",
     description:
       "Track your achievements and milestones. Celebrate your progress along the way.",
-    icon: <Trophy className="w-8 h-8" />,
-    image: "/features/achievements.png",
-    color: "from-pink-100 to-pink-50",
+    icon: <Trophy className="w-8 h-8 text-cyan-600" />,
   },
   {
     name: "Workout Tracking",
     description:
       "Log and monitor your workouts. Track sets, reps, weights and personal records.",
-    icon: <Flame className="w-8 h-8" />,
-    image: "/features/workouts.png",
-    color: "from-yellow-100 to-yellow-50",
+    icon: <Flame className="w-8 h-8 text-cyan-600" />,
   },
 ];
 
@@ -68,32 +55,25 @@ const FeatureCard = ({
   name,
   description,
   icon: Icon,
-  image,
-  color,
   index,
 }: (typeof businessFeatures)[0] & { index: number }) => {
   return (
     <div
       key={index}
-      className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background"
+      className="group relative flex py-12 w-full flex-col items-center justify-center overflow-hidden border bg-background shadow-sm transition-all hover:shadow-lg"
     >
-      <div className="flex flex-col items-center gap-4 relative z-10">
-        <div className="rounded-lg bg-primary/10 p-3 w-fit">{Icon}</div>
+      {/* Content */}
+      <div className="flex flex-col items-center gap-6 relative z-10 px-6">
+        <div className="rounded-xl bg-cyan-500/10 p-4 w-fit ring-1 ring-cyan-500 shadow-sm transition-transform duration-300 group-hover:scale-110">
+          {Icon}
+        </div>
 
-        <h3 className="font-semibold text-xl text-center">{name}</h3>
-        <p className="text-sm text-muted-foreground max-w-lg text-center">
-          {description}
-        </p>
-      </div>
-
-      <div className="absolute bottom-0 right-0 w-3/4 h-3/4">
-        <Image
-          src={image}
-          alt={name}
-          fill
-          className="object-contain"
-          sizes="(max-width: 768px) 75vw, 50vw"
-        />
+        <div className="space-y-2 text-center">
+          <h3 className="font-semibold text-2xl tracking-tight">{name}</h3>
+          <p className="text-sm text-muted-foreground max-w-lg leading-relaxed">
+            {description}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -102,43 +82,39 @@ const FeatureCard = ({
 export function Features() {
   return (
     <>
-      <Section id="business" title="For Gyms" subtitle="Empower Your Business">
-        <div className="flex flex-col gap-4 mx-auto p-6 border-x">
-          {businessFeatures.map(
-            ({ name, description, icon: Icon, image, color }, index) => (
-              <FeatureCard
-                key={index}
-                name={name}
-                description={description}
-                icon={Icon}
-                image={image}
-                color={color}
-                index={index}
-              />
-            )
-          )}
+      <Section
+        id="business"
+        title="For Gyms"
+        subtitle="Same business, smarter gym"
+      >
+        <div className="gap-4 mx-auto p-6 border-x border-t grid sm:grid-cols-3">
+          {businessFeatures.map(({ name, description, icon: Icon }, index) => (
+            <FeatureCard
+              key={index}
+              name={name}
+              description={description}
+              icon={Icon}
+              index={index}
+            />
+          ))}
         </div>
       </Section>
 
       <Section
         id="athletes"
         title="For Athletes"
-        subtitle="Track Your Progress"
+        subtitle="Best workouts, better results"
       >
-        <div className="flex flex-col gap-4 mx-auto p-6 border-x">
-          {athleteFeatures.map(
-            ({ name, description, icon: Icon, image, color }, index) => (
-              <FeatureCard
-                key={index}
-                name={name}
-                description={description}
-                icon={Icon}
-                image={image}
-                color={color}
-                index={index}
-              />
-            )
-          )}
+        <div className="gap-4 mx-auto p-6 border-x border-t grid sm:grid-cols-3">
+          {athleteFeatures.map(({ name, description, icon: Icon }, index) => (
+            <FeatureCard
+              key={index}
+              name={name}
+              description={description}
+              icon={Icon}
+              index={index}
+            />
+          ))}
         </div>
       </Section>
     </>

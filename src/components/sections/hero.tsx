@@ -6,10 +6,11 @@ import OutlinedButton from "../ui/outlined-button";
 import AvatarCircles from "../ui/avatar-circles";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { Check } from "lucide-react";
+import { Check, GoalIcon, TargetIcon } from "lucide-react";
 import { Ripple } from "../ui/ripple";
 import FlickeringGrid from "../ui/flickering-grid";
 import Image from "next/image";
+import { getUserCount } from "@/actions/user-count";
 
 const getAvatarUrls = unstable_cache(
   async () => {
@@ -72,6 +73,15 @@ function HeroTitles() {
         </span>
       </h1>
       <ul className="flex flex-col gap-2 text-muted-foreground max-w-lg mx-auto sm:text-lg sm:leading-normal text-balance">
+        <li className="flex items-center gap-2 text-primary">
+          <TargetIcon className="h-5 w-5 text-red-500 animate-pulse" />
+          <span>
+            The best solution for{" "}
+            <span className="font-semibold text-red-500">
+              gyms and athletes 🏆
+            </span>
+          </span>
+        </li>
         <li className="flex items-center gap-2">
           <Check className="h-5 w-5 text-primary" />
           <span>
@@ -107,13 +117,17 @@ function HeroTitles() {
   );
 }
 
-function HeroCTA() {
+async function HeroCTA() {
+  const response = await getUserCount();
+  const count = response?.data?.data;
+
   return (
     <div className="relative mt-6">
       <div className="flex w-full max-w-2xl flex-col items-center justify-center space-y-4 sm:flex-row  sm:space-y-0">
         <Link href="/login" className="text-sm text-secondary underline">
           <OutlinedButton variant="secondary" className="bg-primary text-white">
-            Join <span className="font-semibold text-white">10+</span> members
+            Join <span className="font-semibold text-white">{count}+</span>{" "}
+            members
           </OutlinedButton>
         </Link>
       </div>

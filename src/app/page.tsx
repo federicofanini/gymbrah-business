@@ -21,12 +21,10 @@ export default function Home() {
       <Header />
       <Hero />
       <Features />
-      <OldNew />
+      <DemoVideo />
       <Pricing />
-      <Benefits />
       {/* <Testimonials />
       <Statistics /> */}
-      <Blog />
       <CTA />
       <Footer />
     </main>
