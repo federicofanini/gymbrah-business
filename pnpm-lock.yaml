@@ -18,8 +18,11 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(next@15.0.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@prisma/client':
-        specifier: ^6.1.0
-        version: 6.1.0(prisma@6.1.0)
+        specifier: ^6.3.0
+        version: 6.3.0(prisma@6.1.0)(typescript@5.5.4)
+      '@prisma/extension-accelerate':
+        specifier: ^1.2.1
+        version: 1.2.1(@prisma/client@6.3.0(prisma@6.1.0)(typescript@5.5.4))
       '@radix-ui/react-accordion':
         specifier: ^1.2.0
         version: 1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -745,13 +748,16 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@prisma/client@6.1.0':
-    resolution: {integrity: sha512-AbQYc5+EJKm1Ydfq3KxwcGiy7wIbm4/QbjCKWWoNROtvy7d6a3gmAGkKjK0iUCzh+rHV8xDhD5Cge8ke/kiy5Q==}
+  '@prisma/client@6.3.0':
+    resolution: {integrity: sha512-BY3Fi28PUSk447Bpv22LhZp4HgNPo7NsEN+EteM1CLDnLjig5863jpW+3c3HHLFmml+nB/eJv1CjSriFZ8z7Cg==}
     engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
+      typescript: '>=5.1.0'
     peerDependenciesMeta:
       prisma:
+        optional: true
+      typescript:
         optional: true
 
   '@prisma/debug@6.1.0':
@@ -762,6 +768,12 @@ packages:
 
   '@prisma/engines@6.1.0':
     resolution: {integrity: sha512-GnYJbCiep3Vyr1P/415ReYrgJUjP79fBNc1wCo7NP6Eia0CzL2Ot9vK7Infczv3oK7JLrCcawOSAxFxNFsAERQ==}
+
+  '@prisma/extension-accelerate@1.2.1':
+    resolution: {integrity: sha512-QicnMeyqL226ilT3vvRsFAqPeIdqHGKR4c25CoK5zZ1tNIv8egfgpD1gCKqOGmfAz0pIKQnMuJU3eNg9KItC7A==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@prisma/client': '>=4.16.1'
 
   '@prisma/fetch-engine@6.1.0':
     resolution: {integrity: sha512-asdFi7TvPlEZ8CzSZ/+Du5wZ27q6OJbRSXh+S8ISZguu+S9KtS/gP7NeXceZyb1Jv1SM1S5YfiCv+STDsG6rrg==}
@@ -5108,9 +5120,10 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@prisma/client@6.1.0(prisma@6.1.0)':
+  '@prisma/client@6.3.0(prisma@6.1.0)(typescript@5.5.4)':
     optionalDependencies:
       prisma: 6.1.0
+      typescript: 5.5.4
 
   '@prisma/debug@6.1.0': {}
 
@@ -5122,6 +5135,10 @@ snapshots:
       '@prisma/engines-version': 6.1.0-21.11f085a2012c0f4778414c8db2651556ee0ef959
       '@prisma/fetch-engine': 6.1.0
       '@prisma/get-platform': 6.1.0
+
+  '@prisma/extension-accelerate@1.2.1(@prisma/client@6.3.0(prisma@6.1.0)(typescript@5.5.4))':
+    dependencies:
+      '@prisma/client': 6.3.0(prisma@6.1.0)(typescript@5.5.4)
 
   '@prisma/fetch-engine@6.1.0':
     dependencies:
