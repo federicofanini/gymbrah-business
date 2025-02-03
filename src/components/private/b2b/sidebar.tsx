@@ -25,54 +25,40 @@ import {
   MdAutoFixHigh,
   MdBallot,
   MdBatchPrediction,
-  MdBatteryCharging90,
+  MdAccessibilityNew,
   MdDashboard,
-  MdGraphicEq,
-  MdOutlineSettings,
-  MdOutlineStackedBarChart,
+  MdSportsGymnastics,
 } from "react-icons/md";
 import { LogoIcon } from "@/components/logo";
+import { Dumbbell } from "lucide-react";
 
 export function Sidebar() {
-  const params = useParams();
   const pathname = usePathname();
 
   const navigation = [
     {
       icon: MdDashboard,
-      label: "Blackboard",
-      path: `/blackboard`,
-      isActive: pathname === `/blackboard`,
+      label: "Your Gym",
+      path: `/business`,
+      isActive: pathname === `/business`,
     },
     {
-      icon: MdAirlineStops,
-      label: "Unique Value Zones",
-      path: `/blackboard/uvz`,
-      isActive: pathname === `/blackboard/uvz`,
+      icon: MdSportsGymnastics,
+      label: "Athletes",
+      path: `/business/athletes`,
+      isActive: pathname === `/business/athletes`,
     },
     {
-      icon: MdAutoFixHigh,
-      label: "Pitch",
-      path: `/blackboard/pitch`,
-      isActive: pathname === `/blackboard/pitch`,
+      icon: Dumbbell,
+      label: "Workouts",
+      path: `/business/workouts`,
+      isActive: pathname === `/business/workouts`,
     },
     {
       icon: MdBatchPrediction,
-      label: "Productizing",
-      path: `/blackboard/productizing`,
-      isActive: pathname === `/blackboard/productizing`,
-    },
-    {
-      icon: MdBallot,
-      label: "Case Studies",
-      path: `/blackboard/case-studies`,
-      isActive: pathname === `/blackboard/case-studies`,
-    },
-    {
-      icon: MdBatteryCharging90,
-      label: "Wheels",
-      path: `/blackboard/wheels`,
-      isActive: pathname === `/blackboard/wheels`,
+      label: "Website",
+      path: `/business/website`,
+      isActive: pathname === `/business/website`,
     },
   ];
 
