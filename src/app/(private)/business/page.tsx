@@ -1,3 +1,5 @@
+import { BusinessPage } from "@/components/private/b2b/business";
+
 export default async function Business() {
-  return <div>Business b2b</div>;
+  return <BusinessPage />;
 }
