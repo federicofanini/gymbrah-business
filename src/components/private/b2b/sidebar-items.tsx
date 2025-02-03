@@ -1,0 +1,29 @@
+import {
+  MdDashboard,
+  MdSportsGymnastics,
+  MdBatchPrediction,
+} from "react-icons/md";
+
+export const sidebarItems = [
+  {
+    icon: MdDashboard,
+    label: "Your Gym",
+    path: `/business`,
+  },
+  {
+    icon: MdSportsGymnastics,
+    label: "Athletes",
+    path: `/business/athletes`,
+  },
+  // {
+  //   icon: Dumbbell,
+  //   label: "Workouts",
+  //   path: `/business/workouts`,
+  //   isActive: pathname === `/business/workouts`,
+  // },
+  {
+    icon: MdBatchPrediction,
+    label: "Website",
+    path: `/business/website`,
+  },
+];

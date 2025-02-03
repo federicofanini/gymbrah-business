@@ -8,9 +8,9 @@ import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import { useState } from "react";
-import OutlinedButton from "../ui/outlined-button";
+import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 interface TabsProps {
   activeTab: string;
@@ -112,13 +112,13 @@ function PricingTier({
                 variant="secondary"
                 className="bg-primary text-primary-foreground hover:bg-secondary-foreground"
               >
-                Most Popular
+                🔥 This is fire
               </Badge>
             )}
           </CardTitle>
           <div className="pt-2 text-3xl font-bold">
             <motion.div
-              key={tier.price[billingCycle]}
+              key={tier.price.yearly}
               initial={{
                 opacity: 0,
                 x: billingCycle === "yearly" ? -10 : 10,
@@ -130,9 +130,9 @@ function PricingTier({
                 ease: [0.4, 0, 0.2, 1],
               }}
             >
-              {tier.price[billingCycle]}
+              {tier.price.yearly}
               <span className="text-sm font-medium text-muted-foreground">
-                / {tier.frequency[billingCycle]}
+                / for ever
               </span>
             </motion.div>
           </div>
@@ -161,7 +161,7 @@ function PricingTier({
               : "bg-muted text-foreground hover:bg-muted/80"
           )}
         >
-          {tier.cta}
+          <Link href="/login">{tier.cta}</Link>
         </Button>
       </div>
     </div>
@@ -183,61 +183,27 @@ export function Pricing() {
         <div className="grid grid-rows-1 gap-y-10 p-10">
           <div className="text-center">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-balance">
-              Simple pricing for everyone.
+              Simple, transparent pricing.
             </h2>
 
-            <p className="mt-4 text-md sm:text-lg text-muted-foreground text-center font-mono">
-              <br />
-              Get{" "}
-              <span className="font-semibold text-primary space-y-8">
-                lifetime access for{" "}
-                <Badge className="bg-primary text-lg text-primary-foreground">
-                  $49
-                </Badge>
-              </span>
-              <br />
-              <br />
-              <span className="font-semibold text-primary">Free </span>during
-              beta.
+            <p className="mt-6 text-balance text-muted-foreground flex items-center gap-2 text-center justify-center">
+              Unlock the full potential of{" "}
+              <Image
+                src="/logo/logo_black.png"
+                alt="GymBrah"
+                width={100}
+                height={100}
+                className="size-6"
+              />
             </p>
           </div>
-          <div className="flex items-center justify-center">
-            <Link href="/login">
-              <OutlinedButton>Start for free</OutlinedButton>
-            </Link>
-          </div>
-          {/* <Tabs
-            activeTab={billingCycle}
-            setActiveTab={handleTabChange}
-            className="mx-auto w-full max-w-md"
-          >
-            {(activeTab) => (
-              <TabsList>
-                {["yearly", "monthly"].map((tab) => (
-                  <TabsTrigger
-                    key={tab}
-                    value={tab}
-                    onClick={() => handleTabChange(tab as "yearly" | "monthly")}
-                    isActive={activeTab === tab}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    {tab === "yearly" && (
-                      <span className="ml-2 text-xs font-semibold text-green-500">
-                        Save 25%
-                      </span>
-                    )}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            )}
-          </Tabs>*/}
         </div>
 
-        {/* <div className="grid grid-cols-1 lg:grid-cols-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3">
           {siteConfig.pricing.map((tier, index) => (
             <PricingTier key={index} tier={tier} billingCycle={billingCycle} />
           ))}
-        </div> */}
+        </div>
       </div>
     </Section>
   );

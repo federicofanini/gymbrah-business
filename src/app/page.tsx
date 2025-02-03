@@ -22,12 +22,9 @@ export default function Home() {
       <Hero />
       <Features />
       <DemoVideo />
-      <OldNew />
       <Pricing />
-      <Benefits />
       {/* <Testimonials />
       <Statistics /> */}
-      <Blog />
       <CTA />
       <Footer />
     </main>

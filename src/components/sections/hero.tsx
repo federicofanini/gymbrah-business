@@ -6,7 +6,11 @@ import OutlinedButton from "../ui/outlined-button";
 import AvatarCircles from "../ui/avatar-circles";
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { Check } from "lucide-react";
+import { Check, GoalIcon, TargetIcon } from "lucide-react";
+import { Ripple } from "../ui/ripple";
+import FlickeringGrid from "../ui/flickering-grid";
+import Image from "next/image";
+import { getUserCount } from "@/actions/user-count";
 
 const getAvatarUrls = unstable_cache(
   async () => {
@@ -60,47 +64,52 @@ function HeroPill() {
 
 function HeroTitles() {
   return (
-    <div className="flex w-full max-w-3xl flex-col overflow-hidden pt-8 text-center">
-      <h1 className="text-center text-4xl font-semibold leading-tighter text-foreground sm:text-4xl md:text-5xl tracking-tighter mb-8">
+    <div className="flex w-full flex-col overflow-hidden pt-8 text-center">
+      <h1 className="text-center text-4xl font-semibold leading-tighter text-foreground sm:text-7xl tracking-tighter mb-8">
         <span className="inline-block text-balance">
           <AuroraText className="leading-normal">
-            Build your dream <br />
-            body with habits that last
+            Build small habits to make a big difference.
           </AuroraText>
         </span>
       </h1>
       <ul className="flex flex-col gap-2 text-muted-foreground max-w-lg mx-auto sm:text-lg sm:leading-normal text-balance">
-        <li className="flex items-center gap-2">
-          <Check className="h-5 w-5 text-primary" />
+        <li className="flex items-center gap-2 text-primary">
+          <TargetIcon className="h-5 w-5 text-red-500 animate-pulse" />
           <span>
-            Get{" "}
-            <span className="font-semibold text-primary">
-              sustainable results
+            The best solution for{" "}
+            <span className="font-semibold text-red-500">
+              gyms and athletes 🏆
             </span>
           </span>
         </li>
         <li className="flex items-center gap-2">
           <Check className="h-5 w-5 text-primary" />
           <span>
-            <span className="font-semibold text-primary">Track workouts</span>{" "}
-            intelligently
+            Every{" "}
+            <span className="font-semibold text-primary">
+              achievement counts
+            </span>
+          </span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            Keep yourself{" "}
+            <span className="font-semibold text-primary">accountable</span>
+          </span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Check className="h-5 w-5 text-primary" />
+          <span>
+            Stay <span className="font-semibold text-primary">motivated</span>{" "}
+            every step of the way
           </span>
         </li>
         <li className="flex items-center gap-2">
           <Check className="h-5 w-5 text-primary" />
           <span>
             Build{" "}
-            <span className="font-semibold text-primary">
-              personalized habits
-            </span>{" "}
-            that stick
-          </span>
-        </li>
-        <li className="flex items-center gap-2">
-          <Check className="h-5 w-5 text-primary" />
-          <span>
-            Stay on top of your{" "}
-            <span className="font-semibold text-primary">goals</span>
+            <span className="font-semibold text-primary">habits that last</span>
           </span>
         </li>
       </ul>
@@ -108,18 +117,20 @@ function HeroTitles() {
   );
 }
 
-function HeroCTA() {
+async function HeroCTA() {
+  const response = await getUserCount();
+  const count = response?.data?.data;
+
   return (
     <div className="relative mt-6">
       <div className="flex w-full max-w-2xl flex-col items-center justify-center space-y-4 sm:flex-row  sm:space-y-0">
         <Link href="/login" className="text-sm text-secondary underline">
-          <OutlinedButton>{siteConfig.hero.cta}</OutlinedButton>
+          <OutlinedButton variant="secondary" className="bg-primary text-white">
+            Join <span className="font-semibold text-white">{count}+</span>{" "}
+            members
+          </OutlinedButton>
         </Link>
       </div>
-      <p className="mt-8 text-xs text-muted-foreground text-center font-mono">
-        Join <span className="font-semibold text-primary">10+</span> startup
-        founders
-      </p>
     </div>
   );
 }
@@ -136,22 +147,37 @@ async function Avatars() {
   );
 }
 
-// <br />
-// Get{" "}
-// span className="font-semibold text-primary">
-//  lifetime access for $49
-// </span>*/}
-// . <br />
-// <br />
+const AppScreenshot = () => {
+  return (
+    <div className="relative mt-8 w-full max-w-[1200px] mx-auto">
+      <div className="relative w-full aspect-[16/9] md:aspect-[2/1] overflow-hidden border">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-full h-full rounded-lg overflow-hidden">
+            <Image
+              src="/dashboard.png"
+              alt="GymBrah Dashboard Demo"
+              fill
+              className="object-cover object-center rounded-lg"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              priority
+              quality={90}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export async function Hero() {
   return (
     <Section id="hero">
-      <div className="relative w-full p-6 lg:p-12 border-x overflow-hidden flex justify-center items-center">
+      <div className="relative w-full p-6 border-x overflow-hidden flex justify-center items-center">
         <div className="flex flex-col justify-center items-center max-w-4xl mx-auto">
           <HeroTitles />
           <HeroCTA />
           <Avatars />
+          <AppScreenshot />
         </div>
       </div>
     </Section>
