@@ -10,29 +10,58 @@ import {
   DollarSignIcon,
   ActivityIcon,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getClientStats } from "@/actions/business/client/get-clients";
+import { useAction } from "next-safe-action/hooks";
+import { useEffect } from "react";
+import {
+  MdAccessTime,
+  MdAttachMoney,
+  MdSportsGymnastics,
+} from "react-icons/md";
 
 export function Overview() {
+  const {
+    execute: fetchStats,
+    result: clientStats,
+    status,
+  } = useAction(getClientStats);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  const isLoading = status === "executing";
+
   const stats = [
     {
-      title: "Total Members",
-      value: "247",
-      change: "+12%",
-      isPositive: true,
-      icon: UsersIcon,
+      title: "Total Clients",
+      value: isLoading ? (
+        <Skeleton className="h-8 w-20" />
+      ) : (
+        clientStats?.data?.data?.totalClients.toString() || "0"
+      ),
+      change: isLoading ? (
+        <Skeleton className="h-4 w-12" />
+      ) : (
+        `${clientStats?.data?.data?.percentageChange}%`
+      ),
+      isPositive: clientStats?.data?.data?.percentageChange >= 0,
+      icon: MdSportsGymnastics,
     },
     {
       title: "Monthly Revenue",
-      value: "$8,742",
-      change: "+8%",
+      value: "$8,742", // TODO: get from db
+      change: "+8%", // TODO: get from db
       isPositive: true,
-      icon: DollarSignIcon,
+      icon: MdAttachMoney,
     },
     {
       title: "Active Sessions",
-      value: "1,432",
-      change: "-3%",
+      value: "1,432", // TODO: get from db
+      change: "-3%", // TODO: get from db
       isPositive: false,
-      icon: ActivityIcon,
+      icon: MdAccessTime,
     },
   ];
 
@@ -48,17 +77,19 @@ export function Overview() {
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold">{stat.value}</p>
-                  <Badge
-                    variant={stat.isPositive ? "success" : "destructive"}
-                    className="text-xs"
-                  >
-                    {stat.isPositive ? (
-                      <ArrowUpIcon className="mr-1 size-3" />
-                    ) : (
-                      <ArrowDownIcon className="mr-1 size-3" />
-                    )}
-                    {stat.change}
-                  </Badge>
+                  {!isLoading && (
+                    <Badge
+                      variant={stat.isPositive ? "success" : "destructive"}
+                      className="text-xs"
+                    >
+                      {stat.isPositive ? (
+                        <ArrowUpIcon className="mr-1 size-3" />
+                      ) : (
+                        <ArrowDownIcon className="mr-1 size-3" />
+                      )}
+                      {stat.change}
+                    </Badge>
+                  )}
                 </div>
               </div>
               <stat.icon className="size-8 text-muted-foreground" />

@@ -45,7 +45,7 @@ export function Clients() {
   useEffect(() => {
     fetchClients({
       page: page,
-      limit: 10,
+      limit: 100,
     });
   }, [page, fetchClients]);
 
@@ -71,6 +71,24 @@ export function Clients() {
         year: "2-digit",
       }),
     };
+  };
+
+  const filterClients = (clients: GetClientsResponse[]) => {
+    if (!searchQuery) return clients;
+
+    const searchTerms = searchQuery.toLowerCase().split(" ");
+
+    return clients.filter((client) => {
+      const fullName = `${client.name} ${client.surname}`.toLowerCase();
+
+      // Check if all search terms are found in the full name
+      return searchTerms.every(
+        (term) =>
+          fullName.includes(term) ||
+          client.name.toLowerCase().includes(term) ||
+          client.surname.toLowerCase().includes(term)
+      );
+    });
   };
 
   return (
@@ -142,7 +160,7 @@ export function Clients() {
                       </TableCell>
                     </TableRow>
                   ))
-                : clientsData?.data?.data?.clients?.map(
+                : filterClients(clientsData?.data?.data?.clients || []).map(
                     (client: GetClientsResponse) => {
                       const expiration = client.subscription?.renewal_date
                         ? getExpirationStatus(client.subscription.renewal_date)

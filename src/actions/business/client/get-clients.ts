@@ -136,3 +136,92 @@ export const getClients = createSafeActionClient()
       };
     }
   });
+
+export const getClientStats = createSafeActionClient().action(
+  async (): Promise<ActionResponse> => {
+    try {
+      const supabase = await createClient();
+
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
+
+      if (authError || !user) {
+        return {
+          success: false,
+          error: appErrors.UNAUTHORIZED,
+        };
+      }
+
+      // Get business ID for the user
+      const business = await prisma.business.findFirst({
+        where: { user_id: user?.id },
+      });
+
+      if (!business) {
+        return {
+          success: false,
+          error: appErrors.NOT_FOUND,
+        };
+      }
+
+      // Get total clients
+      const totalClients = await prisma.client.count({
+        where: { business_id: business.id },
+      });
+
+      // Get clients created in the current month
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const clientsThisMonth = await prisma.client.count({
+        where: {
+          business_id: business.id,
+          created_at: {
+            gte: firstDayOfMonth,
+          },
+        },
+      });
+
+      // Get clients created in the previous month
+      const firstDayOfLastMonth = new Date(
+        now.getFullYear(),
+        now.getMonth() - 1,
+        1
+      );
+      const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      const clientsLastMonth = await prisma.client.count({
+        where: {
+          business_id: business.id,
+          created_at: {
+            gte: firstDayOfLastMonth,
+            lte: lastDayOfLastMonth,
+          },
+        },
+      });
+
+      // Calculate month-over-month percentage change
+      const percentageChange =
+        clientsLastMonth === 0
+          ? 100 // If there were no clients last month, growth is 100%
+          : ((clientsThisMonth - clientsLastMonth) / clientsLastMonth) * 100;
+
+      return {
+        success: true,
+        data: {
+          totalClients,
+          clientsThisMonth,
+          clientsLastMonth,
+          percentageChange: Number(percentageChange.toFixed(1)),
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: appErrors.UNEXPECTED_ERROR,
+      };
+    }
+  }
+);
