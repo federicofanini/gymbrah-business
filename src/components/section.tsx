@@ -31,7 +31,7 @@ const Section = forwardRef<HTMLElement, SectionProps>(
 
     return (
       <section id={id} ref={ref}>
-        <div className={cn("relative mx-auto container", className)}>
+        <div className={cn("relative mx-auto max-w-screen-xl px-4", className)}>
           {(title || subtitle || description) && (
             <div
               className={cn(

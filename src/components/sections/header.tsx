@@ -20,12 +20,13 @@ export function Header() {
           className="relative flex items-center space-x-2"
         >
           <Image
-            src="/logo.svg"
+            src="/logo/logo_black.svg"
             alt="GymBrah"
             width={50}
             height={50}
             className="h-[40px] w-auto"
           />
+          <span className="text-3xl font-extrabold font-mono">GymBrah</span>
         </Link>
         <div className="flex items-center gap-6">
           <Link
@@ -52,7 +53,10 @@ export function Header() {
           </Link>
           <div className="hidden lg:block">
             <Link href="/login" className="text-xs text-secondary underline">
-              <OutlinedButton className="text-xs h-6">
+              <OutlinedButton
+                className="text-xs h-6 bg-primary text-white"
+                variant="secondary"
+              >
                 {siteConfig.cta}
               </OutlinedButton>
             </Link>

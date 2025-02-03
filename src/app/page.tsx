@@ -21,7 +21,6 @@ export default function Home() {
       <Header />
       <Hero />
       <Features />
-      <DemoVideo />
       <OldNew />
       <Pricing />
       <Benefits />
