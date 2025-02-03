@@ -63,77 +63,109 @@ export function Athletes() {
   });
 
   return (
-    <div className="w-full border border-border rounded-lg">
-      <div className="p-4 flex justify-between items-center border-b">
-        <div className="space-y-1">
-          <h2 className="text-lg font-medium">Athletes</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your athletes and their training goals
-          </p>
+    <div className="space-y-8">
+      <div className="w-full border border-border rounded-lg">
+        <div className="p-3 md:p-6 flex flex-col md:flex-row md:justify-between md:items-center border-b gap-3 md:gap-0">
+          <div className="space-y-1">
+            <h2 className="text-base md:text-lg font-medium">Athletes</h2>
+            <p className="text-xs md:text-sm text-muted-foreground">
+              Manage your athletes and their training goals
+            </p>
+          </div>
+          <div className="relative w-full md:max-w-sm">
+            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search athletes..."
+              className="pl-8 w-full md:w-[300px]"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="relative max-w-sm">
-          <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search athletes..."
-            className="pl-8 w-[300px]"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
 
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Full Name</TableHead>
-              <TableHead>Goal</TableHead>
-              <TableHead>Gender & Age</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredAthletes.map((athlete) => (
-              <TableRow key={athlete.id}>
-                <TableCell className="font-medium">
-                  {athlete.fullName}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline">{athlete.goal}</Badge>
-                </TableCell>
-                <TableCell>
-                  {athlete.gender} - {athlete.age}y
-                </TableCell>
-                <TableCell>
-                  <Badge variant={athlete.isActive ? "success" : "destructive"}>
-                    {athlete.isActive ? (
-                      <CheckIcon className="size-3.5 mr-1" />
-                    ) : (
-                      <XIcon className="size-3.5 mr-1" />
-                    )}
-                    {athlete.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right space-x-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/business/athletes/${athlete.link}`}>
-                      <UserIcon className="mr-2 size-4" />
-                      Athlete Page
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive hover:text-destructive/90"
-                  >
-                    <TrashIcon className="size-4" />
-                  </Button>
-                </TableCell>
+        <div className="overflow-x-auto px-2 py-1 md:px-6 md:py-4">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[100px] md:min-w-[120px]">
+                  Full Name
+                </TableHead>
+                <TableHead className="hidden md:table-cell min-w-[100px]">
+                  Goal
+                </TableHead>
+                <TableHead className="hidden md:table-cell min-w-[100px]">
+                  Gender & Age
+                </TableHead>
+                <TableHead className="min-w-[80px] md:min-w-[100px]">
+                  Status
+                </TableHead>
+                <TableHead className="text-right min-w-[100px] md:min-w-[160px]">
+                  Actions
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredAthletes.map((athlete) => (
+                <TableRow key={athlete.id}>
+                  <TableCell className="font-medium">
+                    {athlete.fullName}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline" className="whitespace-nowrap">
+                      {athlete.goal}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell whitespace-nowrap">
+                    {athlete.gender} - {athlete.age}y
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={athlete.isActive ? "success" : "destructive"}
+                      className="whitespace-nowrap"
+                    >
+                      {athlete.isActive ? (
+                        <CheckIcon className="size-3.5 mr-1" />
+                      ) : (
+                        <XIcon className="size-3.5 mr-1" />
+                      )}
+                      {athlete.isActive ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      asChild
+                      className="sm:hidden"
+                    >
+                      <Link href={`/business/athletes/${athlete.link}`}>
+                        <UserIcon className="size-4" />
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="hidden sm:inline-flex whitespace-nowrap"
+                    >
+                      <Link href={`/business/athletes/${athlete.link}`}>
+                        <UserIcon className="mr-2 size-4" />
+                        Athlete Page
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive/90"
+                    >
+                      <TrashIcon className="size-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

@@ -22,28 +22,28 @@ export function BusinessPage() {
   ];
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="w-full px-8">
-      <div className="flex items-center justify-between mb-4 mt-2 max-w-screen-xl">
-        <TabsList className="justify-start rounded-none h-auto p-0 bg-transparent space-x-6">
+    <div className="w-full px-4 md:px-8 py-4">
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
+        <TabsList className="justify-start rounded-none h-auto p-0 bg-transparent space-x-4 md:space-x-6 overflow-x-auto">
           {tabs.map((tab) => (
             <TabsTrigger
               key={tab.id}
               value={tab.id}
-              className="rounded-none border-b-2 border-transparent text-primary data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2"
+              className="rounded-none border-b-2 border-transparent text-primary data-[state=active]:border-primary data-[state=active]:bg-transparent px-0 py-2 text-sm md:text-base whitespace-nowrap"
             >
               {tab.title}
             </TabsTrigger>
           ))}
         </TabsList>
-      </div>
 
-      <TabsContent value="overview">
-        <Overview />
-      </TabsContent>
+        <TabsContent value="overview" className="mt-6">
+          <Overview />
+        </TabsContent>
 
-      <TabsContent value="clients">
-        <Clients />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="clients" className="mt-6">
+          <Clients />
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
