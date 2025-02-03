@@ -1,6 +1,7 @@
 import { Separator } from "./ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
 import { BreadcrumbClient } from "./breadcrumb-client";
+import { ThemeSwitch } from "./theme-switch";
 
 export async function DashboardHeader() {
   return (
@@ -9,6 +10,7 @@ export async function DashboardHeader() {
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <BreadcrumbClient />
+        <ThemeSwitch />
       </div>
     </header>
   );

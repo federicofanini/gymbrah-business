@@ -1,4 +1,4 @@
-import { LeaderboardTable } from "@/components/blackboard/leaderboard/leaderboard-table";
+import { LeaderboardTable } from "@/components/private/leaderboard/leaderboard-table";
 import { Section } from "@/components/section";
 import { Footer } from "@/components/sections/footer";
 import { CTA } from "@/components/sections/cta";

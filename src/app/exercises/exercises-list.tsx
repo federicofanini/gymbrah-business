@@ -6,7 +6,7 @@ import { getExercises } from "./actions";
 import {
   ExercisesTable,
   type Exercise,
-} from "@/components/blackboard/workout/create-workout/exercises/exercises-table";
+} from "@/components/private/workout/create-workout/exercises/exercises-table";
 import { useQueryState } from "nuqs";
 import { BODY_PARTS } from "./config";
 import { toast } from "sonner";

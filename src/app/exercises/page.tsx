@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ExercisesTable } from "@/components/blackboard/workout/create-workout/exercises/exercises-table";
+import { ExercisesTable } from "@/components/private/workout/create-workout/exercises/exercises-table";
 import { getExercises } from "@/app/exercises/actions";
 import { BODY_PARTS } from "./config";
 

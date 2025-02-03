@@ -1,5 +1,5 @@
-import { AddExerciseForm } from "@/components/blackboard/admin/add-exercise";
-import { BulkAddExercisesButton } from "@/components/blackboard/admin/bulk-add-exercises";
+import { AddExerciseForm } from "@/components/private/admin/add-exercise";
+import { BulkAddExercisesButton } from "@/components/private/admin/bulk-add-exercises";
 
 export default function AdminPage() {
   return (
