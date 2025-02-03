@@ -102,8 +102,10 @@ export function Clients() {
               />
             </div>
             <Button className="w-full sm:w-auto" variant="outline" size="sm">
-              <PlusCircleIcon className="mr-2 size-4" />
-              Add Client
+              <Link href="/business/add-client" className="flex items-center">
+                <PlusCircleIcon className="mr-2 size-4" />
+                Add Client
+              </Link>
             </Button>
           </div>
         </div>

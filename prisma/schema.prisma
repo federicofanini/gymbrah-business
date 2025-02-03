@@ -13,33 +13,87 @@ model user {
   email        String  @unique
   full_name    String
   avatar_url   String?
-  bio          String?
-  location     String?
-  website      String?
-  twitter      String?
-  linkedin     String?
-  github       String?
-  instagram    String?
-  youtube      String?
-  tiktok       String?
-  discord      String?
-  telegram     String?
-  bsky         String?
   contactEmail String?
   username     String? @unique
 
-  paid        Boolean @default(false)
-  customer_id String?
-  plan_id     String?
+  paid Boolean @default(false)
 
-  created_at        DateTime           @default(now())
-  updated_at        DateTime           @updatedAt
-  health_profile    health_profile?
-  workouts          workout[]
-  feedback          feedback[]
-  gamification      gamification?
-  workout_frequency workout_frequency?
-  completed_sets    completed_set[]
+  created_at     DateTime        @default(now())
+  updated_at     DateTime        @updatedAt
+  workouts       workout[]
+  feedback       feedback[]
+  gamification   gamification?
+  completed_sets completed_set[]
+}
+
+model plan {
+  id      String @id @default(uuid())
+  user_id String
+
+  stripe_customer_id     String
+  stripe_subscription_id String
+  stripe_price_id        String
+  plan_name              String
+  subscription_status    Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+}
+
+model business {
+  id      String @id @default(uuid())
+  user_id String
+
+  name     String
+  address  String
+  city     String
+  province String
+  zip      String
+  country  String
+  vat      String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+}
+
+model business_code {
+  id          String @id @default(uuid())
+  code        String
+  business_id String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([business_id])
+}
+
+model athlete {
+  id      String @id @default(uuid())
+  user_id String
+
+  business_code String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
+  @@index([business_code])
+}
+
+model business_client {
+  id          String @id @default(uuid())
+  business_id String
+  athlete_id  String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([business_id])
+  @@index([athlete_id])
 }
 
 model waitlist {
@@ -62,20 +116,6 @@ model feedback {
   updated_at DateTime @updatedAt
 
   @@index([user_id])
-}
-
-model health_profile {
-  id           String   @id @default(uuid())
-  user_id      String   @unique
-  user         user     @relation(fields: [user_id], references: [id])
-  height       Float? // in cm
-  weight       Float? // in kg
-  sleep_hours  String? // less-6, 6-7, 7-8, more-8
-  alcohol      String? // none, 1-3, 4-7, more
-  sugar_intake String? // low, moderate, high
-  is_smoker    Boolean? // true = smoker, false = non-smoker
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
 }
 
 model workout_exercise {
@@ -144,17 +184,6 @@ model gamification {
   last_workout_date  DateTime?
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
-
-  @@index([user_id])
-}
-
-model workout_frequency {
-  id         String   @id @default(uuid())
-  user_id    String   @unique
-  user       user     @relation(fields: [user_id], references: [id])
-  frequency  String? // Days of the week [1,2,3,4,5,6,7]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 
   @@index([user_id])
 }
