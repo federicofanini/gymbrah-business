@@ -86,8 +86,6 @@ export const getClients = createSafeActionClient()
         orderBy: {
           created_at: "desc",
         },
-        skip,
-        take: input.parsedInput.limit,
       });
 
       // Get all subscriptions for these clients in a single query

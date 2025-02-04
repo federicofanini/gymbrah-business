@@ -3,50 +3,68 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUpIcon,
-  ArrowDownIcon,
-  UsersIcon,
-  DollarSignIcon,
-  ActivityIcon,
-} from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { getClientStats } from "@/actions/business/client/get-clients";
-import { useAction } from "next-safe-action/hooks";
-import { useEffect } from "react";
+import { ArrowUpIcon, ArrowDownIcon } from "lucide-react";
 import {
   MdAccessTime,
   MdAttachMoney,
   MdSportsGymnastics,
 } from "react-icons/md";
 
-export function Overview() {
-  const {
-    execute: fetchStats,
-    result: clientStats,
-    status,
-  } = useAction(getClientStats);
+export interface OverviewProps {
+  clientStats: {
+    totalClients: number;
+    percentageChange: number;
+    monthlyRevenue: {
+      value: number;
+      percentageChange: number;
+    };
+    activeSessions: {
+      value: number;
+      percentageChange: number;
+    };
+  };
+}
 
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+export const stats = [
+  {
+    title: "Total Clients",
+    value: (clientStats: OverviewProps["clientStats"]) =>
+      clientStats.totalClients.toString(),
+    change: (clientStats: OverviewProps["clientStats"]) =>
+      `${clientStats.percentageChange}%`,
+    isPositive: (clientStats: OverviewProps["clientStats"]) =>
+      clientStats.percentageChange >= 0,
+    icon: MdSportsGymnastics,
+  },
+  {
+    title: "Monthly Revenue",
+    value: (clientStats: OverviewProps["clientStats"]) =>
+      `$${clientStats.monthlyRevenue.value.toLocaleString()}`,
+    change: (clientStats: OverviewProps["clientStats"]) =>
+      `${clientStats.monthlyRevenue.percentageChange}%`,
+    isPositive: (clientStats: OverviewProps["clientStats"]) =>
+      clientStats.monthlyRevenue.percentageChange >= 0,
+    icon: MdAttachMoney,
+  },
+  {
+    title: "Active Sessions",
+    value: (clientStats: OverviewProps["clientStats"]) =>
+      clientStats.activeSessions.value.toLocaleString(),
+    change: (clientStats: OverviewProps["clientStats"]) =>
+      `${clientStats.activeSessions.percentageChange}%`,
+    isPositive: (clientStats: OverviewProps["clientStats"]) =>
+      clientStats.activeSessions.percentageChange >= 0,
+    icon: MdAccessTime,
+  },
+];
 
-  const isLoading = status === "executing";
-
+export function Overview({ clientStats }: OverviewProps) {
   const stats = [
     {
       title: "Total Clients",
-      value: isLoading ? (
-        <Skeleton className="h-8 w-20" />
-      ) : (
-        clientStats?.data?.data?.totalClients.toString() || "0"
-      ),
-      change: isLoading ? (
-        <Skeleton className="h-4 w-12" />
-      ) : (
-        `${clientStats?.data?.data?.percentageChange}%`
-      ),
-      isPositive: clientStats?.data?.data?.percentageChange >= 0,
+      value: clientStats.totalClients.toString(),
+      change: `${clientStats.percentageChange}%`,
+      isPositive: clientStats.percentageChange >= 0,
       icon: MdSportsGymnastics,
     },
     {
@@ -77,19 +95,17 @@ export function Overview() {
                 </p>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold">{stat.value}</p>
-                  {!isLoading && (
-                    <Badge
-                      variant={stat.isPositive ? "success" : "destructive"}
-                      className="text-xs"
-                    >
-                      {stat.isPositive ? (
-                        <ArrowUpIcon className="mr-1 size-3" />
-                      ) : (
-                        <ArrowDownIcon className="mr-1 size-3" />
-                      )}
-                      {stat.change}
-                    </Badge>
-                  )}
+                  <Badge
+                    variant={stat.isPositive ? "success" : "destructive"}
+                    className="text-xs"
+                  >
+                    {stat.isPositive ? (
+                      <ArrowUpIcon className="mr-1 size-3" />
+                    ) : (
+                      <ArrowDownIcon className="mr-1 size-3" />
+                    )}
+                    {stat.change}
+                  </Badge>
                 </div>
               </div>
               <stat.icon className="size-8 text-muted-foreground" />

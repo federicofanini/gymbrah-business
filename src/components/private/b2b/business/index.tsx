@@ -2,10 +2,34 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQueryState } from "nuqs";
-import { Overview } from "./overview";
+import { Overview, OverviewProps } from "./overview";
 import { Clients } from "./clients";
 
-export function BusinessPage() {
+export interface BusinessPageProps {
+  clientStats: {
+    totalClients: number;
+    percentageChange: number;
+    monthlyRevenue: {
+      value: number;
+      percentageChange: number;
+    };
+    activeSessions: {
+      value: number;
+      percentageChange: number;
+    };
+  };
+  clients: {
+    id: string;
+    name: string;
+    surname: string;
+    subscription?: {
+      sub_type: string;
+      renewal_date: Date;
+    };
+  }[];
+}
+
+export function BusinessPage({ clientStats, clients }: BusinessPageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "overview",
   });
@@ -37,11 +61,11 @@ export function BusinessPage() {
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
-          <Overview />
+          <Overview clientStats={clientStats} />
         </TabsContent>
 
         <TabsContent value="clients" className="mt-6">
-          <Clients />
+          <Clients clients={clients} totalClients={clientStats.totalClients} />
         </TabsContent>
       </Tabs>
     </div>
