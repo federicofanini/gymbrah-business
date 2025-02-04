@@ -1,80 +1,21 @@
-import { Suspense } from "react";
-import { AthletePage } from "@/components/private/b2b/athletes/page/athletes-page";
 import { getAthleteById } from "@/actions/business/athletes/get-athlete-by-id";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { AthletePage } from "@/components/private/b2b/athletes/athlete-page";
 
-export const dynamic = "force-dynamic";
-
-interface AthleteData {
-  id: string;
-  full_name: string;
-  goal: string;
-  gender_age: string;
-  status: string;
-}
-
-interface FormattedAthleteData {
-  id: string;
-  fullName: string;
-  goal: string;
-  gender: string;
-  age: number;
-  isActive: boolean;
-  stats: {
-    workoutsCompleted: number;
-    currentStreak: number;
-    bestStreak: number;
-    joinedDate: string;
-  };
-  recentWorkouts: {
-    date: string;
-    name: string;
-    completed: boolean;
-  }[];
-  workouts: {
-    id: string;
-    name: string;
-    date: string;
-    status: "completed" | "scheduled" | "missed";
-    type: string;
-    duration: number;
-  }[];
-}
-
-function LoadingSkeleton() {
-  return (
-    <div className="w-full px-4 md:px-8 py-4 space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-32" />
-      </div>
-
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i}>
-            <CardHeader>
-              <Skeleton className="h-4 w-20" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-8 w-16" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
+// Define the type for the dynamic route params
 type PageParams = { athleteId: string } & Promise<any>;
 
-export default async function Athlete({ params }: { params: PageParams }) {
-  const { athleteId } = await params;
-  const result = await getAthleteById({ athleteId });
+export default async function AthleteIdPage({
+  params,
+}: {
+  params: PageParams;
+}) {
+  const athleteResponse = await getAthleteById({
+    athleteId: params.athleteId,
+  });
 
-  if (!result?.data?.success || !result.data) {
+  if (!athleteResponse?.data?.success || !athleteResponse?.data?.data) {
     return (
-      <div className="w-full px-4 md:px-8 py-4">
+      <div className="container max-w-[1050px] py-12">
         <div className="mt-12 text-center">
           <p className="text-muted-foreground">
             Unable to load athlete details
@@ -84,11 +25,11 @@ export default async function Athlete({ params }: { params: PageParams }) {
     );
   }
 
-  const athleteData = result.data.data as AthleteData;
+  const athleteData = athleteResponse.data.data;
   const [gender] = athleteData.gender_age.split(" - ");
 
-  const formattedAthleteData: FormattedAthleteData = {
-    id: athleteId,
+  const formattedAthleteData = {
+    id: params.athleteId,
     fullName: athleteData.full_name,
     goal: athleteData.goal,
     gender,
@@ -141,9 +82,5 @@ export default async function Athlete({ params }: { params: PageParams }) {
     ],
   };
 
-  return (
-    <Suspense fallback={<LoadingSkeleton />}>
-      <AthletePage athlete={formattedAthleteData} />
-    </Suspense>
-  );
+  return <AthletePage athlete={formattedAthleteData} />;
 }

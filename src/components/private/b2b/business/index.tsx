@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQueryState } from "nuqs";
-import { Overview, OverviewProps } from "./overview";
+import { Overview } from "./overview";
 import { Clients } from "./clients";
 
 export interface BusinessPageProps {
