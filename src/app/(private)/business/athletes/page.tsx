@@ -4,6 +4,8 @@ import { getAthletes } from "@/actions/business/athletes/get-athletes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export const dynamic = "force-dynamic";
+
 async function AthletesPageWrapper() {
   const result = await getAthletes();
 

@@ -4,6 +4,8 @@ import { getAthleteById } from "@/actions/business/athletes/get-athlete-by-id";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
+export const dynamic = "force-dynamic";
+
 interface AthleteData {
   id: string;
   full_name: string;
