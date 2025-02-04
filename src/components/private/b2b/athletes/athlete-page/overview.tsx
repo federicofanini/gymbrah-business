@@ -3,36 +3,47 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Activity, Trophy, Calendar } from "lucide-react";
-import { FormattedAthleteData } from "@/app/(private)/business/athletes/[athleteId]/page";
+
+export interface AthleteData {
+  stats: {
+    workoutsCompleted: number;
+    currentStreak: number;
+    bestStreak: number;
+    joinedDate: string;
+  };
+  recentWorkouts: {
+    name: string;
+    date: string;
+    completed: boolean;
+  }[];
+}
 
 const stats = [
   {
     title: "Workouts",
-    value: (athlete: FormattedAthleteData) => athlete.stats.workoutsCompleted,
+    value: (athlete: AthleteData) => athlete.stats.workoutsCompleted,
     icon: Activity,
   },
   {
     title: "Current Streak",
-    value: (athlete: FormattedAthleteData) =>
-      `${athlete.stats.currentStreak} days`,
+    value: (athlete: AthleteData) => `${athlete.stats.currentStreak} days`,
     icon: LineChart,
   },
   {
     title: "Best Streak",
-    value: (athlete: FormattedAthleteData) =>
-      `${athlete.stats.bestStreak} days`,
+    value: (athlete: AthleteData) => `${athlete.stats.bestStreak} days`,
     icon: Trophy,
   },
   {
     title: "Member Since",
-    value: (athlete: FormattedAthleteData) =>
+    value: (athlete: AthleteData) =>
       new Date(athlete.stats.joinedDate).toLocaleDateString(),
     icon: Calendar,
   },
 ];
 
 interface OverviewProps {
-  athlete: FormattedAthleteData;
+  athlete: AthleteData;
 }
 
 export function Overview({ athlete }: OverviewProps) {

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Plus } from "lucide-react";
 import { useQueryState } from "nuqs";
 
-interface Workout {
+export interface Workout {
   id: string;
   name: string;
   date: string;

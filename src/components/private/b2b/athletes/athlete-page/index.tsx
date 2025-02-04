@@ -5,13 +5,26 @@ import { useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeftIcon } from "lucide-react";
-import { WorkoutsTab } from "./workouts";
+import { Workout, WorkoutsTab } from "./workouts";
 import Link from "next/link";
-import { FormattedAthleteData } from "@/app/(private)/business/athletes/[athleteId]/page";
 import { Overview } from "./overview";
+import { AthleteData } from "./overview";
+
+export interface ExtendedAthleteData extends AthleteData {
+  fullName: string;
+  goal: string;
+  gender: string;
+  age: number;
+  workouts: {
+    id: string;
+    name: string;
+    date: string;
+    status: string;
+  }[];
+}
 
 export interface AthletePageProps {
-  athlete: FormattedAthleteData;
+  athlete: ExtendedAthleteData;
 }
 
 const tabs = [
@@ -67,7 +80,7 @@ export function AthletePage({ athlete }: AthletePageProps) {
         </TabsContent>
 
         <TabsContent value="workouts">
-          <WorkoutsTab workouts={athlete.workouts} />
+          <WorkoutsTab workouts={athlete.workouts as Workout[]} />
         </TabsContent>
 
         <TabsContent value="progress">
