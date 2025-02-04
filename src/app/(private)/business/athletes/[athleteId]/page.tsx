@@ -64,11 +64,8 @@ function LoadingSkeleton() {
   );
 }
 
-// Define the type for the dynamic route params
-type PageParams = { athleteId: string } & Promise<any>;
-
-export default async function Athlete({ params }: { params: PageParams }) {
-  const result = await getAthleteById({ athleteId: params.athleteId });
+async function AthletePageWrapper({ athleteId }: { athleteId: string }) {
+  const result = await getAthleteById({ athleteId });
 
   if (!result?.data?.success || !result.data) {
     return (
@@ -86,7 +83,7 @@ export default async function Athlete({ params }: { params: PageParams }) {
   const [gender] = athleteData.gender_age.split(" - ");
 
   const formattedAthleteData: FormattedAthleteData = {
-    id: params.athleteId,
+    id: athleteId,
     fullName: athleteData.full_name,
     goal: athleteData.goal,
     gender,
@@ -139,9 +136,16 @@ export default async function Athlete({ params }: { params: PageParams }) {
     ],
   };
 
+  return <AthletePage athlete={formattedAthleteData} />;
+}
+
+type PageParams = { athleteId: string } & Promise<any>;
+
+export default async function Athlete({ params }: { params: PageParams }) {
+  const { athleteId } = await params;
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <AthletePage athlete={formattedAthleteData} />
+      <AthletePageWrapper athleteId={athleteId} />
     </Suspense>
   );
 }
