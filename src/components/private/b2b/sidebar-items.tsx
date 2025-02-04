@@ -1,3 +1,4 @@
+import { Dumbbell } from "lucide-react";
 import {
   MdDashboard,
   MdSportsGymnastics,
@@ -15,12 +16,11 @@ export const sidebarItems = [
     label: "Athletes",
     path: `/business/athletes`,
   },
-  // {
-  //   icon: Dumbbell,
-  //   label: "Workouts",
-  //   path: `/business/workouts`,
-  //   isActive: pathname === `/business/workouts`,
-  // },
+  {
+    icon: Dumbbell,
+    label: "Workouts",
+    path: `/business/workouts`,
+  },
   {
     icon: MdBatchPrediction,
     label: "Website",
