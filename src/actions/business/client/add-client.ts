@@ -6,7 +6,6 @@ import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../../types/action-response";
 import { appErrors } from "../../types/errors";
 import { prisma } from "@/lib/db";
-import { revalidatePath } from "next/cache";
 
 const schema = z.object({
   name: z.string().min(2).max(50),
@@ -65,9 +64,6 @@ export const addClient = createSafeActionClient()
           updated_at: new Date(),
         },
       });
-
-      // Revalidate the clients page after creating new client
-      revalidatePath("/business?tab=clients");
 
       return {
         success: true,
