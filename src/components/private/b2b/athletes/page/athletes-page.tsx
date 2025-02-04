@@ -15,27 +15,29 @@ import {
 import { WorkoutsTab } from "./workouts";
 import Link from "next/link";
 
-const mockAthleteData = {
-  id: "1",
-  fullName: "John Smith",
-  goal: "Strength",
-  gender: "M",
-  age: 28,
-  isActive: true,
-  stats: {
-    workoutsCompleted: 156,
-    currentStreak: 5,
-    bestStreak: 14,
-    joinedDate: "2023-09-15",
-  },
-  recentWorkouts: [
-    { date: "2024-01-15", name: "Upper Body Strength", completed: true },
-    { date: "2024-01-13", name: "Lower Body Power", completed: true },
-    { date: "2024-01-11", name: "Core & Mobility", completed: true },
-  ],
-};
+interface AthletePageProps {
+  athlete: {
+    id: string;
+    fullName: string;
+    goal: string;
+    gender: string;
+    age: number;
+    isActive: boolean;
+    stats: {
+      workoutsCompleted: number;
+      currentStreak: number;
+      bestStreak: number;
+      joinedDate: string;
+    };
+    recentWorkouts: {
+      date: string;
+      name: string;
+      completed: boolean;
+    }[];
+  };
+}
 
-export function AthletePage() {
+export function AthletePage({ athlete }: AthletePageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "overview",
   });
@@ -51,13 +53,11 @@ export function AthletePage() {
     <div className="w-full px-4 md:px-8 py-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="space-y-1">
-          <h1 className="text-xl md:text-2xl font-bold">
-            {mockAthleteData.fullName}
-          </h1>
+          <h1 className="text-xl md:text-2xl font-bold">{athlete.fullName}</h1>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">{mockAthleteData.goal}</Badge>
+            <Badge variant="outline">{athlete.goal}</Badge>
             <span className="text-sm text-muted-foreground">
-              {mockAthleteData.gender} • {mockAthleteData.age} years
+              {athlete.gender} • {athlete.age} years
             </span>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function AthletePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-lg md:text-2xl font-bold">
-                  {mockAthleteData.stats.workoutsCompleted}
+                  {athlete.stats.workoutsCompleted}
                 </div>
               </CardContent>
             </Card>
@@ -109,7 +109,7 @@ export function AthletePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-lg md:text-2xl font-bold">
-                  {mockAthleteData.stats.currentStreak} days
+                  {athlete.stats.currentStreak} days
                 </div>
               </CardContent>
             </Card>
@@ -122,7 +122,7 @@ export function AthletePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-lg md:text-2xl font-bold">
-                  {mockAthleteData.stats.bestStreak} days
+                  {athlete.stats.bestStreak} days
                 </div>
               </CardContent>
             </Card>
@@ -135,9 +135,7 @@ export function AthletePage() {
               </CardHeader>
               <CardContent>
                 <div className="text-lg md:text-2xl font-bold">
-                  {new Date(
-                    mockAthleteData.stats.joinedDate
-                  ).toLocaleDateString()}
+                  {new Date(athlete.stats.joinedDate).toLocaleDateString()}
                 </div>
               </CardContent>
             </Card>
@@ -151,7 +149,7 @@ export function AthletePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {mockAthleteData.recentWorkouts.map((workout, i) => (
+                {athlete.recentWorkouts.map((workout, i) => (
                   <div
                     key={i}
                     className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b last:border-0 gap-2"

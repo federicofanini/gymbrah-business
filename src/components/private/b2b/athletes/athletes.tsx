@@ -18,46 +18,36 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getAthletes } from "@/actions/business/athletes/get-athletes";
 
-const mockAthletes = [
-  {
-    id: "1",
-    fullName: "John Smith",
-    goal: "Strength",
-    gender: "M",
-    age: 28,
-    isActive: true,
-    link: "1",
-  },
-  {
-    id: "2",
-    fullName: "Sarah Johnson",
-    goal: "Weight Loss",
-    gender: "F",
-    age: 34,
-    isActive: false,
-    link: "2",
-  },
-  {
-    id: "3",
-    fullName: "Mike Wilson",
-    goal: "Endurance",
-    gender: "M",
-    age: 42,
-    isActive: true,
-    link: "3",
-  },
-];
+interface Athlete {
+  id: string;
+  full_name: string;
+  goal: string;
+  gender_age: string;
+  status: string;
+}
 
 export function Athletes() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [athletes, setAthletes] = useState<Athlete[]>([]);
 
-  const filteredAthletes = mockAthletes.filter((athlete) => {
+  useEffect(() => {
+    async function fetchAthletes() {
+      const result = await getAthletes();
+      if (result?.data?.success && result.data) {
+        setAthletes(result?.data?.data);
+      }
+    }
+    fetchAthletes();
+  }, []);
+
+  const filteredAthletes = athletes.filter((athlete) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      athlete.fullName.toLowerCase().includes(searchLower) ||
+      athlete.full_name.toLowerCase().includes(searchLower) ||
       athlete.goal.toLowerCase().includes(searchLower)
     );
   });
@@ -108,7 +98,7 @@ export function Athletes() {
               {filteredAthletes.map((athlete) => (
                 <TableRow key={athlete.id}>
                   <TableCell className="font-medium">
-                    {athlete.fullName}
+                    {athlete.full_name}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     <Badge variant="outline" className="whitespace-nowrap">
@@ -116,19 +106,21 @@ export function Athletes() {
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell whitespace-nowrap">
-                    {athlete.gender} - {athlete.age}y
+                    {athlete.gender_age}
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={athlete.isActive ? "success" : "destructive"}
+                      variant={
+                        athlete.status === "Active" ? "success" : "destructive"
+                      }
                       className="whitespace-nowrap"
                     >
-                      {athlete.isActive ? (
+                      {athlete.status === "Active" ? (
                         <CheckIcon className="size-3.5 mr-1" />
                       ) : (
                         <XIcon className="size-3.5 mr-1" />
                       )}
-                      {athlete.isActive ? "Active" : "Inactive"}
+                      {athlete.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right space-x-2">
@@ -138,7 +130,7 @@ export function Athletes() {
                       asChild
                       className="sm:hidden"
                     >
-                      <Link href={`/business/athletes/${athlete.link}`}>
+                      <Link href={`/business/athletes/${athlete.id}`}>
                         <UserIcon className="size-4" />
                       </Link>
                     </Button>
@@ -148,7 +140,7 @@ export function Athletes() {
                       asChild
                       className="hidden sm:inline-flex whitespace-nowrap"
                     >
-                      <Link href={`/business/athletes/${athlete.link}`}>
+                      <Link href={`/business/athletes/${athlete.id}`}>
                         <UserIcon className="mr-2 size-4" />
                         Athlete Page
                       </Link>

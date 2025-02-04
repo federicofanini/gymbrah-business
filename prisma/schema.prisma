@@ -84,6 +84,21 @@ model athlete {
   @@index([business_code])
 }
 
+model client_athlete {
+  id          String @id @default(uuid())
+  client_id   String
+  business_id String
+
+  workout_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([client_id])
+  @@index([business_id])
+  @@index([workout_id])
+}
+
 model client {
   id          String  @id @default(uuid())
   user_id     String?

@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import type { ActionResponse } from "../../types/action-response";
 import { appErrors } from "../../types/errors";
 import { prisma } from "@/lib/db";
+import { addClientAthlete } from "./add-client-athlete";
 
 const schema = z.object({
   name: z.string().min(2).max(50),
@@ -64,6 +65,23 @@ export const addClient = createSafeActionClient()
           updated_at: new Date(),
         },
       });
+
+      // Add client athlete record
+      const clientAthleteResult = await addClientAthlete({
+        clientId: client.id,
+        businessId: business.id,
+      });
+
+      if (!clientAthleteResult?.data?.success) {
+        console.error(
+          "Failed to create client athlete:",
+          clientAthleteResult?.data?.error
+        );
+        return {
+          success: false,
+          error: appErrors.UNEXPECTED_ERROR,
+        };
+      }
 
       return {
         success: true,
