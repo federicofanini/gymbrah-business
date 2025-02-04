@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, Plus } from "lucide-react";
@@ -15,42 +15,11 @@ interface Workout {
   duration: number;
 }
 
-const mockWorkouts: Workout[] = [
-  {
-    id: "1",
-    name: "Upper Body Strength",
-    date: "2024-01-20",
-    status: "scheduled",
-    type: "Strength",
-    duration: 60,
-  },
-  {
-    id: "2",
-    name: "Lower Body Power",
-    date: "2024-01-18",
-    status: "completed",
-    type: "Power",
-    duration: 45,
-  },
-  {
-    id: "3",
-    name: "Core & Mobility",
-    date: "2024-01-15",
-    status: "completed",
-    type: "Mobility",
-    duration: 30,
-  },
-  {
-    id: "4",
-    name: "Full Body HIIT",
-    date: "2024-01-12",
-    status: "missed",
-    type: "Conditioning",
-    duration: 45,
-  },
-];
+interface WorkoutsTabProps {
+  workouts: Workout[];
+}
 
-export function WorkoutsTab() {
+export function WorkoutsTab({ workouts }: WorkoutsTabProps) {
   const [view] = useQueryState("view", {
     defaultValue: "upcoming",
   });
@@ -72,7 +41,7 @@ export function WorkoutsTab() {
       </div>
 
       <div className="grid gap-3 md:gap-4">
-        {mockWorkouts.map((workout) => (
+        {workouts.map((workout) => (
           <Card key={workout.id}>
             <CardContent className="p-4 md:p-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

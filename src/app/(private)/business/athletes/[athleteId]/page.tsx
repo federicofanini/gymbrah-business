@@ -12,37 +12,32 @@ interface AthleteData {
   status: string;
 }
 
-async function AthletePageWrapper({ athleteId }: { athleteId: string }) {
-  const result = await getAthleteById({ athleteId });
-
-  if (!result?.data?.success || !result.data) {
-    throw new Error("Failed to load athlete data");
-  }
-
-  const athleteData = result.data.data as AthleteData;
-  const [gender] = athleteData.gender_age.split(" - ");
-
-  const formattedAthleteData = {
-    id: athleteId,
-    fullName: athleteData.full_name,
-    goal: athleteData.goal,
-    gender,
-    age: parseInt(athleteData.gender_age.split("y")[0].split(" - ")[1]),
-    isActive: athleteData.status === "Active",
-    stats: {
-      workoutsCompleted: 156, // Mock data
-      currentStreak: 5,
-      bestStreak: 14,
-      joinedDate: "2023-09-15",
-    },
-    recentWorkouts: [
-      { date: "2024-01-15", name: "Upper Body Strength", completed: true },
-      { date: "2024-01-13", name: "Lower Body Power", completed: true },
-      { date: "2024-01-11", name: "Core & Mobility", completed: true },
-    ],
+interface FormattedAthleteData {
+  id: string;
+  fullName: string;
+  goal: string;
+  gender: string;
+  age: number;
+  isActive: boolean;
+  stats: {
+    workoutsCompleted: number;
+    currentStreak: number;
+    bestStreak: number;
+    joinedDate: string;
   };
-
-  return <AthletePage athlete={formattedAthleteData} />;
+  recentWorkouts: {
+    date: string;
+    name: string;
+    completed: boolean;
+  }[];
+  workouts: {
+    id: string;
+    name: string;
+    date: string;
+    status: "completed" | "scheduled" | "missed";
+    type: string;
+    duration: number;
+  }[];
 }
 
 function LoadingSkeleton() {
@@ -69,10 +64,84 @@ function LoadingSkeleton() {
   );
 }
 
-export default function Athlete({ params }: { params: { athleteId: string } }) {
+// Define the type for the dynamic route params
+type PageParams = { athleteId: string } & Promise<any>;
+
+export default async function Athlete({ params }: { params: PageParams }) {
+  const result = await getAthleteById({ athleteId: params.athleteId });
+
+  if (!result?.data?.success || !result.data) {
+    return (
+      <div className="w-full px-4 md:px-8 py-4">
+        <div className="mt-12 text-center">
+          <p className="text-muted-foreground">
+            Unable to load athlete details
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const athleteData = result.data.data as AthleteData;
+  const [gender] = athleteData.gender_age.split(" - ");
+
+  const formattedAthleteData: FormattedAthleteData = {
+    id: params.athleteId,
+    fullName: athleteData.full_name,
+    goal: athleteData.goal,
+    gender,
+    age: parseInt(athleteData.gender_age.split("y")[0].split(" - ")[1]),
+    isActive: athleteData.status === "Active",
+    stats: {
+      workoutsCompleted: 156, // Mock data
+      currentStreak: 5,
+      bestStreak: 14,
+      joinedDate: "2023-09-15",
+    },
+    recentWorkouts: [
+      { date: "2024-01-15", name: "Upper Body Strength", completed: true },
+      { date: "2024-01-13", name: "Lower Body Power", completed: true },
+      { date: "2024-01-11", name: "Core & Mobility", completed: true },
+    ],
+    workouts: [
+      {
+        id: "1",
+        name: "Upper Body Strength",
+        date: "2024-01-15",
+        status: "completed" as const,
+        type: "Strength",
+        duration: 60,
+      },
+      {
+        id: "2",
+        name: "Lower Body Power",
+        date: "2024-01-13",
+        status: "completed" as const,
+        type: "Power",
+        duration: 45,
+      },
+      {
+        id: "3",
+        name: "Core & Mobility",
+        date: "2024-01-11",
+        status: "completed" as const,
+        type: "Mobility",
+        duration: 30,
+      },
+      {
+        id: "4",
+        name: "Full Body Circuit",
+        date: "2024-01-17",
+        status: "scheduled" as const,
+        type: "Circuit",
+        duration: 45,
+      },
+    ],
+  };
+
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <AthletePageWrapper athleteId={params.athleteId} />
+      <AthletePage athlete={formattedAthleteData} />
     </Suspense>
   );
 }

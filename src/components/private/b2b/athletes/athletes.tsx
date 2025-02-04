@@ -18,9 +18,8 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { getAthletes } from "@/actions/business/athletes/get-athletes";
 
 interface Athlete {
   id: string;
@@ -30,21 +29,14 @@ interface Athlete {
   status: string;
 }
 
-export function Athletes() {
+interface AthletesProps {
+  athletes: Athlete[];
+}
+
+export function Athletes({ athletes: initialAthletes }: AthletesProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [athletes, setAthletes] = useState<Athlete[]>([]);
 
-  useEffect(() => {
-    async function fetchAthletes() {
-      const result = await getAthletes();
-      if (result?.data?.success && result.data) {
-        setAthletes(result?.data?.data);
-      }
-    }
-    fetchAthletes();
-  }, []);
-
-  const filteredAthletes = athletes.filter((athlete) => {
+  const filteredAthletes = initialAthletes.filter((athlete) => {
     const searchLower = searchQuery.toLowerCase();
     return (
       athlete.full_name.toLowerCase().includes(searchLower) ||

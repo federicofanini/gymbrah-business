@@ -34,20 +34,55 @@ interface AthletePageProps {
       name: string;
       completed: boolean;
     }[];
+    workouts: {
+      id: string;
+      name: string;
+      date: string;
+      status: "completed" | "scheduled" | "missed";
+      type: string;
+      duration: number;
+    }[];
   };
 }
+
+const stats = [
+  {
+    title: "Workouts",
+    value: (athlete: AthletePageProps["athlete"]) =>
+      athlete.stats.workoutsCompleted,
+    icon: Activity,
+  },
+  {
+    title: "Current Streak",
+    value: (athlete: AthletePageProps["athlete"]) =>
+      `${athlete.stats.currentStreak} days`,
+    icon: LineChart,
+  },
+  {
+    title: "Best Streak",
+    value: (athlete: AthletePageProps["athlete"]) =>
+      `${athlete.stats.bestStreak} days`,
+    icon: Trophy,
+  },
+  {
+    title: "Member Since",
+    value: (athlete: AthletePageProps["athlete"]) =>
+      new Date(athlete.stats.joinedDate).toLocaleDateString(),
+    icon: Calendar,
+  },
+];
+
+const tabs = [
+  { id: "overview", title: "Overview" },
+  { id: "workouts", title: "Workouts" },
+  { id: "progress", title: "Progress" },
+  { id: "settings", title: "Settings" },
+];
 
 export function AthletePage({ athlete }: AthletePageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "overview",
   });
-
-  const tabs = [
-    { id: "overview", title: "Overview" },
-    { id: "workouts", title: "Workouts" },
-    { id: "progress", title: "Progress" },
-    { id: "settings", title: "Settings" },
-  ];
 
   return (
     <div className="w-full px-4 md:px-8 py-4">
@@ -87,58 +122,21 @@ export function AthletePage({ athlete }: AthletePageProps) {
 
         <TabsContent value="overview" className="mt-6">
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">
-                  Workouts
-                </CardTitle>
-                <Activity className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg md:text-2xl font-bold">
-                  {athlete.stats.workoutsCompleted}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">
-                  Current Streak
-                </CardTitle>
-                <LineChart className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg md:text-2xl font-bold">
-                  {athlete.stats.currentStreak} days
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">
-                  Best Streak
-                </CardTitle>
-                <Trophy className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg md:text-2xl font-bold">
-                  {athlete.stats.bestStreak} days
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xs sm:text-sm font-medium">
-                  Member Since
-                </CardTitle>
-                <Calendar className="size-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg md:text-2xl font-bold">
-                  {new Date(athlete.stats.joinedDate).toLocaleDateString()}
-                </div>
-              </CardContent>
-            </Card>
+            {stats.map((stat) => (
+              <Card key={stat.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xs sm:text-sm font-medium">
+                    {stat.title}
+                  </CardTitle>
+                  <stat.icon className="size-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-lg md:text-2xl font-bold">
+                    {stat.value(athlete)}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           <Card className="mt-4">
@@ -176,7 +174,7 @@ export function AthletePage({ athlete }: AthletePageProps) {
         </TabsContent>
 
         <TabsContent value="workouts">
-          <WorkoutsTab />
+          <WorkoutsTab workouts={athlete.workouts} />
         </TabsContent>
 
         <TabsContent value="progress">
