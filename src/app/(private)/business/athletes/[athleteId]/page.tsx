@@ -66,7 +66,10 @@ function LoadingSkeleton() {
   );
 }
 
-async function AthletePageWrapper({ athleteId }: { athleteId: string }) {
+type PageParams = { athleteId: string } & Promise<any>;
+
+export default async function Athlete({ params }: { params: PageParams }) {
+  const { athleteId } = await params;
   const result = await getAthleteById({ athleteId });
 
   if (!result?.data?.success || !result.data) {
@@ -138,16 +141,9 @@ async function AthletePageWrapper({ athleteId }: { athleteId: string }) {
     ],
   };
 
-  return <AthletePage athlete={formattedAthleteData} />;
-}
-
-type PageParams = { athleteId: string } & Promise<any>;
-
-export default async function Athlete({ params }: { params: PageParams }) {
-  const { athleteId } = await params;
   return (
     <Suspense fallback={<LoadingSkeleton />}>
-      <AthletePageWrapper athleteId={athleteId} />
+      <AthletePage athlete={formattedAthleteData} />
     </Suspense>
   );
 }
