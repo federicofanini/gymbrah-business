@@ -121,7 +121,7 @@ export function ExerciseTable({
         <div className="p-3 md:p-6 flex flex-col md:flex-row md:justify-between md:items-center border-b gap-3 md:gap-0">
           <div className="space-y-1">
             <h2 className="text-base md:text-lg font-medium">
-              Exercise Library
+              Exercise Library - 1,330+ exercises
             </h2>
             <p className="text-xs md:text-sm text-muted-foreground">
               Browse and add exercises to your workout
