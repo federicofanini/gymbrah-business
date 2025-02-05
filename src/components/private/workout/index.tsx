@@ -87,7 +87,10 @@ export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
         <TabsContent value="your-workouts" className="mt-6"></TabsContent>
 
         <TabsContent value="exercise-library" className="mt-6">
-          <ExerciseTable exercises={exercises} />
+          <ExerciseTable
+            exercises={exercises}
+            initialExercises={initialExercises}
+          />
         </TabsContent>
 
         <TabsContent value="assign-workout" className="mt-6"></TabsContent>

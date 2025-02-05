@@ -1,6 +1,7 @@
 import { WorkoutPage } from "@/components/private/workout";
 import { getExercisesByBodyPart } from "@/actions/exercises/exercise-by-bodyPart";
 import { bodyParts } from "@/actions/exercises/bodyParts";
+import { getExercises } from "@/actions/exercises/exercises-list";
 
 interface SearchParams {
   bodyPart?: string;
@@ -14,7 +15,7 @@ export default async function Workouts({
 }) {
   const selectedBodyPart = searchParams.bodyPart || "all";
   const currentPage = Number(searchParams.page) || 1;
-  const pageSize = 10;
+  const pageSize = 25;
 
   // Fetch exercises for selected body part
   const exercisesResponse = await getExercisesByBodyPart({
@@ -28,11 +29,12 @@ export default async function Workouts({
   }
 
   // Fetch initial exercises for all body parts
-  const initialExercisesResponse = await getExercisesByBodyPart({
-    bodyPart: "back",
+  const initialExercisesResponse = await getExercises({
     page: 1,
-    limit: 10,
+    limit: 10, // Fetch more initial exercises to have a good base for filtering
   });
+
+  console.log(initialExercisesResponse);
 
   if (!initialExercisesResponse?.data?.success) {
     throw new Error(initialExercisesResponse?.data?.error as string);

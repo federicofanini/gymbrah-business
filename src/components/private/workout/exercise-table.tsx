@@ -56,9 +56,13 @@ interface ExerciseTableProps {
       limit: number;
     };
   };
+  initialExercises: Exercise[];
 }
 
-export function ExerciseTable({ exercises }: ExerciseTableProps) {
+export function ExerciseTable({
+  exercises,
+  initialExercises,
+}: ExerciseTableProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useQueryState("search", {
     defaultValue: "",
@@ -95,15 +99,21 @@ export function ExerciseTable({ exercises }: ExerciseTableProps) {
     router.refresh();
   };
 
-  const filteredExercises = exercises.exercises.filter((exercise) => {
-    const matchesSearch =
-      !searchQuery ||
-      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      exercise.body_part.toLowerCase().includes(searchQuery.toLowerCase());
+  const displayedExercises =
+    bodyPart === "all" ? initialExercises : exercises?.exercises || [];
 
-    return matchesSearch;
-  });
+  const filteredExercises =
+    displayedExercises?.filter((exercise) => {
+      if (!exercise) return false;
+
+      const matchesSearch =
+        !searchQuery ||
+        exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        exercise.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        exercise.body_part.toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesSearch;
+    }) || [];
 
   return (
     <div className="space-y-8">
