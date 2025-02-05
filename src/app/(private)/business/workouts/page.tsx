@@ -11,10 +11,10 @@ interface SearchParams {
 export default async function Workouts({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 }) {
-  const selectedBodyPart = searchParams.bodyPart || "all";
-  const currentPage = Number(searchParams.page) || 1;
+  const selectedBodyPart = (await searchParams).bodyPart || "all";
+  const currentPage = Number((await searchParams).page) || 1;
   const pageSize = 25;
 
   // Fetch exercises for selected body part
@@ -33,8 +33,6 @@ export default async function Workouts({
     page: 1,
     limit: 10, // Fetch more initial exercises to have a good base for filtering
   });
-
-  console.log(initialExercisesResponse);
 
   if (!initialExercisesResponse?.data?.success) {
     throw new Error(initialExercisesResponse?.data?.error as string);
