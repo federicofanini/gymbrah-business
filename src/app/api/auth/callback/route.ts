@@ -1,5 +1,6 @@
 "use server";
 
+import { checkBusiness } from "@/actions/business/onboarding/check-business";
 import { prisma } from "@/lib/db";
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
@@ -54,9 +55,13 @@ export async function GET(req: NextRequest) {
           select: { full_name: true },
         });
 
-        const redirectPath = userData?.full_name
-          ? "/blackboard"
-          : "/onboarding";
+        let redirectPath = "/onboarding";
+        if (userData?.full_name) {
+          const businessCheck = await checkBusiness({ user_id: userId });
+          redirectPath = businessCheck?.data?.success
+            ? "/business"
+            : "/athlete";
+        }
 
         const forwardedHost = req.headers.get("x-forwarded-host");
         const isLocalEnv = process.env.NODE_ENV === "development";

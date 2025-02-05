@@ -125,6 +125,7 @@ model business_client_subscription {
   business_id String
 
   sub_type     String // e.g. "monthly", "yearly"
+  price        Float
   payment_date DateTime // date of payment 
   renewal_date DateTime // date of renewal
   months_paid  String // e.g. "1,2" to count how many months have been paid

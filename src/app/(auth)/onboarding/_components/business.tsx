@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { addBusiness } from "@/actions/business/onboarding/add-business";
 import { addBusinessPlan } from "@/actions/business/onboarding/add-business-plan";
+import { saveUser } from "@/actions/user/save-user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,13 +57,23 @@ export default function OnboardingPage() {
       onSuccess: (response) => {
         if (response?.data?.success) {
           toast.success("Business plan added successfully");
-          router.push("/business");
+          executeCreateUser();
         } else {
           toast.error("Failed to add business plan");
         }
       },
     }
   );
+
+  const { execute: executeCreateUser } = useAction(saveUser, {
+    onSuccess: (response) => {
+      if (response?.data) {
+        router.push("/business");
+      } else {
+        toast.error("Failed to create user");
+      }
+    },
+  });
 
   const handleBusinessSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +86,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="container max-w-2xl mx-auto py-8">
+    <>
       {step === 1 ? (
         <Card>
           <CardHeader>
@@ -294,6 +305,6 @@ export default function OnboardingPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </>
   );
 }
