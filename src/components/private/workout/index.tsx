@@ -30,7 +30,7 @@ interface WorkoutPageProps {
 
 export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
   const [tab, setTab] = useQueryState("tab", {
-    defaultValue: "exercise-library",
+    defaultValue: "your-workouts",
   });
 
   // Add parse and defaultValue for proper pagination
@@ -87,10 +87,7 @@ export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
         <TabsContent value="your-workouts" className="mt-6"></TabsContent>
 
         <TabsContent value="exercise-library" className="mt-6">
-          <ExerciseTable
-            initialExercises={initialExercises}
-            exercises={exercises}
-          />
+          <ExerciseTable exercises={exercises} />
         </TabsContent>
 
         <TabsContent value="assign-workout" className="mt-6"></TabsContent>

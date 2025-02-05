@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryState } from "nuqs";
 import {
   Table,
   TableBody,
@@ -10,7 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { SearchIcon, PlusIcon, InfoIcon } from "lucide-react";
+import {
+  SearchIcon,
+  InfoIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { bodyParts } from "@/actions/exercises/bodyParts";
+import { useQueryState } from "nuqs";
+import { useRouter } from "next/navigation";
 
 interface Exercise {
   id: string;
@@ -50,34 +56,54 @@ interface ExerciseTableProps {
       limit: number;
     };
   };
-  initialExercises: Exercise[];
 }
 
-export function ExerciseTable({
-  exercises,
-  initialExercises,
-}: ExerciseTableProps) {
+export function ExerciseTable({ exercises }: ExerciseTableProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useQueryState("search", {
     defaultValue: "",
+    parse: (value) => value || "",
   });
-  const [bodyPart, setBodyPart] = useQueryState("bodyPart");
 
-  const filterExercises = (exercisesToFilter: Exercise[]) => {
-    return exercisesToFilter.filter((exercise) => {
-      const matchesSearch =
-        !searchQuery ||
-        exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exercise.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        exercise.body_part.toLowerCase().includes(searchQuery.toLowerCase());
+  const [bodyPart, setBodyPart] = useQueryState("bodyPart", {
+    defaultValue: "all",
+    parse: (value) => value || "all",
+  });
 
-      return matchesSearch;
-    });
+  const [page, setPage] = useQueryState("page", {
+    defaultValue: "1",
+    parse: (value) => {
+      const parsed = parseInt(value || "1");
+      return isNaN(parsed) ? "1" : parsed.toString();
+    },
+  });
+
+  const handleBodyPartChange = async (value: string) => {
+    await setBodyPart(value);
+    await setPage("1"); // Reset to first page when changing body part
+    router.refresh();
   };
 
-  const displayedExercises =
-    bodyPart === "all" || !bodyPart
-      ? filterExercises(initialExercises)
-      : filterExercises(exercises.exercises);
+  const handleSearch = async (value: string) => {
+    await setSearchQuery(value);
+    await setPage("1"); // Reset to first page when searching
+    router.refresh();
+  };
+
+  const handlePageChange = async (newPage: number) => {
+    await setPage(newPage.toString());
+    router.refresh();
+  };
+
+  const filteredExercises = exercises.exercises.filter((exercise) => {
+    const matchesSearch =
+      !searchQuery ||
+      exercise.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exercise.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      exercise.body_part.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesSearch;
+  });
 
   return (
     <div className="space-y-8">
@@ -97,11 +123,14 @@ export function ExerciseTable({
               <Input
                 placeholder="Search exercises..."
                 className="pl-8 w-full md:w-[300px]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQuery || ""}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
-            <Select value={bodyPart || "all"} onValueChange={setBodyPart}>
+            <Select
+              value={bodyPart || "all"}
+              onValueChange={handleBodyPartChange}
+            >
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Body Part" />
               </SelectTrigger>
@@ -132,7 +161,7 @@ export function ExerciseTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {displayedExercises.map((exercise) => (
+              {filteredExercises.map((exercise) => (
                 <TableRow key={exercise.id}>
                   <TableCell>
                     <Dialog>
@@ -228,6 +257,38 @@ export function ExerciseTable({
               ))}
             </TableBody>
           </Table>
+        </div>
+        <div className="flex items-center justify-between px-2 py-4 md:px-6">
+          <div className="text-sm text-muted-foreground">
+            Page {exercises.pagination.currentPage} of{" "}
+            {exercises.pagination.pages}
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                handlePageChange(exercises.pagination.currentPage - 1)
+              }
+              disabled={exercises.pagination.currentPage <= 1}
+            >
+              <ChevronLeftIcon className="h-4 w-4" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                handlePageChange(exercises.pagination.currentPage + 1)
+              }
+              disabled={
+                exercises.pagination.currentPage >= exercises.pagination.pages
+              }
+            >
+              Next
+              <ChevronRightIcon className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
