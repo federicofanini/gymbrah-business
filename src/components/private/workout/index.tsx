@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQueryState } from "nuqs";
 import { ExerciseTable } from "./exercise-table";
+import { WorkoutBuilder } from "./your-workouts";
 
 interface Exercise {
   id: string;
@@ -84,7 +85,12 @@ export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
           ))}
         </TabsList>
 
-        <TabsContent value="your-workouts" className="mt-6"></TabsContent>
+        <TabsContent value="your-workouts" className="mt-6">
+          <WorkoutBuilder
+            exercises={exercises}
+            initialExercises={initialExercises}
+          />
+        </TabsContent>
 
         <TabsContent value="exercise-library" className="mt-6">
           <ExerciseTable

@@ -90,6 +90,7 @@ export function AddClientDialog() {
         | "yearly",
       paymentDate: formData.get("paymentDate") as string,
       renewalDate: formData.get("renewalDate") as string,
+      price: parseFloat(formData.get("price") as string),
     });
   };
 
@@ -205,6 +206,11 @@ export function AddClientDialog() {
             <div className="space-y-2">
               <Label htmlFor="renewalDate">Renewal Date</Label>
               <Input id="renewalDate" name="renewalDate" type="date" required />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="price">Price</Label>
+              <Input id="price" name="price" type="number" required />
             </div>
 
             <div className="flex gap-2">

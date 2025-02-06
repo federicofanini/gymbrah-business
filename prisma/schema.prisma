@@ -179,10 +179,13 @@ model workout_exercise {
 }
 
 model workout {
-  id         String             @id @default(uuid())
-  name       String
-  user_id    String
-  user       user               @relation(fields: [user_id], references: [id])
+  id          String  @id @default(uuid())
+  name        String
+  user_id     String
+  user        user    @relation(fields: [user_id], references: [id])
+  business_id String?
+  athlete_id  String?
+
   selected   Boolean            @default(false)
   exercises  workout_exercise[]
   frequency  String? // Days of the week [1,2,3,4,5,6,7]
@@ -190,6 +193,8 @@ model workout {
   updated_at DateTime           @updatedAt
 
   @@index([user_id])
+  @@index([business_id])
+  @@index([athlete_id])
 }
 
 model exercises {

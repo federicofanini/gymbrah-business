@@ -4,13 +4,15 @@ import {
   getClientStats,
   getClients,
 } from "@/actions/business/client/get-clients";
+import { getRevenueStats } from "@/actions/business/client/get-revenues";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function BusinessPageWrapper() {
-  const [statsResult, clientsResult] = await Promise.all([
+  const [statsResult, clientsResult, revenueResult] = await Promise.all([
     getClientStats(),
     getClients({ page: 1, limit: 10 }),
+    getRevenueStats(),
   ]);
 
   if (!statsResult?.data?.success || !statsResult.data) {
@@ -21,12 +23,16 @@ async function BusinessPageWrapper() {
     throw new Error("Failed to load clients");
   }
 
+  if (!revenueResult?.data?.success || !revenueResult.data) {
+    throw new Error("Failed to load revenue stats");
+  }
+
   const clientStats = {
     totalClients: statsResult.data.data.totalClients,
     percentageChange: statsResult.data.data.percentageChange,
     monthlyRevenue: {
-      value: 0, // TODO: Add to getClientStats
-      percentageChange: 0,
+      value: revenueResult.data.data.currentMonthRevenue,
+      percentageChange: revenueResult.data.data.percentageChange,
     },
     activeSessions: {
       value: 0, // TODO: Add to getClientStats

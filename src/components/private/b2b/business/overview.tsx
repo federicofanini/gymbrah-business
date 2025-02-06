@@ -69,16 +69,16 @@ export function Overview({ clientStats }: OverviewProps) {
     },
     {
       title: "Monthly Revenue",
-      value: "$8,742", // TODO: get from db
-      change: "+8%", // TODO: get from db
-      isPositive: true,
+      value: clientStats.monthlyRevenue.value.toLocaleString(),
+      change: `${clientStats.monthlyRevenue.percentageChange}%`,
+      isPositive: clientStats.monthlyRevenue.percentageChange >= 0,
       icon: MdAttachMoney,
     },
     {
       title: "Active Sessions",
-      value: "1,432", // TODO: get from db
-      change: "-3%", // TODO: get from db
-      isPositive: false,
+      value: clientStats.activeSessions.value.toLocaleString(),
+      change: `${clientStats.activeSessions.percentageChange}%`,
+      isPositive: clientStats.activeSessions.percentageChange >= 0,
       icon: MdAccessTime,
     },
   ];

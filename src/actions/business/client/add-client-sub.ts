@@ -20,6 +20,7 @@ const schema = z.object({
   ]),
   paymentDate: z.string().transform((str) => new Date(str)),
   renewalDate: z.string().transform((str) => new Date(str)),
+  price: z.number(),
 });
 
 export const addClientSubscription = createSafeActionClient()
@@ -89,6 +90,7 @@ export const addClientSubscription = createSafeActionClient()
           sub_type: input.parsedInput.subType,
           payment_date: input.parsedInput.paymentDate,
           renewal_date: input.parsedInput.renewalDate,
+          price: input.parsedInput.price,
           months_paid: calculatedMonths,
           created_at: new Date(),
           updated_at: new Date(),
