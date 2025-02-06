@@ -2,6 +2,7 @@ import { WorkoutPage } from "@/components/private/workout";
 import { getExercisesByBodyPart } from "@/actions/exercises/exercise-by-bodyPart";
 import { bodyParts } from "@/actions/exercises/bodyParts";
 import { getExercises } from "@/actions/exercises/exercises-list";
+import { getWorkout } from "@/actions/workout/get-workout";
 
 interface SearchParams {
   bodyPart?: string;
@@ -38,11 +39,21 @@ export default async function Workouts({
     throw new Error(initialExercisesResponse?.data?.error as string);
   }
 
+  // Fetch workouts
+  const workoutsResponse = await getWorkout({
+    businessId: "592c43fa-ef79-414e-af58-885bcd3469e7", // You'll need to pass the actual business ID
+  });
+
+  if (!workoutsResponse?.data?.success) {
+    throw new Error(workoutsResponse?.data?.error as string);
+  }
+
   return (
     <div className="space-y-4">
       <WorkoutPage
         exercises={exercisesResponse.data.data}
         initialExercises={initialExercisesResponse.data.data.exercises}
+        workouts={workoutsResponse.data.data}
       />
     </div>
   );

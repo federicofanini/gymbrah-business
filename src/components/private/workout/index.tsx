@@ -3,7 +3,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQueryState } from "nuqs";
 import { ExerciseTable } from "./exercise-table";
-import { WorkoutBuilder } from "./your-workouts";
+import { WorkoutBuilder } from "./workout-builder";
+import { YourWorkouts } from "./your-workouts";
 
 interface Exercise {
   id: string;
@@ -14,6 +15,23 @@ interface Exercise {
   gif_url: string;
   secondary_muscles: string[];
   instructions: string[];
+}
+
+interface WorkoutExercise {
+  id: string;
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  round?: string;
+  exercise: Exercise;
+}
+
+interface Workout {
+  id: string;
+  name: string;
+  created_at: string;
+  exercises: WorkoutExercise[];
 }
 
 interface WorkoutPageProps {
@@ -27,9 +45,14 @@ interface WorkoutPageProps {
     };
   };
   initialExercises: Exercise[];
+  workouts: Workout[];
 }
 
-export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
+export function WorkoutPage({
+  exercises,
+  initialExercises,
+  workouts,
+}: WorkoutPageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "your-workouts",
   });
@@ -61,6 +84,10 @@ export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
       title: "Your Workouts",
     },
     {
+      id: "workout-builder",
+      title: "Workout Builder",
+    },
+    {
       id: "exercise-library",
       title: "Exercise Library",
     },
@@ -86,6 +113,10 @@ export function WorkoutPage({ exercises, initialExercises }: WorkoutPageProps) {
         </TabsList>
 
         <TabsContent value="your-workouts" className="mt-6">
+          <YourWorkouts workouts={{ success: true, data: workouts }} />
+        </TabsContent>
+
+        <TabsContent value="workout-builder" className="mt-6">
           <WorkoutBuilder
             exercises={exercises}
             initialExercises={initialExercises}
