@@ -5,6 +5,8 @@ import { useQueryState } from "nuqs";
 import { ExerciseTable } from "./exercise-table";
 import { WorkoutBuilder } from "./workout-builder";
 import { YourWorkouts } from "./your-workouts";
+import { AssignWorkout } from "./assign-workout";
+import { AssignedWorkout } from "./assigned-workout";
 
 interface Exercise {
   id: string;
@@ -34,48 +36,59 @@ interface Workout {
   exercises: WorkoutExercise[];
 }
 
+interface Athlete {
+  id: string;
+  full_name: string;
+  goal: string;
+  gender_age: string;
+  status: string;
+}
+
+interface PaginatedResponse {
+  total: number;
+  pages: number;
+  currentPage: number;
+  limit: number;
+}
+
+interface AssignedWorkout {
+  id: string;
+  workout: {
+    id: string;
+    name: string;
+    exercises: {
+      exercise: {
+        id: string;
+        name: string;
+      };
+    }[];
+  };
+  athlete_id: string;
+}
+
 interface WorkoutPageProps {
   exercises: {
     exercises: Exercise[];
-    pagination: {
-      total: number;
-      pages: number;
-      currentPage: number;
-      limit: number;
-    };
+    pagination: PaginatedResponse;
   };
   initialExercises: Exercise[];
   workouts: Workout[];
+  athletes: {
+    athletes: Athlete[];
+    pagination: PaginatedResponse;
+  };
+  assignedWorkouts: AssignedWorkout[];
 }
 
 export function WorkoutPage({
   exercises,
   initialExercises,
   workouts,
+  athletes,
+  assignedWorkouts,
 }: WorkoutPageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "your-workouts",
-  });
-
-  // Add parse and defaultValue for proper pagination
-  const [page, setPage] = useQueryState("page", {
-    defaultValue: "1",
-    parse: (value) => {
-      const parsed = parseInt(value || "1");
-      return isNaN(parsed) ? "1" : parsed.toString();
-    },
-  });
-
-  // Add parse and defaultValue for bodyPart filter
-  const [bodyPart, setBodyPart] = useQueryState("bodyPart", {
-    defaultValue: "all",
-    parse: (value) => value || "all",
-  });
-
-  // Add parse and defaultValue for search
-  const [searchQuery, setSearchQuery] = useQueryState("search", {
-    defaultValue: "",
-    parse: (value) => value || "",
   });
 
   const tabs = [
@@ -130,7 +143,23 @@ export function WorkoutPage({
           />
         </TabsContent>
 
-        <TabsContent value="assign-workout" className="mt-6"></TabsContent>
+        <TabsContent value="assign-workout" className="mt-6">
+          <AssignWorkout
+            athletes={{
+              athletes: athletes.athletes,
+              pagination: athletes.pagination,
+            }}
+            workouts={{
+              workouts: workouts,
+              pagination: {
+                total: workouts.length,
+                pages: 1,
+                currentPage: 1,
+                limit: workouts.length,
+              },
+            }}
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );

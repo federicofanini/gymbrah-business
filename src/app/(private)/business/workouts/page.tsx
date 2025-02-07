@@ -1,16 +1,20 @@
+import { Suspense } from "react";
 import { WorkoutPage } from "@/components/private/workout";
 import { getExercisesByBodyPart } from "@/actions/exercises/exercise-by-bodyPart";
-import { bodyParts } from "@/actions/exercises/bodyParts";
 import { getExercises } from "@/actions/exercises/exercises-list";
 import { getWorkout } from "@/actions/workout/get-workout";
 import { getBusinessId } from "@/actions/business/business-id";
+import { getAthletes } from "@/actions/business/athletes/get-athletes";
+import { getAssignedWorkouts } from "@/actions/workout/assigned-workout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SearchParams {
   bodyPart?: string;
   page?: string;
 }
 
-export default async function Workouts({
+async function WorkoutsPageWrapper({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
@@ -55,13 +59,60 @@ export default async function Workouts({
     throw new Error(workoutsResponse?.data?.error as string);
   }
 
+  const athletesResponse = await getAthletes();
+
+  if (!athletesResponse?.data?.success) {
+    throw new Error(athletesResponse?.data?.error as string);
+  }
+
+  // Fetch assigned workouts
+  const assignedWorkoutsResponse = await getAssignedWorkouts();
+
+  if (!assignedWorkoutsResponse?.data?.success) {
+    console.log("assignedWorkoutsResponse", assignedWorkoutsResponse);
+  }
+
   return (
     <div className="space-y-4">
       <WorkoutPage
         exercises={exercisesResponse.data.data}
         initialExercises={initialExercisesResponse.data.data.exercises}
         workouts={workoutsResponse.data.data}
+        athletes={{
+          athletes: athletesResponse.data.data,
+          pagination: athletesResponse.data.data.pagination,
+        }}
+        assignedWorkouts={assignedWorkoutsResponse?.data?.data}
       />
     </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="w-full px-4 md:px-8 py-4">
+      <Card>
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function Workouts({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <WorkoutsPageWrapper searchParams={searchParams} />
+    </Suspense>
   );
 }
