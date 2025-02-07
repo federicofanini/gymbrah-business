@@ -14,6 +14,7 @@ import {
   InfoIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  PlusIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -57,11 +58,13 @@ interface ExerciseTableProps {
     };
   };
   initialExercises: Exercise[];
+  onAddExercise?: (exercise: Exercise) => void;
 }
 
 export function ExerciseTable({
   exercises,
   initialExercises,
+  onAddExercise,
 }: ExerciseTableProps) {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useQueryState("search", {
@@ -262,6 +265,15 @@ export function ExerciseTable({
                         </div>
                       </DialogContent>
                     </Dialog>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="whitespace-nowrap"
+                      onClick={() => onAddExercise?.(exercise)}
+                    >
+                      <PlusIcon className="size-4 mr-1" />
+                      Add
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

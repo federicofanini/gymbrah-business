@@ -6,32 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, SearchIcon, InfoIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { bodyParts } from "@/actions/exercises/bodyParts";
 import { useQueryState } from "nuqs";
 import { useRouter } from "next/navigation";
 import { ExerciseTable } from "./exercise-table";
@@ -76,7 +52,7 @@ export function WorkoutBuilder({
 }: WorkoutBuilderProps) {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>(
+  const [selectedExercises, setSelectedExercises] = useState<WorkoutExercise[]>(
     []
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,43 +75,36 @@ export function WorkoutBuilder({
     },
   });
 
-  const handleBodyPartChange = async (value: string) => {
-    await setBodyPart(value);
-    await setPage("1");
-    router.refresh();
+  const handleSelectExercise = (exercise: Exercise) => {
+    // Only add the exercise to the selected list if it's not already there
+    if (!selectedExercises.some((e) => e.exerciseId === exercise.id)) {
+      setSelectedExercises([
+        ...selectedExercises,
+        {
+          exerciseId: exercise.id,
+          exercise: exercise,
+        },
+      ]);
+    } else {
+      toast.info("Exercise already added to workout");
+    }
   };
 
-  const handleSearch = async (value: string) => {
-    await setSearchQuery(value);
-    await setPage("1");
-    router.refresh();
-  };
-
-  const addExerciseToWorkout = (exercise: Exercise) => {
-    setWorkoutExercises([
-      ...workoutExercises,
-      {
-        exerciseId: exercise.id,
-        exercise: exercise,
-      },
-    ]);
-  };
-
-  const updateWorkoutExercise = (
+  const updateSelectedExercise = (
     index: number,
     field: keyof WorkoutExercise,
     value: string | number
   ) => {
-    const updatedExercises = [...workoutExercises];
+    const updatedExercises = [...selectedExercises];
     updatedExercises[index] = {
       ...updatedExercises[index],
       [field]: field === "exerciseId" ? value : Number(value),
     };
-    setWorkoutExercises(updatedExercises);
+    setSelectedExercises(updatedExercises);
   };
 
-  const removeWorkoutExercise = (index: number) => {
-    setWorkoutExercises(workoutExercises.filter((_, i) => i !== index));
+  const removeSelectedExercise = (index: number) => {
+    setSelectedExercises(selectedExercises.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -146,8 +115,18 @@ export function WorkoutBuilder({
       return;
     }
 
-    if (workoutExercises.length === 0) {
+    if (selectedExercises.length === 0) {
       toast.error("Please add at least one exercise");
+      return;
+    }
+
+    // Validate that all selected exercises have required fields
+    const hasInvalidExercises = selectedExercises.some(
+      (exercise) => !exercise.sets || !exercise.reps
+    );
+
+    if (hasInvalidExercises) {
+      toast.error("Please fill in sets and reps for all exercises");
       return;
     }
 
@@ -156,13 +135,13 @@ export function WorkoutBuilder({
     try {
       const result = await createWorkout({
         name,
-        exercises: workoutExercises,
+        exercises: selectedExercises,
       });
 
       if (result?.data?.success) {
         toast.success("Workout created successfully");
         setName("");
-        setWorkoutExercises([]);
+        setSelectedExercises([]);
         router.refresh();
       } else {
         toast.error("Failed to create workout");
@@ -208,38 +187,48 @@ export function WorkoutBuilder({
               />
             </div>
 
-            {workoutExercises.length > 0 && (
+            {selectedExercises.length > 0 && (
               <div className="space-y-4">
                 <Label>Selected Exercises</Label>
-                {workoutExercises.map((workoutExercise, index) => (
+                {selectedExercises.map((selectedExercise, index) => (
                   <div key={index} className="flex gap-2 items-end">
                     <div className="flex-1 space-y-2">
                       <div className="font-medium">
-                        {workoutExercise.exercise?.name}
+                        {selectedExercise.exercise?.name}
                       </div>
                       <div className="grid grid-cols-4 gap-2">
                         <Input
                           type="number"
                           placeholder="Sets"
-                          value={workoutExercise.sets || ""}
+                          value={selectedExercise.sets || ""}
                           onChange={(e) =>
-                            updateWorkoutExercise(index, "sets", e.target.value)
+                            updateSelectedExercise(
+                              index,
+                              "sets",
+                              e.target.value
+                            )
                           }
+                          required
                         />
                         <Input
                           type="number"
                           placeholder="Reps"
-                          value={workoutExercise.reps || ""}
+                          value={selectedExercise.reps || ""}
                           onChange={(e) =>
-                            updateWorkoutExercise(index, "reps", e.target.value)
+                            updateSelectedExercise(
+                              index,
+                              "reps",
+                              e.target.value
+                            )
                           }
+                          required
                         />
                         <Input
                           type="number"
                           placeholder="Weight"
-                          value={workoutExercise.weight || ""}
+                          value={selectedExercise.weight || ""}
                           onChange={(e) =>
-                            updateWorkoutExercise(
+                            updateSelectedExercise(
                               index,
                               "weight",
                               e.target.value
@@ -249,9 +238,9 @@ export function WorkoutBuilder({
                         <Input
                           type="number"
                           placeholder="Duration"
-                          value={workoutExercise.duration || ""}
+                          value={selectedExercise.duration || ""}
                           onChange={(e) =>
-                            updateWorkoutExercise(
+                            updateSelectedExercise(
                               index,
                               "duration",
                               e.target.value
@@ -263,7 +252,7 @@ export function WorkoutBuilder({
                     <Button
                       type="button"
                       variant="destructive"
-                      onClick={() => removeWorkoutExercise(index)}
+                      onClick={() => removeSelectedExercise(index)}
                     >
                       Remove
                     </Button>
@@ -274,7 +263,7 @@ export function WorkoutBuilder({
 
             <Button
               type="submit"
-              disabled={isSubmitting || !name || workoutExercises.length === 0}
+              disabled={isSubmitting || !name || selectedExercises.length === 0}
               className="w-full"
             >
               {isSubmitting ? (
@@ -290,6 +279,7 @@ export function WorkoutBuilder({
             <ExerciseTable
               exercises={exercises}
               initialExercises={initialExercises}
+              onAddExercise={handleSelectExercise}
             />
           </form>
         </CardContent>
