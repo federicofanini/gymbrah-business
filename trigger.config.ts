@@ -6,7 +6,7 @@ export default defineConfig({
   runtime: "node",
   logLevel: "log",
   // Set the maxDuration to 300 seconds for all tasks. See https://trigger.dev/docs/runs/max-duration
-  // maxDuration: 300,
+  maxDuration: 3000,
   retries: {
     enabledInDev: true,
     default: {
@@ -21,7 +21,7 @@ export default defineConfig({
   build: {
     extensions: [
       prismaExtension({
-        version: "6.1.0",
+        version: "6.3.1",
         schema: "prisma/schema.prisma",
       }),
     ],
