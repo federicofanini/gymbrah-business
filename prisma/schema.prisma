@@ -197,6 +197,20 @@ model workout {
   @@index([athlete_id])
 }
 
+model workout_athlete {
+  id          String  @id @default(uuid())
+  workout_id  String
+  athlete_id  String
+  business_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([workout_id])
+  @@index([athlete_id])
+  @@index([business_id])
+}
+
 model exercises {
   id                String   @id @unique
   name              String?

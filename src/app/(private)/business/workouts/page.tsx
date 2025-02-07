@@ -3,6 +3,7 @@ import { getExercisesByBodyPart } from "@/actions/exercises/exercise-by-bodyPart
 import { bodyParts } from "@/actions/exercises/bodyParts";
 import { getExercises } from "@/actions/exercises/exercises-list";
 import { getWorkout } from "@/actions/workout/get-workout";
+import { getBusinessId } from "@/actions/business/business-id";
 
 interface SearchParams {
   bodyPart?: string;
@@ -39,9 +40,15 @@ export default async function Workouts({
     throw new Error(initialExercisesResponse?.data?.error as string);
   }
 
+  const businessIdResponse = await getBusinessId();
+
+  if (!businessIdResponse?.data?.success) {
+    throw new Error(businessIdResponse?.data?.error as string);
+  }
+
   // Fetch workouts
   const workoutsResponse = await getWorkout({
-    businessId: "592c43fa-ef79-414e-af58-885bcd3469e7", // You'll need to pass the actual business ID
+    businessId: businessIdResponse.data.data,
   });
 
   if (!workoutsResponse?.data?.success) {
