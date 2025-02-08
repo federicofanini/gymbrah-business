@@ -1,5 +1,9 @@
 import { getAthleteById } from "@/actions/business/athletes/get-athlete-by-id";
 import { AthletePage } from "@/components/private/b2b/athletes/athlete-page";
+import {
+  AssignedWorkout,
+  getAssignedWorkouts,
+} from "@/actions/workout/assigned-workout";
 
 // Define the type for the dynamic route params
 type PageParams = { athleteId: string } & Promise<any>;
@@ -9,9 +13,14 @@ export default async function AthleteIdPage({
 }: {
   params: PageParams;
 }) {
-  const athleteResponse = await getAthleteById({
-    athleteId: params.athleteId,
-  });
+  const [athleteResponse, assignedWorkoutsResponse] = await Promise.all([
+    getAthleteById({
+      athleteId: params.athleteId,
+    }),
+    getAssignedWorkouts(),
+  ]);
+
+  console.log("assignedWorkouts -->", assignedWorkoutsResponse);
 
   if (!athleteResponse?.data?.success || !athleteResponse?.data?.data) {
     return (
@@ -28,6 +37,45 @@ export default async function AthleteIdPage({
   const athleteData = athleteResponse.data.data;
   const [gender] = athleteData.gender_age.split(" - ");
 
+  // Filter assigned workouts for this specific athlete
+  const athleteWorkouts = assignedWorkoutsResponse?.data?.success
+    ? assignedWorkoutsResponse.data.data.filter(
+        (workout: AssignedWorkout) => workout.athlete_id === params.athleteId
+      )
+    : [];
+
+  console.log("athleteWorkouts -->", athleteWorkouts);
+
+  const formattedWorkouts = athleteWorkouts.map((workout: AssignedWorkout) => ({
+    id: workout.id,
+    name: workout.workout.name,
+    date: new Date().toISOString(),
+    status: "scheduled" as const,
+    type: "Workout",
+    duration: 45,
+    created_at: new Date().toISOString(),
+    exercises: workout.workout.exercises.map((ex) => ({
+      id: ex.id,
+      exercise: {
+        id: ex.exercise.id,
+        name: ex.exercise.name,
+        body_part: ex.exercise.body_part,
+        equipment: ex.exercise.equipment,
+        target: ex.exercise.target,
+        gif_url: ex.exercise.gif_url,
+        secondary_muscles: ex.exercise.secondary_muscles,
+        instructions: ex.exercise.instructions,
+      },
+      sets: ex.sets,
+      reps: ex.reps,
+      weight: ex.weight,
+      duration: ex.duration,
+      round: ex.round,
+    })),
+  }));
+
+  console.log("formattedWorkouts -->", formattedWorkouts);
+
   const formattedAthleteData = {
     id: params.athleteId,
     fullName: athleteData.full_name,
@@ -41,46 +89,11 @@ export default async function AthleteIdPage({
       bestStreak: 14,
       joinedDate: "2023-09-15",
     },
-    recentWorkouts: [
-      { date: "2024-01-15", name: "Upper Body Strength", completed: true },
-      { date: "2024-01-13", name: "Lower Body Power", completed: true },
-      { date: "2024-01-11", name: "Core & Mobility", completed: true },
-    ],
-    workouts: [
-      {
-        id: "1",
-        name: "Upper Body Strength",
-        date: "2024-01-15",
-        status: "completed" as const,
-        type: "Strength",
-        duration: 60,
-      },
-      {
-        id: "2",
-        name: "Lower Body Power",
-        date: "2024-01-13",
-        status: "completed" as const,
-        type: "Power",
-        duration: 45,
-      },
-      {
-        id: "3",
-        name: "Core & Mobility",
-        date: "2024-01-11",
-        status: "completed" as const,
-        type: "Mobility",
-        duration: 30,
-      },
-      {
-        id: "4",
-        name: "Full Body Circuit",
-        date: "2024-01-17",
-        status: "scheduled" as const,
-        type: "Circuit",
-        duration: 45,
-      },
-    ],
+    recentWorkouts: formattedWorkouts,
+    workouts: formattedWorkouts,
   };
+
+  console.log("formattedAthleteData -->", formattedAthleteData);
 
   return <AthletePage athlete={formattedAthleteData} />;
 }

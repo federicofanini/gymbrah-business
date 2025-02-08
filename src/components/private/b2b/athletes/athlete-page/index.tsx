@@ -21,6 +21,7 @@ export interface ExtendedAthleteData extends AthleteData {
     date: string;
     status: string;
   }[];
+  id: string;
 }
 
 export interface AthletePageProps {
@@ -80,7 +81,10 @@ export function AthletePage({ athlete }: AthletePageProps) {
         </TabsContent>
 
         <TabsContent value="workouts">
-          <WorkoutsTab workouts={athlete.workouts as Workout[]} />
+          <WorkoutsTab
+            workouts={athlete.workouts as Workout[]}
+            athleteId={athlete.id}
+          />
         </TabsContent>
 
         <TabsContent value="progress">

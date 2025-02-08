@@ -6,37 +6,37 @@ import type { ActionResponse } from "../types/action-response";
 import { getBusinessId } from "../business/business-id";
 import { appErrors } from "../types/errors";
 
-interface Exercise {
+export interface Exercise {
   id: string;
   name: string;
+  body_part: string;
+  equipment: string;
+  target: string;
+  gif_url: string;
+  secondary_muscles: string[];
+  instructions: string[];
 }
 
-interface WorkoutExercise {
+export interface WorkoutExercise {
+  id: string;
   exercise: Exercise;
+  sets?: number;
+  reps?: number;
+  weight?: number;
+  duration?: number;
+  round?: string;
 }
 
-interface Workout {
+export interface Workout {
   id: string;
   name: string;
-  exercises: {
-    exercise: Exercise;
-  }[];
+  exercises: WorkoutExercise[];
 }
 
-interface WorkoutAthlete {
+export interface AssignedWorkout {
   id: string;
   athlete_id: string;
   workout: Workout;
-}
-
-interface AssignedWorkout {
-  id: string;
-  athlete_id: string;
-  workout: {
-    id: string;
-    name: string;
-    exercises: WorkoutExercise[];
-  };
 }
 
 export const getAssignedWorkouts = createSafeActionClient().action(
@@ -51,65 +51,77 @@ export const getAssignedWorkouts = createSafeActionClient().action(
         };
       }
 
-      const query = {
+      // First get all workout_athlete records for this business
+      const workoutAthletes = await prisma.workout_athlete.findMany({
         where: {
           business_id: businessIdResponse.data.data,
         },
-        include: {
-          athlete: {
-            select: {
-              id: true,
-              full_name: true,
-            },
+      });
+
+      // Then get the full workout details for each assigned workout
+      const workouts = await prisma.workout.findMany({
+        where: {
+          id: {
+            in: workoutAthletes.map((wa) => wa.workout_id),
           },
-          workout: {
-            select: {
-              id: true,
-              name: true,
-              exercises: {
-                select: {
-                  exercise: {
-                    select: {
-                      id: true,
-                      name: true,
-                    },
-                  },
-                },
-              },
+          business_id: businessIdResponse.data.data,
+        },
+        include: {
+          exercises: {
+            include: {
+              exercise: true,
             },
           },
         },
-      };
+      });
 
-      const assignedWorkouts = await prisma.workout_athlete.findMany(query);
-
-      if (!assignedWorkouts) {
+      if (!workouts) {
         return {
           success: false,
-          error: "No assigned workouts found",
+          error: "No workouts found",
         };
       }
 
+      const formattedWorkouts = workouts.map((workout): AssignedWorkout => {
+        // Find the corresponding workout_athlete record
+        const workoutAthlete = workoutAthletes.find(
+          (wa) => wa.workout_id === workout.id
+        );
+
+        return {
+          id: workout.id,
+          athlete_id: workoutAthlete?.athlete_id || "",
+          workout: {
+            id: workout.id,
+            name: workout.name,
+            exercises: workout.exercises.map((ex) => ({
+              id: ex.id,
+              exercise: {
+                id: ex.exercise.id,
+                name: ex.exercise.name || "",
+                body_part: ex.exercise.body_part || "",
+                equipment: ex.exercise.equipment || "",
+                target: ex.exercise.target || "",
+                gif_url: ex.exercise.gif_url || "",
+                secondary_muscles: ex.exercise.secondary_muscles || [],
+                instructions: ex.exercise.instructions || [],
+              },
+              sets: ex.sets || 0,
+              reps: ex.reps || 0,
+              weight: ex.weight || 0,
+              duration: ex.duration || 0,
+              round: ex.round || "1",
+            })),
+          },
+        };
+      });
+
       return {
         success: true,
-        data: assignedWorkouts.map(
-          (assignment: WorkoutAthlete): AssignedWorkout => ({
-            id: assignment.id,
-            athlete_id: assignment.athlete_id,
-            workout: {
-              id: assignment.workout.id,
-              name: assignment.workout.name,
-              exercises: assignment.workout.exercises.map((ex) => ({
-                exercise: {
-                  id: ex.exercise.id,
-                  name: ex.exercise.name,
-                },
-              })),
-            },
-          })
-        ),
+        data: formattedWorkouts,
       };
     } catch (error) {
+      console.error("Error fetching assigned workouts:", error);
       return {
         success: false,
         error: appErrors.UNEXPECTED_ERROR,
