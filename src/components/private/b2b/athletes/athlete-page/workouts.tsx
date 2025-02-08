@@ -109,12 +109,13 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
                         {workout.name}
                       </h3>
                       <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                        <Badge variant="outline" className="text-xs md:text-sm">
-                          {workout.type}
-                        </Badge>
                         <span className="text-xs md:text-sm text-muted-foreground">
-                          {new Date(workout.date).toLocaleDateString()} •{" "}
-                          {workout.duration} min
+                          {new Date(workout.date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}{" "}
+                          • {workout.duration} min
                         </span>
                       </div>
                     </div>
