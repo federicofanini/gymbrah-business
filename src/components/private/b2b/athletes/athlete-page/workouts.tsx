@@ -6,6 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Plus } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { AssignDialog } from "./assign-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface Exercise {
   id: string;
@@ -48,6 +55,7 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
   const [view] = useQueryState("view", {
     defaultValue: "upcoming",
   });
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
 
   const statusVariant = {
     completed: "success",
@@ -101,6 +109,7 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
                       variant="ghost"
                       size="sm"
                       className="text-xs md:text-sm"
+                      onClick={() => setSelectedWorkout(workout)}
                     >
                       View Details
                     </Button>
@@ -111,6 +120,75 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
           ))
         )}
       </div>
+
+      <Dialog
+        open={!!selectedWorkout}
+        onOpenChange={() => setSelectedWorkout(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{selectedWorkout?.name}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>
+                {new Date(selectedWorkout?.date || "").toLocaleDateString()}
+              </span>
+              <span>•</span>
+              <span>{selectedWorkout?.duration} min</span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold">Exercises</h3>
+              <div className="grid gap-3">
+                {selectedWorkout?.exercises.map((exercise) => (
+                  <div
+                    key={exercise.id}
+                    className="border rounded-lg p-4 flex items-center gap-2"
+                  >
+                    <span className="font-medium capitalize flex items-center gap-2">
+                      <img
+                        src={exercise.exercise.gif_url}
+                        alt={exercise.exercise.name}
+                        className="size-10 rounded-full"
+                      />
+                      {exercise.exercise.name}
+                    </span>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                      {exercise.sets ? (
+                        <div>
+                          <span className="text-muted-foreground">Sets:</span>{" "}
+                          {exercise.sets}
+                        </div>
+                      ) : null}
+                      {exercise.reps ? (
+                        <div>
+                          <span className="text-muted-foreground">Reps:</span>{" "}
+                          {exercise.reps}
+                        </div>
+                      ) : null}
+                      {exercise.weight ? (
+                        <div>
+                          <span className="text-muted-foreground">Weight:</span>{" "}
+                          {exercise.weight}kg
+                        </div>
+                      ) : null}
+                      {exercise.duration ? (
+                        <div>
+                          <span className="text-muted-foreground">
+                            Duration:
+                          </span>{" "}
+                          {exercise.duration}s
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
