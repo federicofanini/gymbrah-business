@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, Plus, Trash2 } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { AssignDialog } from "./assign-dialog";
 import {
@@ -13,6 +13,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { deleteAssignedWorkout } from "@/actions/workout/assigned-workout";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface Exercise {
   id: string;
@@ -39,7 +42,7 @@ export interface Workout {
   id: string;
   name: string;
   date: string;
-  status: "completed" | "scheduled" | "missed";
+  status: "completed" | "assigned" | "missed";
   type: string;
   duration: number;
   created_at: string;
@@ -56,11 +59,30 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
     defaultValue: "upcoming",
   });
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+  const router = useRouter();
 
   const statusVariant = {
     completed: "success",
-    scheduled: "secondary",
+    assigned: "secondary",
     missed: "destructive",
+  };
+
+  const handleDelete = async (workoutId: string) => {
+    try {
+      const result = await deleteAssignedWorkout({
+        workoutId,
+        athleteId,
+      });
+
+      if (result?.data?.success) {
+        toast.success("Workout deleted successfully");
+        router.refresh();
+      } else {
+        toast.error("Failed to delete workout");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    }
   };
 
   return (
@@ -99,20 +121,30 @@ export function WorkoutsTab({ workouts, athleteId }: WorkoutsTabProps) {
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4 mt-2 sm:mt-0">
                     <Badge
-                      variant="outline"
+                      variant="secondary"
                       className="text-xs md:text-sm whitespace-nowrap"
                     >
                       {workout.status.charAt(0).toUpperCase() +
                         workout.status.slice(1)}
                     </Badge>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs md:text-sm"
-                      onClick={() => setSelectedWorkout(workout)}
-                    >
-                      View Details
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs md:text-sm"
+                        onClick={() => setSelectedWorkout(workout)}
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="text-xs md:text-sm"
+                        onClick={() => handleDelete(workout.id)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>

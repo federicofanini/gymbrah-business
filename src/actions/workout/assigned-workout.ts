@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import type { ActionResponse } from "../types/action-response";
 import { getBusinessId } from "../business/business-id";
 import { appErrors } from "../types/errors";
+import { z } from "zod";
 
 export interface Exercise {
   id: string;
@@ -129,3 +130,32 @@ export const getAssignedWorkouts = createSafeActionClient().action(
     }
   }
 );
+
+export const deleteAssignedWorkout = createSafeActionClient()
+  .schema(
+    z.object({
+      workoutId: z.string(),
+      athleteId: z.string(),
+    })
+  )
+  .action(async ({ parsedInput }): Promise<ActionResponse> => {
+    try {
+      await prisma.workout_athlete.deleteMany({
+        where: {
+          workout_id: parsedInput.workoutId,
+          athlete_id: parsedInput.athleteId,
+        },
+      });
+
+      return {
+        success: true,
+        data: null,
+      };
+    } catch (error) {
+      console.error("Error deleting assigned workout:", error);
+      return {
+        success: false,
+        error: appErrors.UNEXPECTED_ERROR,
+      };
+    }
+  });
