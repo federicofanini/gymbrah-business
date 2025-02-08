@@ -189,13 +189,13 @@ export function Clients({ clients, totalClients = 0 }: ClientsProps) {
                           Client Page
                         </Link>
                       </Button>
-                      <Button
+                      {/*<Button
                         variant="ghost"
                         size="icon"
                         className="text-destructive hover:text-destructive/90"
                       >
                         <TrashIcon className="size-4" />
-                      </Button>
+                      </Button>*/}
                     </TableCell>
                   </TableRow>
                 );

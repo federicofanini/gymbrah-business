@@ -137,13 +137,13 @@ export function Athletes({ athletes: initialAthletes }: AthletesProps) {
                         Athlete Page
                       </Link>
                     </Button>
-                    <Button
+                    {/*<Button
                       variant="ghost"
                       size="icon"
                       className="text-destructive hover:text-destructive/90"
                     >
                       <TrashIcon className="size-4" />
-                    </Button>
+                    </Button>*/}
                   </TableCell>
                 </TableRow>
               ))}
