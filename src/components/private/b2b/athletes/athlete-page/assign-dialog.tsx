@@ -175,11 +175,24 @@ export function AssignDialog({ athleteId }: AssignDialogProps) {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                  </TableCell>
-                </TableRow>
+                <>
+                  {[...Array(3)].map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-6 w-20 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                      <TableCell>
+                        <div className="h-9 w-20 bg-muted animate-pulse rounded" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </>
               ) : filteredWorkouts.length === 0 ? (
                 <TableRow>
                   <TableCell
