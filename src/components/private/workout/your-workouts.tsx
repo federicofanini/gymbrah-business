@@ -126,7 +126,12 @@ export function YourWorkouts({ workouts }: YourWorkoutsProps) {
                               <TableBody>
                                 {workout.exercises.map((exercise) => (
                                   <TableRow key={exercise.id}>
-                                    <TableCell className="font-medium">
+                                    <TableCell className="font-medium capitalize flex items-center gap-2">
+                                      <img
+                                        src={exercise.exercise.gif_url}
+                                        alt={exercise.exercise.name}
+                                        className="size-10"
+                                      />
                                       {exercise.exercise.name}
                                     </TableCell>
                                     <TableCell>
