@@ -17,7 +17,9 @@ export default async function AthleteIdPage({
     getAthleteById({
       athleteId: params.athleteId,
     }),
-    getAssignedWorkouts(),
+    getAssignedWorkouts({
+      athleteId: params.athleteId,
+    }),
   ]);
 
   console.log("assignedWorkouts -->", assignedWorkoutsResponse);
@@ -37,44 +39,45 @@ export default async function AthleteIdPage({
   const athleteData = athleteResponse.data.data;
   const [gender] = athleteData.gender_age.split(" - ");
 
-  // Filter assigned workouts for this specific athlete
-  const athleteWorkouts = assignedWorkoutsResponse?.data?.success
-    ? assignedWorkoutsResponse.data.data.filter(
-        (workout: AssignedWorkout) => workout.athlete_id === params.athleteId
-      )
+  const formattedWorkouts = assignedWorkoutsResponse?.data?.success
+    ? assignedWorkoutsResponse.data.data.map((workout: AssignedWorkout) => ({
+        id: workout.id,
+        name: workout.workout.name,
+        date: new Date().toISOString(),
+        status: "scheduled" as const,
+        type: "Workout",
+        duration: 45,
+        created_at: new Date().toISOString(),
+        exercises: workout.workout.exercises.map((ex) => ({
+          id: ex.id,
+          exercise: {
+            id: ex.exercise.id,
+            name: ex.exercise.name,
+            body_part: ex.exercise.body_part,
+            equipment: ex.exercise.equipment,
+            target: ex.exercise.target,
+            gif_url: ex.exercise.gif_url,
+            secondary_muscles: ex.exercise.secondary_muscles,
+            instructions: ex.exercise.instructions,
+          },
+          sets: ex.sets,
+          reps: ex.reps,
+          weight: ex.weight,
+          duration: ex.duration,
+          round: ex.round,
+        })),
+      }))
     : [];
 
-  console.log("athleteWorkouts -->", athleteWorkouts);
-
-  const formattedWorkouts = athleteWorkouts.map((workout: AssignedWorkout) => ({
-    id: workout.id,
-    name: workout.workout.name,
-    date: new Date().toISOString(),
-    status: "scheduled" as const,
-    type: "Workout",
-    duration: 45,
-    created_at: new Date().toISOString(),
-    exercises: workout.workout.exercises.map((ex) => ({
-      id: ex.id,
-      exercise: {
-        id: ex.exercise.id,
-        name: ex.exercise.name,
-        body_part: ex.exercise.body_part,
-        equipment: ex.exercise.equipment,
-        target: ex.exercise.target,
-        gif_url: ex.exercise.gif_url,
-        secondary_muscles: ex.exercise.secondary_muscles,
-        instructions: ex.exercise.instructions,
-      },
-      sets: ex.sets,
-      reps: ex.reps,
-      weight: ex.weight,
-      duration: ex.duration,
-      round: ex.round,
-    })),
-  }));
-
   console.log("formattedWorkouts -->", formattedWorkouts);
+
+  // Filter workouts for this athlete's view
+  const athleteWorkouts = formattedWorkouts.filter((workout: any) =>
+    assignedWorkoutsResponse?.data?.data.find(
+      (assigned: AssignedWorkout) =>
+        assigned.id === workout.id && assigned.athlete_id === params.athleteId
+    )
+  );
 
   const formattedAthleteData = {
     id: params.athleteId,
@@ -89,8 +92,8 @@ export default async function AthleteIdPage({
       bestStreak: 14,
       joinedDate: "2023-09-15",
     },
-    recentWorkouts: formattedWorkouts,
-    workouts: formattedWorkouts,
+    recentWorkouts: athleteWorkouts,
+    workouts: athleteWorkouts,
   };
 
   console.log("formattedAthleteData -->", formattedAthleteData);

@@ -66,7 +66,9 @@ async function WorkoutsPageWrapper({
   }
 
   // Fetch assigned workouts
-  const assignedWorkoutsResponse = await getAssignedWorkouts();
+  const assignedWorkoutsResponse = await getAssignedWorkouts({
+    athleteId: "1",
+  });
 
   if (!assignedWorkoutsResponse?.data?.success) {
     console.log("assignedWorkoutsResponse", assignedWorkoutsResponse);
@@ -75,6 +77,7 @@ async function WorkoutsPageWrapper({
   return (
     <div className="space-y-4">
       <WorkoutPage
+        assignedWorkouts={assignedWorkoutsResponse?.data?.data}
         exercises={exercisesResponse.data.data}
         initialExercises={initialExercisesResponse.data.data.exercises}
         workouts={workoutsResponse.data.data}
@@ -82,7 +85,6 @@ async function WorkoutsPageWrapper({
           athletes: athletesResponse.data.data,
           pagination: athletesResponse.data.data.pagination,
         }}
-        assignedWorkouts={assignedWorkoutsResponse?.data?.data}
       />
     </div>
   );

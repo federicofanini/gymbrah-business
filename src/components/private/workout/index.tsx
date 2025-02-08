@@ -84,8 +84,6 @@ export function WorkoutPage({
   exercises,
   initialExercises,
   workouts,
-  athletes,
-  assignedWorkouts,
 }: WorkoutPageProps) {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "your-workouts",
@@ -103,10 +101,6 @@ export function WorkoutPage({
     {
       id: "exercise-library",
       title: "Exercise Library",
-    },
-    {
-      id: "assign-workout",
-      title: "Assign Workout",
     },
   ];
 
@@ -140,24 +134,6 @@ export function WorkoutPage({
           <ExerciseTable
             exercises={exercises}
             initialExercises={initialExercises}
-          />
-        </TabsContent>
-
-        <TabsContent value="assign-workout" className="mt-6">
-          <AssignWorkout
-            athletes={{
-              athletes: athletes.athletes,
-              pagination: athletes.pagination,
-            }}
-            workouts={{
-              workouts: workouts,
-              pagination: {
-                total: workouts.length,
-                pages: 1,
-                currentPage: 1,
-                limit: workouts.length,
-              },
-            }}
           />
         </TabsContent>
       </Tabs>

@@ -40,8 +40,13 @@ export interface AssignedWorkout {
   workout: Workout;
 }
 
-export const getAssignedWorkouts = createSafeActionClient().action(
-  async (): Promise<ActionResponse> => {
+export const getAssignedWorkouts = createSafeActionClient()
+  .schema(
+    z.object({
+      athleteId: z.string(),
+    })
+  )
+  .action(async ({ parsedInput }): Promise<ActionResponse> => {
     try {
       const businessIdResponse = await getBusinessId();
 
@@ -52,14 +57,15 @@ export const getAssignedWorkouts = createSafeActionClient().action(
         };
       }
 
-      // First get all workout_athlete records for this business
+      // Get workout_athlete records for this athlete and business
       const workoutAthletes = await prisma.workout_athlete.findMany({
         where: {
           business_id: businessIdResponse.data.data,
+          athlete_id: parsedInput.athleteId,
         },
       });
 
-      // Then get the full workout details for each assigned workout
+      // Get the full workout details for each assigned workout
       const workouts = await prisma.workout.findMany({
         where: {
           id: {
@@ -128,8 +134,7 @@ export const getAssignedWorkouts = createSafeActionClient().action(
         error: appErrors.UNEXPECTED_ERROR,
       };
     }
-  }
-);
+  });
 
 export const deleteAssignedWorkout = createSafeActionClient()
   .schema(
