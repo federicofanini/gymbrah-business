@@ -14,16 +14,24 @@ export default async function Onboarding() {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto h-screen flex flex-col items-center justify-center gap-4 p-4">
-      <h1 className="text-2xl font-bold mb-8">What best describes you?</h1>
-      <Button size="lg" className="w-full max-w-sm" asChild>
-        <Link href="/onboarding/business">
-          I&apos;m a Gym or Personal Trainer
-        </Link>
-      </Button>
-      <Button size="lg" className="w-full max-w-sm" asChild>
-        <Link href="/onboarding/athlete">I&apos;m an Athlete</Link>
-      </Button>
+    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8 text-center">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold tracking-tight">Welcome!</h1>
+          <p className="text-muted-foreground">Tell us about yourself</p>
+        </div>
+
+        <div className="space-y-4">
+          <Button size="lg" className="w-full" variant="outline" asChild>
+            <Link href="/onboarding/athlete">I&apos;m an Athlete</Link>
+          </Button>
+          <Button size="lg" className="w-full" variant="default" asChild>
+            <Link href="/onboarding/business">
+              I&apos;m a Gym or Personal Trainer
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
