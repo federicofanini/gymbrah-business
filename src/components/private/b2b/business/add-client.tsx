@@ -77,7 +77,7 @@ export function AddClientDialog() {
           setStep(3); // Move to subscription form
           toast.success("Athlete associated successfully");
         } else {
-          toast.error("Failed to associate athlete");
+          toast.error("Athlete already associated with this gym!");
         }
       },
     }

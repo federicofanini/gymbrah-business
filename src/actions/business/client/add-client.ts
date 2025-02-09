@@ -203,6 +203,21 @@ export const associateClientAthlete = createSafeActionClient()
         };
       }
 
+      // Check if athlete is already associated with this business
+      const existingAssociation = await prisma.client_athlete.findFirst({
+        where: {
+          athlete_id: input.parsedInput.athleteId,
+          business_id: business.id,
+        },
+      });
+
+      if (existingAssociation) {
+        return {
+          success: false,
+          error: "Athlete is already associated with this business",
+        };
+      }
+
       // Create client athlete association
       const clientAthlete = await prisma.client_athlete.create({
         data: {
