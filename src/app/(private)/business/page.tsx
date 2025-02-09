@@ -9,11 +9,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function BusinessPageWrapper() {
-  const [clientStatsResponse, clientsResponse, revenueStatsResponse] = await Promise.all([
-    getClientStats(),
-    getClients({ page: 1, limit: 10 }),
-    getRevenueStats()
-  ]);
+  const [clientStatsResponse, clientsResponse, revenueStatsResponse] =
+    await Promise.all([
+      getClientStats(),
+      getClients({ page: 1, limit: 10 }),
+      getRevenueStats(),
+    ]);
 
   const clientStats = {
     totalClients: clientStatsResponse?.data?.success
@@ -23,7 +24,7 @@ async function BusinessPageWrapper() {
       ? clientStatsResponse.data.data.percentageChange
       : 0,
     monthlyRevenue: {
-      value: revenueStatsResponse?.data?.success 
+      value: revenueStatsResponse?.data?.success
         ? revenueStatsResponse.data.data.currentMonthRevenue
         : 0,
       percentageChange: revenueStatsResponse?.data?.success
@@ -39,7 +40,10 @@ async function BusinessPageWrapper() {
   const clients = clientsResponse?.data?.success
     ? clientsResponse.data.data.clients.map((client: any) => ({
         ...client,
-        fullName: `${client.athlete.name} ${client.athlete.surname}`,
+        fullName:
+          client.athlete?.name && client.athlete?.surname
+            ? `${client.athlete.name} ${client.athlete.surname}`
+            : "Unknown Athlete",
       }))
     : [];
 

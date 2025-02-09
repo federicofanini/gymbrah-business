@@ -8,6 +8,7 @@ import { appErrors } from "@/actions/types/errors";
 import { generateCode } from "@/lib/user-code";
 import { createClient } from "@/utils/supabase/server";
 import { getBusinessCode } from "../onboarding/get-business-code";
+import { sendWelcomeAthleteEmail } from "@/components/private/b2b/email/welcome-athlete";
 
 // onboarding steps to add athlete
 
@@ -139,6 +140,17 @@ export const createAthlete = createSafeActionClient()
           invited_by: businessCodeResponse.data.data.code,
         },
       });
+
+      // Send welcome email to the new athlete
+      const emailResult = await sendWelcomeAthleteEmail({
+        athleteEmail: athlete.email || "",
+        athleteName: athlete.name,
+        athleteCode: athlete.athlete_code,
+      });
+
+      if (!emailResult.success) {
+        console.error("Failed to send welcome email");
+      }
 
       return {
         success: true,
