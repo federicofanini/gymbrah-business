@@ -7,8 +7,10 @@ import { format } from "date-fns";
 
 interface ClientSubProps {
   client: {
-    name: string;
-    surname: string;
+    athlete: {
+      name: string;
+      surname: string;
+    };
     subscription: {
       sub_type: string;
       payment_date: Date;

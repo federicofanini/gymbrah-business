@@ -14,18 +14,23 @@ import { MdCalendarMonth } from "react-icons/md";
 interface ClientPageProps {
   client: {
     id: string;
-    name: string;
-    surname: string;
-    email: string;
-    phone: string;
-    birth_date: Date;
-    gender: string;
-    created_at: Date;
+    athlete: {
+      id: string;
+      name: string;
+      surname: string;
+      email: string;
+      phone: string;
+      birth_date: Date;
+      gender: string;
+    };
     subscription: {
+      id: string;
       sub_type: string;
       payment_date: Date;
       renewal_date: Date;
       months_paid: number;
+      created_at: Date;
+      updated_at: Date;
     } | null;
   };
 }
@@ -45,15 +50,17 @@ export function ClientPage({ client }: ClientPageProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div className="space-y-1">
           <h1 className="text-xl md:text-2xl font-bold">
-            {client.name} {client.surname}
+            {client.athlete.name} {client.athlete.surname}
           </h1>
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="capitalize">
-              {client.gender}
+              {client.athlete.gender}
             </Badge>
             <span className="text-sm text-muted-foreground flex items-center gap-1">
               <MdCalendarMonth className="size-4" />
-              {format(new Date(client.birth_date), "MMM d, yyyy")}
+              {client.athlete.birth_date
+                ? format(new Date(client.athlete.birth_date), "MMM d, yyyy")
+                : "Not provided"}
             </span>
           </div>
         </div>
@@ -92,7 +99,7 @@ export function ClientPage({ client }: ClientPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-sm md:text-base font-medium truncate">
-                  {client.email}
+                  {client.athlete.email}
                 </div>
               </CardContent>
             </Card>
@@ -105,7 +112,7 @@ export function ClientPage({ client }: ClientPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-sm md:text-base font-medium">
-                  {client.phone}
+                  {client.athlete.phone}
                 </div>
               </CardContent>
             </Card>
@@ -131,7 +138,12 @@ export function ClientPage({ client }: ClientPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="text-sm md:text-base font-medium">
-                  {format(new Date(client.created_at), "MMM d, yyyy")}
+                  {client.subscription?.created_at
+                    ? format(
+                        new Date(client.subscription.created_at),
+                        "MMM d, yyyy"
+                      )
+                    : "Not available"}
                 </div>
               </CardContent>
             </Card>
