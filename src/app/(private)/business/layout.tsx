@@ -38,7 +38,7 @@ export default async function DashboardLayout({
     businessResponse?.data?.success &&
     !businessResponse?.data?.data?.exists
   ) {
-    redirect("/business-onboarding");
+    redirect("/onboarding");
   }
 
   const planResponse = await checkPlan({ user_id: data.user.id });

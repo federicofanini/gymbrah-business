@@ -58,6 +58,7 @@
     "languine": "1.0.3-canary.0",
     "lucide-react": "^0.417.0",
     "motion": "^11.17.0",
+    "nanoid": "^5.0.9",
     "next": "15.0.3",
     "next-intl": "^3.26.3",
     "next-safe-action": "^7.10.2",

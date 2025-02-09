@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/private/b2b/user-menu";
 import { SettingsButton } from "@/components/private/b2b/settings-button";
+import { BusinessCodeDisplay } from "./business-code";
 
 export function Header() {
   return (
@@ -15,9 +16,7 @@ export function Header() {
       </div>
 
       <div className="flex-1 flex justify-center">
-        <span className="text-sm text-muted-foreground bg-secondary px-3 py-1.5 rounded-xl border border-border font-mono m-4">
-          🏗️ Gymbrah is under construction
-        </span>
+        <BusinessCodeDisplay />
       </div>
 
       <div className="flex justify-end items-center">
