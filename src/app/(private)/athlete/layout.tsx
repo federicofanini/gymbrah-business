@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
-import { Sidebar, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarInset } from "@/components/ui/sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/server";
-import { DashboardHeader } from "@/components/dashboard-header";
-import { prisma } from "@/lib/db";
+import { Toaster } from "@/components/ui/sonner";
+import { Header } from "@/components/private/b2c/header";
+import { Sidebar } from "@/components/private/b2c/sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -27,11 +28,20 @@ export default async function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <Sidebar />
-      <SidebarInset>
-        <DashboardHeader />
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
-      </SidebarInset>
+      <div className="flex min-h-screen w-full">
+        <Sidebar />
+
+        <SidebarInset className="flex-1 bg-noise pb-8">
+          <Header />
+
+          <main className="pt-4">
+            {children}
+
+            {/* {!admins.includes(userData.email) && <ComingSoon />} */}
+            <Toaster />
+          </main>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
