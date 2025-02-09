@@ -55,9 +55,9 @@ export const getAthleteById = createSafeActionClient()
         };
       }
 
-      const client = await prisma.client.findUnique({
+      const athlete = await prisma.athlete.findUnique({
         where: {
-          id: clientAthlete.client_id,
+          id: clientAthlete.athlete_id,
         },
         select: {
           id: true,
@@ -68,22 +68,26 @@ export const getAthleteById = createSafeActionClient()
         },
       });
 
-      if (!client) {
+      if (!athlete) {
         return {
           success: false,
           error: appErrors.NOT_FOUND,
         };
       }
 
-      const age = calculateAge(client.birth_date);
+      const age = calculateAge(athlete.birth_date);
       const genderPrefix =
-        client.gender === "male" ? "M" : client.gender === "female" ? "F" : "O";
+        athlete.gender === "male"
+          ? "M"
+          : athlete.gender === "female"
+          ? "F"
+          : "O";
 
       return {
         success: true,
         data: {
           id: clientAthlete.id,
-          full_name: `${client.name} ${client.surname}`,
+          full_name: `${athlete.name} ${athlete.surname}`,
           goal: "Weight Loss", // Mock goal. Change using workout goal
           gender_age: `${genderPrefix} - ${age}y`,
           status: "Active", // Mock status. Change using workout status
