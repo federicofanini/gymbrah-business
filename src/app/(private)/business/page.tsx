@@ -9,9 +9,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function BusinessPageWrapper() {
-  const [clientStatsResponse, clientsResponse] = await Promise.all([
+  const [clientStatsResponse, clientsResponse, revenueStatsResponse] = await Promise.all([
     getClientStats(),
     getClients({ page: 1, limit: 10 }),
+    getRevenueStats()
   ]);
 
   const clientStats = {
@@ -22,8 +23,12 @@ async function BusinessPageWrapper() {
       ? clientStatsResponse.data.data.percentageChange
       : 0,
     monthlyRevenue: {
-      value: 0,
-      percentageChange: 0,
+      value: revenueStatsResponse?.data?.success 
+        ? revenueStatsResponse.data.data.currentMonthRevenue
+        : 0,
+      percentageChange: revenueStatsResponse?.data?.success
+        ? revenueStatsResponse.data.data.percentageChange
+        : 0,
     },
     activeSessions: {
       value: 0,
@@ -37,8 +42,6 @@ async function BusinessPageWrapper() {
         fullName: `${client.athlete.name} ${client.athlete.surname}`,
       }))
     : [];
-
-  console.log("clients", clients);
 
   return <BusinessPage clientStats={clientStats} clients={clients} />;
 }
