@@ -9,20 +9,38 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function BusinessPageWrapper() {
+  const [clientStatsResponse, clientsResponse] = await Promise.all([
+    getClientStats(),
+    getClients({ page: 1, limit: 10 }),
+  ]);
+
   const clientStats = {
-    totalClients: 0,
-    percentageChange: 0,
+    totalClients: clientStatsResponse?.data?.success
+      ? clientStatsResponse.data.data.totalClients
+      : 0,
+    percentageChange: clientStatsResponse?.data?.success
+      ? clientStatsResponse.data.data.percentageChange
+      : 0,
     monthlyRevenue: {
       value: 0,
       percentageChange: 0,
     },
     activeSessions: {
-      value: 0, // TODO: Add to getClientStats
+      value: 0,
       percentageChange: 0,
     },
   };
 
-  return <BusinessPage clientStats={clientStats} clients={[]} />;
+  const clients = clientsResponse?.data?.success
+    ? clientsResponse.data.data.clients.map((client: any) => ({
+        ...client,
+        fullName: `${client.athlete.name} ${client.athlete.surname}`,
+      }))
+    : [];
+
+  console.log("clients", clients);
+
+  return <BusinessPage clientStats={clientStats} clients={clients} />;
 }
 
 function LoadingSkeleton() {

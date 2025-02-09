@@ -58,11 +58,11 @@ export const getAthletes = createSafeActionClient().action(
         },
       });
 
-      // Then get the corresponding clients
-      const clients = await prisma.client.findMany({
+      // Then get the corresponding athletes
+      const athletes = await prisma.athlete.findMany({
         where: {
           id: {
-            in: clientAthletes.map((ca) => ca.client_id),
+            in: clientAthletes.map((ca) => ca.athlete_id),
           },
         },
         select: {
@@ -75,21 +75,23 @@ export const getAthletes = createSafeActionClient().action(
       });
 
       const formattedAthletes = clientAthletes
-        .map((athlete) => {
-          const client = clients.find((c) => c.id === athlete.client_id);
-          if (!client) return null;
+        .map((clientAthlete) => {
+          const athlete = athletes.find(
+            (a) => a.id === clientAthlete.athlete_id
+          );
+          if (!athlete) return null;
 
-          const age = calculateAge(client.birth_date);
+          const age = calculateAge(athlete.birth_date);
           const genderPrefix =
-            client.gender === "male"
+            athlete.gender === "male"
               ? "M"
-              : client.gender === "female"
+              : athlete.gender === "female"
               ? "F"
               : "O";
 
           return {
-            id: athlete.id,
-            full_name: `${client.name} ${client.surname}`,
+            id: clientAthlete.id,
+            full_name: `${athlete.name} ${athlete.surname}`,
             goal: "Weight Loss", // Mock goal. Change using workout goal
             gender_age: `${genderPrefix} - ${age}y`,
             status: "Active", // Mock status. Change using workout status

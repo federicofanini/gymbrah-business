@@ -20,8 +20,7 @@ export interface BusinessPageProps {
   };
   clients: {
     id: string;
-    name: string;
-    surname: string;
+    fullName: string;
     subscription?: {
       sub_type: string;
       renewal_date: Date;

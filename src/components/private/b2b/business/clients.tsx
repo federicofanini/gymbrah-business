@@ -24,8 +24,7 @@ import { AddClientDialog } from "./add-client";
 
 interface Client {
   id: string;
-  name: string;
-  surname: string;
+  fullName: string;
   subscription?: {
     sub_type: string;
     renewal_date: Date;
@@ -72,14 +71,8 @@ export function Clients({ clients, totalClients = 0 }: ClientsProps) {
     const searchTerms = searchQuery.toLowerCase().split(" ");
 
     return clients.filter((client) => {
-      const fullName = `${client.name} ${client.surname}`.toLowerCase();
-
-      return searchTerms.every(
-        (term) =>
-          fullName.includes(term) ||
-          client.name.toLowerCase().includes(term) ||
-          client.surname.toLowerCase().includes(term)
-      );
+      const fullName = client.fullName.toLowerCase();
+      return searchTerms.every((term) => fullName.includes(term));
     });
   };
 
@@ -137,7 +130,7 @@ export function Clients({ clients, totalClients = 0 }: ClientsProps) {
                 return (
                   <TableRow key={client.id}>
                     <TableCell className="font-medium">
-                      {client.name} {client.surname}
+                      {client.fullName}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       <Badge variant="outline" className="whitespace-nowrap">
