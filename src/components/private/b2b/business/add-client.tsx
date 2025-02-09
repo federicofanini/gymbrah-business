@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
-import { addClient } from "@/actions/business/client/add-client";
-import { addClientSubscription } from "@/actions/business/client/add-client-sub";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,74 +21,128 @@ import {
 } from "@/components/ui/select";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import {
+  checkAthleteExists,
+  createAthlete,
+  associateClientAthlete,
+  createClientSubscription,
+} from "@/actions/business/client/add-client";
 
 export function AddClientDialog() {
   const [step, setStep] = useState(1);
-  const [clientId, setClientId] = useState<string>("");
+  const [athleteId, setAthleteId] = useState<string>("");
+  const [clientAthleteId, setClientAthleteId] = useState<string>("");
   const [open, setOpen] = useState(false);
+  const [searchType, setSearchType] = useState<"email" | "code">("email");
+  const [foundAthlete, setFoundAthlete] = useState<{
+    id: string;
+    email: string;
+    athlete_code: string;
+    name: string;
+    surname: string;
+  } | null>(null);
 
-  const { execute: executeAddClient, status: addClientStatus } = useAction(
-    addClient,
+  const { execute: executeCheckAthlete } = useAction(checkAthleteExists, {
+    onSuccess: (response) => {
+      if (response?.data?.data?.exists) {
+        setFoundAthlete(response.data.data.athlete);
+        setAthleteId(response.data.data.athlete.id);
+      } else {
+        setFoundAthlete(null);
+        setStep(2); // Move to create athlete form
+      }
+    },
+    onError: () => {
+      toast.error("Athlete don't exists. Add it in GymBrah");
+    },
+  });
+
+  const { execute: executeCreateAthlete } = useAction(createAthlete, {
+    onSuccess: (response) => {
+      if (response?.data?.data?.id) {
+        setAthleteId(response.data.data.id);
+        handleAssociateAthlete(response.data.data.id);
+      } else {
+        toast.error("Failed to create athlete");
+      }
+    },
+  });
+
+  const { execute: executeAssociateAthlete } = useAction(
+    associateClientAthlete,
     {
       onSuccess: (response) => {
-        if (response?.data?.success) {
-          setClientId(response.data.data.id);
-          setStep(2);
-          toast.success("Client added successfully");
+        if (response?.data?.data?.id) {
+          setClientAthleteId(response.data.data.id);
+          setStep(3); // Move to subscription form
+          toast.success("Athlete associated successfully");
         } else {
-          toast.error("Failed to add client");
+          toast.error("Failed to associate athlete");
         }
       },
     }
   );
 
-  const { execute: executeAddSubscription, status: addSubStatus } = useAction(
-    addClientSubscription,
+  const { execute: executeCreateSubscription } = useAction(
+    createClientSubscription,
     {
       onSuccess: (response) => {
-        if (response?.data?.success) {
+        if (response?.data?.data?.id) {
           setOpen(false);
           setStep(1);
-          toast.success("Subscription added successfully");
+          setFoundAthlete(null);
+          toast.success("Subscription created successfully");
         } else {
-          toast.error("Failed to add subscription");
+          toast.error("Failed to create subscription");
         }
       },
     }
   );
 
-  const handleClientSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCheckAthlete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    await executeAddClient({
+    await executeCheckAthlete(
+      searchType === "email"
+        ? { email: formData.get("email") as string }
+        : { athleteCode: formData.get("athleteCode") as string }
+    );
+  };
+
+  const handleCreateAthlete = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+
+    await executeCreateAthlete({
+      email: formData.get("email") as string,
       name: formData.get("name") as string,
       surname: formData.get("surname") as string,
-      email: formData.get("email") as string,
       phone: formData.get("phone") as string,
       birthDate: formData.get("birthDate") as string,
       gender: formData.get("gender") as "male" | "female" | "other",
     });
   };
 
-  const handleSubscriptionSubmit = async (
+  const handleAssociateAthlete = async (athleteId: string) => {
+    await executeAssociateAthlete({
+      athleteId,
+    });
+  };
+
+  const handleCreateSubscription = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
 
-    await executeAddSubscription({
-      clientId,
-      subType: formData.get("subType") as
-        | "monthly"
-        | "bimestral"
-        | "trimestral"
-        | "quadrimestral"
-        | "semestral"
-        | "yearly",
-      paymentDate: formData.get("paymentDate") as string,
-      renewalDate: formData.get("renewalDate") as string,
+    await executeCreateSubscription({
+      clientAthleteId,
+      subType: formData.get("subType") as string,
       price: parseFloat(formData.get("price") as string),
+      paymentDate: new Date(formData.get("paymentDate") as string),
+      renewalDate: new Date(formData.get("renewalDate") as string),
+      monthsPaid: "1", // Default to 1 month
     });
   };
 
@@ -102,12 +154,73 @@ export function AddClientDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {step === 1 ? "Add New Client" : "Set Client Subscription"}
+            {step === 1
+              ? "Check Athlete"
+              : step === 2
+              ? "Create New Athlete"
+              : "Set Subscription"}
           </DialogTitle>
         </DialogHeader>
 
-        {step === 1 ? (
-          <form onSubmit={handleClientSubmit} className="space-y-4">
+        {step === 1 && (
+          <div className="space-y-4">
+            <form onSubmit={handleCheckAthlete} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="searchType">Search By</Label>
+                <Select
+                  value={searchType}
+                  onValueChange={(value) =>
+                    setSearchType(value as "email" | "code")
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="code">Athlete Code</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {searchType === "email" ? (
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" name="email" type="email" />
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="athleteCode">Athlete Code</Label>
+                  <Input id="athleteCode" name="athleteCode" />
+                </div>
+              )}
+
+              <Button type="submit" className="w-full">
+                Check Athlete
+              </Button>
+            </form>
+
+            {foundAthlete && (
+              <div className="mt-4 p-4 border rounded-lg space-y-2">
+                <h3 className="font-semibold">Found Athlete:</h3>
+                <p>
+                  Name: {foundAthlete.name} {foundAthlete.surname}
+                </p>
+                <p>Email: {foundAthlete.email}</p>
+                <p>Athlete Code: {foundAthlete.athlete_code}</p>
+                <Button
+                  onClick={() => handleAssociateAthlete(foundAthlete.id)}
+                  className="w-full mt-2"
+                >
+                  Associate Athlete
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === 2 && (
+          <form onSubmit={handleCreateAthlete} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
@@ -161,20 +274,19 @@ export function AddClientDialog() {
                 <SelectContent>
                   <SelectItem value="male">Male</SelectItem>
                   <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <Button
-              type="submit"
-              disabled={addClientStatus === "executing"}
-              className="w-full"
-            >
-              {addClientStatus === "executing" ? "Adding..." : "Next"}
+            <Button type="submit" className="w-full">
+              Create Athlete
             </Button>
           </form>
-        ) : (
-          <form onSubmit={handleSubscriptionSubmit} className="space-y-4">
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handleCreateSubscription} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="subType">Subscription Type</Label>
               <Select name="subType" required>
@@ -217,13 +329,11 @@ export function AddClientDialog() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
               >
                 Back
               </Button>
-              <Button type="submit" disabled={addSubStatus === "executing"}>
-                {addSubStatus === "executing" ? "Adding..." : "Complete"}
-              </Button>
+              <Button type="submit">Complete</Button>
             </div>
           </form>
         )}

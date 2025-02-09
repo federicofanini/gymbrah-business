@@ -9,30 +9,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 async function BusinessPageWrapper() {
-  const [statsResult, clientsResult, revenueResult] = await Promise.all([
-    getClientStats(),
-    getClients({ page: 1, limit: 10 }),
-    getRevenueStats(),
-  ]);
-
-  if (!statsResult?.data?.success || !statsResult.data) {
-    throw new Error("Failed to load client stats");
-  }
-
-  if (!clientsResult?.data?.success || !clientsResult.data) {
-    throw new Error("Failed to load clients");
-  }
-
-  if (!revenueResult?.data?.success || !revenueResult.data) {
-    throw new Error("Failed to load revenue stats");
-  }
-
   const clientStats = {
-    totalClients: statsResult.data.data.totalClients,
-    percentageChange: statsResult.data.data.percentageChange,
+    totalClients: 0,
+    percentageChange: 0,
     monthlyRevenue: {
-      value: revenueResult.data.data.currentMonthRevenue,
-      percentageChange: revenueResult.data.data.percentageChange,
+      value: 0,
+      percentageChange: 0,
     },
     activeSessions: {
       value: 0, // TODO: Add to getClientStats
@@ -40,12 +22,7 @@ async function BusinessPageWrapper() {
     },
   };
 
-  return (
-    <BusinessPage
-      clientStats={clientStats}
-      clients={clientsResult.data.data.clients}
-    />
-  );
+  return <BusinessPage clientStats={clientStats} clients={[]} />;
 }
 
 function LoadingSkeleton() {

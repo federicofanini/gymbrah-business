@@ -65,7 +65,7 @@ export const getRevenues = createSafeActionClient()
         },
         select: {
           id: true,
-          client_id: true,
+          client_athlete_id: true,
           sub_type: true,
           price: true,
           payment_date: true,
