@@ -14,46 +14,32 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { redirect } from "next/navigation";
+import { AthleteCodeBanner } from "@/components/athlete-code-banner";
 
 export const metadata: Metadata = {
   title: "Login",
 };
 
-// Define the type for the dynamic route params
-type PageParams = {
-  athlete_code: string;
-  athlete_email: string;
-} & Promise<any>;
-
-// Example URL: /login?athlete_code=ABC123&athlete_email=athlete@example.com
-export default async function Page({
+// Example URL: /login?athlete_code=ABC123
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: PageParams;
+  searchParams: { athlete_code?: string };
 }) {
   const cookieStore = await cookies();
   const preferred = cookieStore.get(Cookies.PreferredSignInProvider);
   const showTrackingConsent =
     (await isEU()) && !cookieStore.has(Cookies.TrackingConsent);
   const { device } = userAgent({ headers: await headers() });
+  const athleteCodeCookie = cookieStore.get(Cookies.AthleteCode);
 
-  // Store athlete code and email in cookies if present in URL
+  console.log("athleteCodeCookie", athleteCodeCookie);
+
   if (searchParams.athlete_code) {
-    cookieStore.set("athlete_code", searchParams.athlete_code, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
-  }
-
-  if (searchParams.athlete_email) {
-    cookieStore.set("athlete_email", searchParams.athlete_email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-    });
+    if (athleteCodeCookie) {
+      redirect(`/login`);
+    }
   }
 
   let moreSignInOptions = null;
@@ -99,7 +85,12 @@ export default async function Page({
       <header className="w-full fixed left-0 right-0">
         <div className="ml-5 mt-4 md:ml-10 md:mt-10">
           <Link href="/">
-            <Image src="/logo.svg" alt="GymBrah" width={100} height={100} />
+            <Image
+              src="/logo/logo_black.svg"
+              alt="GymBrah"
+              width={50}
+              height={50}
+            />
           </Link>
         </div>
       </header>
@@ -107,6 +98,19 @@ export default async function Page({
       <div className="flex min-h-screen justify-center items-center overflow-hidden p-6 md:p-0">
         <div className="relative z-20 m-auto flex w-full max-w-[380px] flex-col py-8">
           <div className="flex w-full flex-col relative">
+            <div className="text-xs text-muted-foreground text-center mt-2 mb-4">
+              {searchParams.athlete_code && (
+                <p className="mb-2">
+                  You&apos;ve been invited to join GymBrah. Please login to
+                  continue.
+                </p>
+              )}
+              {searchParams.athlete_code && (
+                <span className="inline-block px-2 py-1 bg-muted rounded-md">
+                  Code: <strong>{searchParams.athlete_code}</strong>
+                </span>
+              )}
+            </div>
             <div className="pb-4 bg-gradient-to-r from-primary dark:via-primary dark:to-muted-foreground to-[#000] inline-block text-transparent bg-clip-text">
               <h1 className="font-medium pb-1 text-3xl">Login to GymBrah.</h1>
             </div>
@@ -156,6 +160,9 @@ export default async function Page({
       </div>
 
       {showTrackingConsent && <ConsentBanner />}
+      {searchParams.athlete_code && (
+        <AthleteCodeBanner athleteCode={searchParams.athlete_code} />
+      )}
     </div>
   );
 }

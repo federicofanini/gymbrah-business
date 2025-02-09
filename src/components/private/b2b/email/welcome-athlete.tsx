@@ -39,7 +39,7 @@ export async function sendWelcomeAthleteEmail({
 
           <div style="margin: 32px 0;">
             <a 
-              href="https://gymbrah.com/login?athlete_code=${athleteCode}&athlete_email=${athleteEmail}" 
+              href="http://localhost:3000/login?athlete_code=${athleteCode}" 
               style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;"
             >
               Get Started
