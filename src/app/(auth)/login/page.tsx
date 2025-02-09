@@ -19,12 +19,42 @@ export const metadata: Metadata = {
   title: "Login",
 };
 
-export default async function Page() {
+// Define the type for the dynamic route params
+type PageParams = {
+  athlete_code: string;
+  athlete_email: string;
+} & Promise<any>;
+
+// Example URL: /login?athlete_code=ABC123&athlete_email=athlete@example.com
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: PageParams;
+}) {
   const cookieStore = await cookies();
   const preferred = cookieStore.get(Cookies.PreferredSignInProvider);
   const showTrackingConsent =
     (await isEU()) && !cookieStore.has(Cookies.TrackingConsent);
   const { device } = userAgent({ headers: await headers() });
+
+  // Store athlete code and email in cookies if present in URL
+  if (searchParams.athlete_code) {
+    cookieStore.set("athlete_code", searchParams.athlete_code, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+  }
+
+  if (searchParams.athlete_email) {
+    cookieStore.set("athlete_email", searchParams.athlete_email, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    });
+  }
 
   let moreSignInOptions = null;
   let preferredSignInOption =
