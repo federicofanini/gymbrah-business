@@ -14,7 +14,6 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { redirect } from "next/navigation";
 import { AthleteCodeBanner } from "@/components/athlete-code-banner";
 
 export const metadata: Metadata = {
@@ -33,14 +32,6 @@ export default async function LoginPage({
     (await isEU()) && !cookieStore.has(Cookies.TrackingConsent);
   const { device } = userAgent({ headers: await headers() });
   const athleteCodeCookie = cookieStore.get(Cookies.AthleteCode);
-
-  console.log("athleteCodeCookie", athleteCodeCookie);
-
-  if (searchParams.athlete_code) {
-    if (athleteCodeCookie) {
-      redirect(`/login`);
-    }
-  }
 
   let moreSignInOptions = null;
   let preferredSignInOption =
@@ -99,15 +90,15 @@ export default async function LoginPage({
         <div className="relative z-20 m-auto flex w-full max-w-[380px] flex-col py-8">
           <div className="flex w-full flex-col relative">
             <div className="text-xs text-muted-foreground text-center mt-2 mb-4">
-              {searchParams.athlete_code && (
+              {athleteCodeCookie && (
                 <p className="mb-2">
                   You&apos;ve been invited to join GymBrah. Please login to
                   continue.
                 </p>
               )}
-              {searchParams.athlete_code && (
+              {athleteCodeCookie && (
                 <span className="inline-block px-2 py-1 bg-muted rounded-md">
-                  Code: <strong>{searchParams.athlete_code}</strong>
+                  Code: <strong>{athleteCodeCookie.value}</strong>
                 </span>
               )}
             </div>
@@ -160,8 +151,8 @@ export default async function LoginPage({
       </div>
 
       {showTrackingConsent && <ConsentBanner />}
-      {searchParams.athlete_code && (
-        <AthleteCodeBanner athleteCode={searchParams.athlete_code} />
+      {athleteCodeCookie && (
+        <AthleteCodeBanner athleteCode={athleteCodeCookie.value} />
       )}
     </div>
   );

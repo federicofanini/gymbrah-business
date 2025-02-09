@@ -47,7 +47,7 @@ export default async function DashboardLayout({
     planResponse?.data?.success &&
     !planResponse?.data?.data?.hasActiveSubscription
   ) {
-    redirect("/business-onboarding");
+    redirect("/onboarding");
   }
 
   console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);

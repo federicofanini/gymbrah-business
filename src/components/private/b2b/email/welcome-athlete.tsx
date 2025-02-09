@@ -32,9 +32,6 @@ export async function sendWelcomeAthleteEmail({
 
           <p style="color: #374151; line-height: 1.5;">
             You can use this code to log in to the GymBrah app and access your training programs, track your progress, and connect with your trainer.
-            <strong style="color: #111827;">
-              Use this email to login to GymBrah to link your athlete account correctly.
-            </strong>
           </p>
 
           <div style="margin: 32px 0;">

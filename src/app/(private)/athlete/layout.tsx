@@ -25,19 +25,6 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const userData = await prisma.user.findUnique({
-    where: {
-      id: data.user.id,
-    },
-    select: {
-      full_name: true,
-    },
-  });
-
-  if (!userData?.full_name) {
-    redirect("/onboarding");
-  }
-
   return (
     <SidebarProvider>
       <Sidebar />
