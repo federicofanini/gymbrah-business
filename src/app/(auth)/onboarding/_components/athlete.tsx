@@ -2,128 +2,137 @@
 
 import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
-import { addBusinessPlan } from "@/actions/business/onboarding/add-business-plan";
-import { saveUser } from "@/actions/user/save-user";
+import { updateAthlete } from "@/actions/athlete/update-athlete";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+type Gender = "male" | "female" | "other";
+
+interface FormData {
+  name: string;
+  surname: string;
+  birth_date: string;
+  gender: Gender | "";
+  phone: string;
+}
 
 export function Athlete() {
   const router = useRouter();
 
-  // Plan Form State
-  // TODO: replace with stripe payment
-  const [planForm, setPlanForm] = useState({
-    stripeCustomerId: "",
-    stripeSubscriptionId: "",
-    stripePriceId: "",
-    planName: "",
+  const [form, setForm] = useState<FormData>({
+    name: "",
+    surname: "",
+    birth_date: "",
+    gender: "",
+    phone: "",
   });
 
-  const { execute: executeAddBusinessPlan, status: addPlanStatus } = useAction(
-    addBusinessPlan,
-    {
-      onSuccess: (response) => {
-        if (response?.data?.success) {
-          toast.success("Business plan added successfully");
-          executeCreateUser();
-        } else {
-          toast.error("Failed to add business plan");
-        }
-      },
-    }
-  );
-
-  const { execute: executeCreateUser } = useAction(saveUser, {
+  const { execute: executeUpdateAthlete, status } = useAction(updateAthlete, {
     onSuccess: (response) => {
-      if (response?.data) {
+      if (response.data?.success) {
+        toast.success("Profile updated successfully");
         router.push("/athlete");
       } else {
-        toast.error("Failed to create user");
+        toast.error(response.data?.error || "Failed to update profile");
       }
     },
   });
 
-  const handlePlanSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    executeAddBusinessPlan(planForm);
+    if (!form.gender) return;
+    executeUpdateAthlete({
+      ...form,
+      gender: form.gender as Gender,
+    });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Athlete Plan</CardTitle>
+        <CardTitle>Complete Your Profile</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handlePlanSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="planName">Plan Name</Label>
+            <Label htmlFor="name">First Name</Label>
             <Input
-              id="planName"
-              value={planForm.planName}
-              onChange={(e) =>
-                setPlanForm({ ...planForm, planName: e.target.value })
-              }
+              id="name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stripeCustomerId">Stripe Customer ID</Label>
+            <Label htmlFor="surname">Last Name</Label>
             <Input
-              id="stripeCustomerId"
-              value={planForm.stripeCustomerId}
-              onChange={(e) =>
-                setPlanForm({
-                  ...planForm,
-                  stripeCustomerId: e.target.value,
-                })
-              }
+              id="surname"
+              value={form.surname}
+              onChange={(e) => setForm({ ...form, surname: e.target.value })}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stripeSubscriptionId">Stripe Subscription ID</Label>
+            <Label htmlFor="birth_date">Date of Birth</Label>
             <Input
-              id="stripeSubscriptionId"
-              value={planForm.stripeSubscriptionId}
-              onChange={(e) =>
-                setPlanForm({
-                  ...planForm,
-                  stripeSubscriptionId: e.target.value,
-                })
-              }
+              id="birth_date"
+              type="date"
+              value={form.birth_date}
+              onChange={(e) => setForm({ ...form, birth_date: e.target.value })}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="stripePriceId">Stripe Price ID</Label>
-            <Input
-              id="stripePriceId"
-              value={planForm.stripePriceId}
-              onChange={(e) =>
-                setPlanForm({ ...planForm, stripePriceId: e.target.value })
+            <Label htmlFor="gender">Gender</Label>
+            <Select
+              value={form.gender}
+              onValueChange={(value: Gender) =>
+                setForm({ ...form, gender: value })
               }
-              required
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={addPlanStatus === "executing"}
             >
-              {addPlanStatus === "executing"
-                ? "Saving..."
-                : "Complete Onboarding"}
-            </Button>
+              <SelectTrigger>
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              required
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={status === "executing"}
+          >
+            {status === "executing" ? "Saving..." : "Complete Profile"}
+          </Button>
         </form>
       </CardContent>
     </Card>
