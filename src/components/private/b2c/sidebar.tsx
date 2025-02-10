@@ -38,7 +38,7 @@ export function Sidebar() {
         className="border-r border-primary bg-noise overflow-hidden"
       >
         <SidebarHeader className="flex justify-center items-center h-[70px] border-b border-primary">
-          <Link href="/blackboard">
+          <Link href="/athlete">
             <LogoIcon />
           </Link>
         </SidebarHeader>
