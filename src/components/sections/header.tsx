@@ -29,28 +29,6 @@ export function Header() {
           <span className="text-3xl font-extrabold font-mono">GymBrah</span>
         </Link>
         <div className="flex items-center gap-6">
-          <Link
-            href="/leaderboard"
-            className={`text-sm hidden lg:block hover:text-primary font-mono transition-colors ${
-              pathname === "/leaderboard" ? "underline underline-offset-8" : ""
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <Trophy className="size-4" />
-              Leaderboard
-            </span>
-          </Link>
-          <Link
-            href="/mobile"
-            className={`text-sm hidden lg:block hover:text-primary font-mono transition-colors ${
-              pathname === "/mobile" ? "underline underline-offset-8" : ""
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <Dock className="size-4" />
-              Mobile app
-            </span>
-          </Link>
           <div className="hidden lg:block">
             <Link href="/login" className="text-xs text-secondary underline">
               <OutlinedButton
