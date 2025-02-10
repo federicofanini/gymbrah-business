@@ -20,11 +20,14 @@ export const metadata: Metadata = {
   title: "Login",
 };
 
+type SearchParams = {
+  athlete_code?: string;
+} & Promise<any>;
 // Example URL: /login?athlete_code=ABC123
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { athlete_code?: string };
+  searchParams: SearchParams;
 }) {
   const cookieStore = await cookies();
   const preferred = cookieStore.get(Cookies.PreferredSignInProvider);
