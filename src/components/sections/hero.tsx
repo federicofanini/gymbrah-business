@@ -152,10 +152,10 @@ const AppScreenshot = () => {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative w-full h-full rounded-lg overflow-hidden">
             <Image
-              src="/dashboard.png"
-              alt="GymBrah Dashboard Demo"
+              src="/business.png"
+              alt="GymBrah Business"
               fill
-              className="object-cover object-center rounded-lg"
+              className="object-center rounded-lg"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               priority
               quality={90}
