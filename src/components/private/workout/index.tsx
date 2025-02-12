@@ -5,7 +5,6 @@ import { useQueryState } from "nuqs";
 import { ExerciseTable } from "./exercise-table";
 import { WorkoutBuilder } from "./workout-builder";
 import { YourWorkouts } from "./your-workouts";
-import { AssignWorkout } from "./assign-workout";
 import { AssignedWorkout } from "./assigned-workout";
 
 interface Exercise {
