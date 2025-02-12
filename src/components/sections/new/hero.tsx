@@ -7,10 +7,10 @@ import { Safari } from "@/components/ui/safari";
 
 function Demo() {
   return (
-    <div className="relative w-full max-w-[100vw] sm:max-w-full mx-auto">
+    <div className="relative">
       <Safari
         url="gymbrah.com"
-        className="w-full h-full aspect-video"
+        className="size-full"
         videoSrc="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
       />
     </div>
