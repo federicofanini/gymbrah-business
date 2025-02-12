@@ -11,7 +11,7 @@ import Image from "next/image";
 
 function SignInButton() {
   return (
-    <Link href="/login" className="text-xs text-secondary underline">
+    <Link href="/access" className="text-xs text-secondary underline">
       <OutlinedButton
         className="text-xs h-6 bg-primary text-white"
         variant="secondary"

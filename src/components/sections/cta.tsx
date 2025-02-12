@@ -11,7 +11,7 @@ export async function CTA() {
         </p>
 
         <div className="flex justify-center">
-          <Link href="/login">
+          <Link href="/access">
             <OutlinedButton
               className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-secondary-foreground text-xl"
               variant="secondary"
