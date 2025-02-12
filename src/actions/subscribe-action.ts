@@ -2,11 +2,10 @@
 
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { appErrors } from "@/actions/types/errors";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { prisma } from "@/lib/db";
 
 const schema = z.object({
   email: z.string().email(),
@@ -16,28 +15,37 @@ export const subscribeAction = createSafeActionClient()
   .schema(schema)
   .action(async (input): Promise<ActionResponse> => {
     try {
-      await resend.contacts.create({
-        email: input.parsedInput.email,
-        audienceId: process.env.RESEND_AUDIENCE_ID as string,
-        firstName: "",
-        lastName: "",
-        unsubscribed: false,
+      // Check if email already exists
+      const existingSubscriber = await prisma.waitlist.findFirst({
+        where: {
+          email: input.parsedInput.email,
+        },
       });
 
-      return {
-        success: true,
-        data: { email: input.parsedInput.email },
-      };
-    } catch (error: any) {
-      console.error("Subscribe error:", error);
-
-      if (error.statusCode === 409) {
+      if (existingSubscriber) {
         return {
           success: false,
           error: "This email is already subscribed",
         };
       }
 
+      const waitlistEntry = await prisma.waitlist.create({
+        data: {
+          id: crypto.randomUUID(),
+          email: input.parsedInput.email,
+          created_at: new Date(),
+          updated_at: new Date(),
+        },
+      });
+
+      revalidatePath("/");
+
+      return {
+        success: true,
+        data: waitlistEntry,
+      };
+    } catch (error) {
+      console.error("Subscribe error:", error);
       return {
         success: false,
         error: appErrors.UNEXPECTED_ERROR,
