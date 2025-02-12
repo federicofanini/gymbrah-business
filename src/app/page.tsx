@@ -15,14 +15,14 @@ export default function Home() {
 
       <div className="space-y-16 max-w-screen-xl mx-auto">
         <Hero />
-      </div>
-      <Features />
-      {/* <DemoVideo /> */}
-      <Pricing />
-      {/* <Testimonials />
+        <Features />
+        {/* <DemoVideo /> */}
+        <Pricing />
+        {/* <Testimonials />
       <Statistics /> */}
-      <CTA />
-      <Footer />
+        <CTA />
+        <Footer />
+      </div>
     </main>
   );
 }
