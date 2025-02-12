@@ -77,8 +77,8 @@ const Section = forwardRef<HTMLElement, SectionProps>(
               <FlickeringGrid
                 squareSize={4}
                 gridGap={4}
-                color="#6B7280"
-                maxOpacity={0.2}
+                color="#06b6d4"
+                maxOpacity={0.3}
                 flickerChance={0.1}
                 className="-z-20 absolute inset-0 size-full"
               />

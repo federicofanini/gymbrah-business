@@ -15,8 +15,7 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
   return (
     <div
       className={cn(
-        "outline-focus transition-transform-background relative z-10 border grid h-full w-full overflow-hidden text-foreground motion-reduce:transition-none",
-        tier.popular ? "bg-primary/5" : "text-foreground"
+        "outline-focus transition-transform-background relative z-10 border grid h-full w-full overflow-hidden text-foreground motion-reduce:transition-none"
       )}
     >
       <div className="flex flex-col h-full">
