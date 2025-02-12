@@ -3,19 +3,16 @@ import { Section } from "@/components/section";
 import { BorderText } from "@/components/ui/border-number";
 import Link from "next/link";
 import { Users } from "lucide-react";
-import { formatStars } from "./github-stars";
-import { getGithubStars } from "./github-stars";
 import { getUserCount } from "@/actions/user/user-count";
 import { unstable_cache } from "next/cache";
 
 const getCachedStats = unstable_cache(
   async () => {
-    const starsCount = await getGithubStars();
     const result = await getUserCount();
     const userCount = result?.data?.success ? result.data.data : 1;
 
     return {
-      stars: starsCount,
+      stars: 50,
       userCount,
     };
   },
@@ -28,7 +25,7 @@ export async function Statistics() {
 
   const stats = [
     {
-      title: formatStars(stars)?.toString() ?? "-",
+      title: "50",
       subtitle: "Stars on GitHub",
       icon: <Icons.github className="h-5 w-5" />,
       link: "https://github.com/federicofanini/gymbrah.com",
