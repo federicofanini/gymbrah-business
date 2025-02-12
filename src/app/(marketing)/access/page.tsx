@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 
+export const revalidate = 3600; // revalidate every hour
 export default async function ComingSoon() {
   const subscriberCountResponse = await getSubscriberCount();
   const subscriberCount = subscriberCountResponse.success ? (

@@ -8,6 +8,8 @@ import { Pricing } from "@/components/sections/pricing";
 // new components
 import { Hero } from "@/components/sections/new/hero";
 
+export const revalidate = 3600; // revalidate every hour
+
 export default function Home() {
   return (
     <main>

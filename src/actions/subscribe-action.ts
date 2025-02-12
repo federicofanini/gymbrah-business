@@ -40,25 +40,32 @@ export const subscribeAction = createSafeActionClient()
       });
 
       // Add to Resend audience
-      const resendResponse = await fetch(
-        `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: input.parsedInput.email,
-            first_name: "",
-            last_name: "",
-            unsubscribed: false,
-          }),
-        }
-      );
+      try {
+        const resendResponse = await fetch(
+          `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: input.parsedInput.email,
+              first_name: "",
+              last_name: "",
+              unsubscribed: false,
+            }),
+          }
+        );
 
-      if (!resendResponse.ok) {
-        throw new Error("Failed to add contact to Resend audience");
+        if (!resendResponse.ok) {
+          console.error(
+            "Failed to add contact to Resend audience, continuing anyway"
+          );
+        }
+      } catch (resendError) {
+        console.error("Resend API error:", resendError);
+        // Continue execution even if Resend fails
       }
 
       revalidatePath("/");
@@ -78,26 +85,13 @@ export const subscribeAction = createSafeActionClient()
 
 export async function getSubscriberCount(): Promise<ActionResponse> {
   try {
-    const response = await fetch(
-      `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    // Get count directly from database instead of Resend
+    const count = await prisma.waitlist.count();
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch subscriber count");
-    }
-
-    const data = await response.json();
     return {
       success: true,
       data: {
-        count: data.data.length,
+        count,
       },
     };
   } catch (error) {
