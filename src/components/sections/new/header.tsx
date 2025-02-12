@@ -26,8 +26,7 @@ export function Header() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/pricing", label: "Pricing" },
-    { href: "https://git.new/languine", label: "Docs" },
+    { href: "#pricing", label: "Pricing" },
     {
       component: <SignInButton />,
       className:

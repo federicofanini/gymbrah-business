@@ -6,7 +6,7 @@ import { SubscribeInput } from "../ui/subscribe-input";
 
 export function Footer() {
   return (
-    <footer className="flex flex-col gap-y-5 rounded-lg py-5 max-w-screen-xl px-4 mx-auto">
+    <footer className="flex flex-col gap-y-5 rounded-lg py-5 max-w-screen-xl px-4 mx-auto border-t">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
           <Image

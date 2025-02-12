@@ -150,7 +150,9 @@ export const siteConfig = {
   pricing: [
     {
       name: "For Athletes",
-      price: { yearly: "$25" }, // lifetime
+      price: 45, // lifetime
+      currency: "$",
+      anchor: 95,
       description: "Best workouts, better results.",
       features: [
         "No more workout notes on your phone",
@@ -163,7 +165,9 @@ export const siteConfig = {
     },
     {
       name: "For Gyms & Coaches",
-      price: { yearly: "$250" }, // lifetime
+      price: 495, // lifetime
+      currency: "$",
+      anchor: 995,
       description: "Same business, smarter gym.",
       features: [
         "Member management",
@@ -174,13 +178,6 @@ export const siteConfig = {
       ],
       cta: "Become our partner",
       popular: true,
-    },
-    {
-      name: "Custom for gyms and coaches",
-      price: { yearly: "$500" }, // lifetime
-      description: "Customized for your business.",
-      features: ["All in gym plan", "Ask features you need"],
-      cta: "Your dreams, our work",
     },
   ],
   footer: {

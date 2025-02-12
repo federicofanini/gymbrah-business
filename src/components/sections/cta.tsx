@@ -5,7 +5,7 @@ import Link from "next/link";
 export async function CTA() {
   return (
     <Section id="cta">
-      <div className="border overflow-hidden relative text-center py-16 mx-auto">
+      <div className="overflow-hidden relative text-center py-32 mx-auto">
         <p className="max-w-3xl text-foreground mb-6 text-balance mx-auto font-mono text-3xl">
           Ready to level up? Let&apos;s do this together.
         </p>

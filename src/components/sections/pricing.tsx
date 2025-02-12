@@ -10,94 +10,12 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
-interface TabsProps {
-  activeTab: string;
-  setActiveTab: (tab: "yearly" | "monthly") => void;
-  className?: string;
-  children: (activeTab: string) => React.ReactNode;
-}
-
-interface TabsListProps {
-  children: React.ReactNode;
-}
-
-interface TabsTriggerProps {
-  value: string;
-  onClick: () => void;
-  children: React.ReactNode;
-  isActive: boolean;
-}
-
-const Tabs = ({ activeTab, setActiveTab, className, children }: TabsProps) => {
+function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
   return (
     <div
       className={cn(
-        "mx-auto flex w-full items-center justify-center",
-        className
-      )}
-    >
-      {children(activeTab)}
-    </div>
-  );
-};
-
-const TabsList = ({ children }: TabsListProps) => {
-  return (
-    <div className="relative flex w-fit items-center rounded-full border p-1.5">
-      {children}
-    </div>
-  );
-};
-
-const TabsTrigger = ({
-  value,
-  onClick,
-  children,
-  isActive,
-}: TabsTriggerProps) => {
-  return (
-    <button
-      onClick={onClick}
-      className={cn("relative z-[1] px-4 py-2", { "z-0": isActive })}
-    >
-      {isActive && (
-        <motion.div
-          layoutId="active-tab"
-          className="absolute inset-0 rounded-full bg-accent"
-          transition={{
-            duration: 0.2,
-            type: "spring",
-            stiffness: 300,
-            damping: 25,
-            velocity: 2,
-          }}
-        />
-      )}
-      <span
-        className={cn(
-          "relative block text-sm font-medium duration-200",
-          isActive ? "delay-100 text-primary" : ""
-        )}
-      >
-        {children}
-      </span>
-    </button>
-  );
-};
-
-function PricingTier({
-  tier,
-  billingCycle,
-}: {
-  tier: (typeof siteConfig.pricing)[0];
-  billingCycle: "monthly" | "yearly";
-}) {
-  return (
-    <div
-      className={cn(
-        "outline-focus transition-transform-background relative z-10 box-border grid h-full w-full overflow-hidden text-foreground motion-reduce:transition-none lg:border-r border-t last:border-r-0",
+        "outline-focus transition-transform-background relative z-10 border grid h-full w-full overflow-hidden text-foreground motion-reduce:transition-none",
         tier.popular ? "bg-primary/5" : "text-foreground"
       )}
     >
@@ -118,10 +36,10 @@ function PricingTier({
           </CardTitle>
           <div className="pt-2 text-3xl font-bold">
             <motion.div
-              key={tier.price.yearly}
+              key={tier.price}
               initial={{
                 opacity: 0,
-                x: billingCycle === "yearly" ? -10 : 10,
+                x: -10,
                 filter: "blur(5px)",
               }}
               animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
@@ -130,9 +48,12 @@ function PricingTier({
                 ease: [0.4, 0, 0.2, 1],
               }}
             >
-              {tier.price.yearly}
+              <span className="text-muted-foreground line-through text-lg mr-2">
+                ${tier.anchor}
+              </span>
+              ${tier.price}
               <span className="text-sm font-medium text-muted-foreground">
-                / for ever
+                / lifetime
               </span>
             </motion.div>
           </div>
@@ -161,7 +82,7 @@ function PricingTier({
               : "bg-muted text-foreground hover:bg-muted/80"
           )}
         >
-          <Link href="/login">{tier.cta}</Link>
+          <Link href="/access">{tier.cta}</Link>
         </Button>
       </div>
     </div>
@@ -169,17 +90,9 @@ function PricingTier({
 }
 
 export function Pricing() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
-    "yearly"
-  );
-
-  const handleTabChange = (tab: "yearly" | "monthly") => {
-    setBillingCycle(tab);
-  };
-
   return (
     <Section id="pricing" title="Pricing">
-      <div className="border border-b-0 grid grid-rows-1">
+      <div className="border-b-0 grid grid-rows-1">
         <div className="grid grid-rows-1 gap-y-10 p-10">
           <div className="text-center">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-balance">
@@ -199,9 +112,9 @@ export function Pricing() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto px-4">
           {siteConfig.pricing.map((tier, index) => (
-            <PricingTier key={index} tier={tier} billingCycle={billingCycle} />
+            <PricingTier key={index} tier={tier} />
           ))}
         </div>
       </div>

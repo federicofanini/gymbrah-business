@@ -87,7 +87,7 @@ export function Features() {
         title="For Gyms"
         subtitle="Same business, smarter gym"
       >
-        <div className="gap-4 mx-auto p-6 border-x border-t grid sm:grid-cols-3">
+        <div className="gap-4 mx-auto p-6  grid sm:grid-cols-3">
           {businessFeatures.map(({ name, description, icon: Icon }, index) => (
             <FeatureCard
               key={index}
@@ -105,7 +105,7 @@ export function Features() {
         title="For Athletes"
         subtitle="Best workouts, better results"
       >
-        <div className="gap-4 mx-auto p-6 border-x border-t grid sm:grid-cols-3">
+        <div className="gap-4 mx-auto p-6 grid sm:grid-cols-3">
           {athleteFeatures.map(({ name, description, icon: Icon }, index) => (
             <FeatureCard
               key={index}

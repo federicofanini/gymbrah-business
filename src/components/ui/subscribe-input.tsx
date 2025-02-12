@@ -58,12 +58,12 @@ export function SubscribeInput() {
 
               if (result?.data?.success) {
                 setSubmitted(true);
-                toast.success("Successfully subscribed!");
+                toast.success("Thanks for joining the waiting list!");
                 setTimeout(() => {
                   setSubmitted(false);
                 }, 5000);
               } else {
-                toast.error("Failed to subscribe");
+                toast.error("You're already on the list!");
               }
             }}
           >

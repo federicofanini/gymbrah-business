@@ -4,7 +4,7 @@ import HeroVideoDialog from "../ui/hero-video-dialog";
 export function DemoVideo() {
   return (
     <Section id="demo">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border-x border-t">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
         <div className="relative">
           <HeroVideoDialog
             className="dark:hidden block"

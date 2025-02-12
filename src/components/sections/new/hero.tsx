@@ -9,7 +9,7 @@ function Demo() {
   return (
     <div className="relative">
       <Safari
-        url="magicui.design"
+        url="gymbrah.com"
         className="size-full"
         videoSrc="https://videos.pexels.com/video-files/27180348/12091515_2560_1440_50fps.mp4"
       />
@@ -65,7 +65,7 @@ export function Hero() {
         </ul>
         <div className="flex items-center gap-8">
           <div className="flex justify-center">
-            <Link href="/login">
+            <Link href="/access">
               <OutlinedButton
                 className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-secondary-foreground text-xl"
                 variant="secondary"
