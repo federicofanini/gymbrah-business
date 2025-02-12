@@ -15,8 +15,8 @@ export function Safari({
   imageSrc,
   videoSrc,
   url,
-  width = 1203,
-  height = 753,
+  width = 1920,
+  height = 1080,
   mode = "default",
   ...props
 }: SafariProps) {
@@ -31,19 +31,19 @@ export function Safari({
     >
       <g clipPath="url(#path0)">
         <path
-          d="M0 52H1202V741C1202 747.627 1196.63 753 1190 753H12C5.37258 753 0 747.627 0 741V52Z"
+          d="M0 52H1919V1068C1919 1074.63 1913.63 1080 1907 1080H12C5.37258 1080 0 1074.63 0 1068V52Z"
           className="fill-[#E5E5E5] dark:fill-[#404040]"
         />
         <path
           fillRule="evenodd"
           clipRule="evenodd"
-          d="M0 12C0 5.37258 5.37258 0 12 0H1190C1196.63 0 1202 5.37258 1202 12V52H0L0 12Z"
+          d="M0 12C0 5.37258 5.37258 0 12 0H1907C1913.63 0 1919 5.37258 1919 12V52H0L0 12Z"
           className="fill-[#E5E5E5] dark:fill-[#404040]"
         />
         <path
           fillRule="evenodd"
           clipRule="evenodd"
-          d="M1.06738 12C1.06738 5.92487 5.99225 1 12.0674 1H1189.93C1196.01 1 1200.93 5.92487 1200.93 12V51H1.06738V12Z"
+          d="M1.06738 12C1.06738 5.92487 5.99225 1 12.0674 1H1906.93C1913.01 1 1917.93 5.92487 1917.93 12V51H1.06738V12Z"
           className="fill-white dark:fill-[#262626]"
         />
         <circle
@@ -65,7 +65,7 @@ export function Safari({
           className="fill-[#E5E5E5] dark:fill-[#404040]"
         />
         <path
-          d="M286 17C286 13.6863 288.686 11 292 11H946C949.314 11 952 13.6863 952 17V35C952 38.3137 949.314 41 946 41H292C288.686 41 286 38.3137 286 35V17Z"
+          d="M286 17C286 13.6863 288.686 11 292 11H1663C1666.31 11 1669 13.6863 1669 17V35C1669 38.3137 1666.31 41 1663 41H292C288.686 41 286 38.3137 286 35V17Z"
           className="fill-[#E5E5E5] dark:fill-[#404040]"
         />
         <g className="mix-blend-luminosity">
@@ -140,8 +140,8 @@ export function Safari({
         {imageSrc && (
           <image
             href={imageSrc}
-            width="1200"
-            height="700"
+            width="1917"
+            height="1027"
             x="1"
             y="52"
             preserveAspectRatio="xMidYMid slice"
@@ -152,13 +152,13 @@ export function Safari({
           <foreignObject
             x="1"
             y="52"
-            width="1200"
-            height="700"
+            width="1920"
+            height="1080"
             preserveAspectRatio="xMidYMid slice"
             clipPath="url(#roundedBottom)"
           >
             <video
-              className="size-full overflow-hidden object-cover"
+              className="size-full overflow-hidden object-fill"
               src={videoSrc}
               autoPlay
               loop
@@ -174,7 +174,7 @@ export function Safari({
         </clipPath>
         <clipPath id="roundedBottom">
           <path
-            d="M1 52H1201V741C1201 747.075 1196.08 752 1190 752H12C5.92486 752 1 747.075 1 741V52Z"
+            d="M1 52H1918V1068C1918 1074.08 1913.08 1079 1907 1079H12C5.92486 1079 1 1074.08 1 1068V52Z"
             fill="white"
           />
         </clipPath>

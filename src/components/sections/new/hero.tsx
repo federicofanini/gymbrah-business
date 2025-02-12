@@ -10,8 +10,8 @@ function Demo() {
     <div className="relative">
       <Safari
         url="gymbrah.com"
-        className="size-full"
-        videoSrc="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeicpv62j5wip2smwmmyslksdjoatlqrxwfxuho3ykjhdg5eslpvw3a"
+        className="w-full h-full"
+        videoSrc="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
       />
     </div>
   );
