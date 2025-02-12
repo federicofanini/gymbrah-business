@@ -44,10 +44,7 @@ export default function RootLayout({
           defaultTheme="light"
           enableSystem={false}
         >
-          <NuqsAdapter>
-            <Header />
-            {children}
-          </NuqsAdapter>
+          <NuqsAdapter>{children}</NuqsAdapter>
           <TailwindIndicator />
         </ThemeProvider>
         <Toaster />

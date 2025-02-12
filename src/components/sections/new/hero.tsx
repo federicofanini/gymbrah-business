@@ -11,7 +11,7 @@ function Demo() {
       <Safari
         url="gymbrah.com"
         className="size-full"
-        videoSrc="https://videos.pexels.com/video-files/27180348/12091515_2560_1440_50fps.mp4"
+        videoSrc="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeicpv62j5wip2smwmmyslksdjoatlqrxwfxuho3ykjhdg5eslpvw3a"
       />
     </div>
   );

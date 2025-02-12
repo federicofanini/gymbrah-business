@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { userAgent } from "next/server";
-import Image from "next/image";
 import {
   Accordion,
   AccordionItem,
@@ -76,19 +75,6 @@ export default async function LoginPage({
 
   return (
     <div>
-      <header className="w-full fixed left-0 right-0">
-        <div className="ml-5 mt-4 md:ml-10 md:mt-10">
-          <Link href="/">
-            <Image
-              src="/logo/logo_black.svg"
-              alt="GymBrah"
-              width={50}
-              height={50}
-            />
-          </Link>
-        </div>
-      </header>
-
       <div className="flex min-h-screen justify-center items-center overflow-hidden p-6 md:p-0">
         <div className="relative z-20 m-auto flex w-full max-w-[380px] flex-col py-8">
           <div className="flex w-full flex-col relative">
@@ -140,13 +126,13 @@ export default async function LoginPage({
             <p className="text-xs text-muted-foreground">
               By clicking continue, you acknowledge that you have read and agree
               to GymBrah&apos;s{" "}
-              <a href="/terms" className="underline">
+              <Link href="/terms" className="underline">
                 Terms of Service
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a href="/privacy" className="underline">
+              <Link href="/privacy" className="underline">
                 Privacy Policy
-              </a>
+              </Link>
               .
             </p>
           </div>
