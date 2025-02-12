@@ -3,20 +3,45 @@
 import Link from "next/link";
 import OutlinedButton from "../../ui/outlined-button";
 import { Check } from "lucide-react";
+import { useState } from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 function Demo() {
+  const [selectedVideo, setSelectedVideo] = useState<"business" | "athlete">(
+    "business"
+  );
+
   return (
-    <div className="relative w-full mx-auto aspect-video sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]">
-      <video
-        className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg"
-        src={
-          "https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
-        }
-        autoPlay
-        loop
-        muted
-        playsInline
-      />
+    <div className="flex flex-col items-center gap-4">
+      <Carousel className="w-full mx-auto aspect-video sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]">
+        <CarouselContent>
+          <CarouselItem>
+            <video
+              className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg"
+              src="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </CarouselItem>
+          <CarouselItem>
+            <div className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg flex items-center justify-center">
+              <span className="text-center text-muted-foreground">
+                Athlete demo coming soon...
+              </span>
+            </div>
+          </CarouselItem>
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
     </div>
   );
 }
