@@ -1,12 +1,8 @@
 import { Section } from "@/components/section";
 import OutlinedButton from "../ui/outlined-button";
 import Link from "next/link";
-import { getUserCount } from "@/actions/user/user-count";
 
 export async function CTA() {
-  const response = await getUserCount();
-  const count = response?.data?.data;
-
   return (
     <Section id="cta">
       <div className="border overflow-hidden relative text-center py-16 mx-auto">
@@ -20,7 +16,7 @@ export async function CTA() {
               className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-secondary-foreground text-xl"
               variant="secondary"
             >
-              Join {count}+ members
+              Join 50+ members
             </OutlinedButton>
           </Link>
         </div>
