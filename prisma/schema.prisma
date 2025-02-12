@@ -15,6 +15,7 @@ model user {
   avatar_url String?
 
   paid Boolean @default(false)
+  role String  @default("athlete")
 
   created_at     DateTime        @default(now())
   updated_at     DateTime        @updatedAt
