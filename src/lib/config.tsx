@@ -197,6 +197,10 @@ export const siteConfig = {
         icon: <Icons.discord className="h-5 w-5" />,
         url: "https://discord.gg/f7fSp6vQcK",
       },
+      {
+        icon: <Icons.github className="h-5 w-5" />,
+        url: "https://github.com/federicofanini/gymbrah.com",
+      },
     ],
     links: [
       { text: "Terms", url: "/terms" },

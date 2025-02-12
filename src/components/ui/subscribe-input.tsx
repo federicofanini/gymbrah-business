@@ -69,7 +69,7 @@ export function SubscribeInput() {
           >
             <fieldset className="relative">
               <input
-                placeholder="Enter your email"
+                placeholder="Join the waiting list"
                 type="email"
                 name="email"
                 id="email"
