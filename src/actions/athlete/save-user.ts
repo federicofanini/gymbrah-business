@@ -53,11 +53,13 @@ export const saveUser = createSafeActionClient()
           full_name: athlete.name + " " + athlete.surname,
           avatar_url: input.parsedInput.avatar_url,
           paid: false,
+          role: "athlete",
         },
         update: {
           email: input.parsedInput.email,
           full_name: athlete.name + " " + athlete.surname,
           avatar_url: input.parsedInput.avatar_url,
+          role: "athlete",
         },
       });
 

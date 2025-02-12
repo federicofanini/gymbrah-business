@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function OnboardingPage() {
-  const [step, setStep] = useState(1);
   const router = useRouter();
 
   // Business Form State
@@ -28,38 +27,15 @@ export default function OnboardingPage() {
     vat: "",
   });
 
-  // Plan Form State
-  // TODO: replace with stripe payment
-  const [planForm, setPlanForm] = useState({
-    stripeCustomerId: "",
-    stripeSubscriptionId: "",
-    stripePriceId: "",
-    planName: "",
-  });
-
   const { execute: executeAddBusiness, status: addBusinessStatus } = useAction(
     addBusiness,
     {
       onSuccess: (response) => {
         if (response?.data?.success) {
           toast.success("Business information saved successfully");
-          setStep(2);
+          router.push("/business");
         } else {
           toast.error("Failed to save business information");
-        }
-      },
-    }
-  );
-
-  const { execute: executeAddBusinessPlan, status: addPlanStatus } = useAction(
-    addBusinessPlan,
-    {
-      onSuccess: (response) => {
-        if (response?.data?.success) {
-          toast.success("Business plan added successfully");
-          executeCreateUser();
-        } else {
-          toast.error("Failed to add business plan");
         }
       },
     }
@@ -68,7 +44,6 @@ export default function OnboardingPage() {
   const { execute: executeCreateUser } = useAction(saveUser, {
     onSuccess: (response) => {
       if (response?.data) {
-        router.push("/business");
       } else {
         toast.error("Failed to create user");
       }
@@ -77,17 +52,13 @@ export default function OnboardingPage() {
 
   const handleBusinessSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    executeCreateUser();
     executeAddBusiness(businessForm);
   };
 
-  const handlePlanSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    executeAddBusinessPlan(planForm);
-  };
-
   return (
-    <>
-      {step === 1 ? (
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <div className="w-full max-w-xl">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -137,14 +108,17 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
                   <Input
                     id="city"
                     value={businessForm.city}
                     onChange={(e) =>
-                      setBusinessForm({ ...businessForm, city: e.target.value })
+                      setBusinessForm({
+                        ...businessForm,
+                        city: e.target.value,
+                      })
                     }
                     required
                   />
@@ -166,14 +140,17 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="zip">ZIP/Postal Code</Label>
                   <Input
                     id="zip"
                     value={businessForm.zip}
                     onChange={(e) =>
-                      setBusinessForm({ ...businessForm, zip: e.target.value })
+                      setBusinessForm({
+                        ...businessForm,
+                        zip: e.target.value,
+                      })
                     }
                     required
                   />
@@ -219,92 +196,7 @@ export default function OnboardingPage() {
             </form>
           </CardContent>
         </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Business Plan</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handlePlanSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="planName">Plan Name</Label>
-                <Input
-                  id="planName"
-                  value={planForm.planName}
-                  onChange={(e) =>
-                    setPlanForm({ ...planForm, planName: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="stripeCustomerId">Stripe Customer ID</Label>
-                <Input
-                  id="stripeCustomerId"
-                  value={planForm.stripeCustomerId}
-                  onChange={(e) =>
-                    setPlanForm({
-                      ...planForm,
-                      stripeCustomerId: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="stripeSubscriptionId">
-                  Stripe Subscription ID
-                </Label>
-                <Input
-                  id="stripeSubscriptionId"
-                  value={planForm.stripeSubscriptionId}
-                  onChange={(e) =>
-                    setPlanForm({
-                      ...planForm,
-                      stripeSubscriptionId: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="stripePriceId">Stripe Price ID</Label>
-                <Input
-                  id="stripePriceId"
-                  value={planForm.stripePriceId}
-                  onChange={(e) =>
-                    setPlanForm({ ...planForm, stripePriceId: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setStep(1)}
-                  className="w-full"
-                >
-                  Back
-                </Button>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={addPlanStatus === "executing"}
-                >
-                  {addPlanStatus === "executing"
-                    ? "Saving..."
-                    : "Complete Onboarding"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      )}
-    </>
+      </div>
+    </div>
   );
 }

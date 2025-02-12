@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { prisma } from "@/lib/db";
 
 export default async function Onboarding() {
   const supabase = await createClient();
@@ -13,6 +14,24 @@ export default async function Onboarding() {
     redirect("/login");
   }
 
+  // Check if user already has a role
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      id: session.user.id,
+    },
+    select: {
+      role: true,
+    },
+  });
+
+  // Redirect based on existing role
+  if (existingUser?.role === "athlete") {
+    redirect("/athlete");
+  }
+
+  if (existingUser?.role === "business") {
+    redirect("/business");
+  }
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 text-center">

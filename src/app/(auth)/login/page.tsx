@@ -33,7 +33,7 @@ export default async function LoginPage({
   const showTrackingConsent =
     (await isEU()) && !cookieStore.has(Cookies.TrackingConsent);
   const { device } = userAgent({ headers: await headers() });
-  const athleteCodeCookie = cookieStore.get(Cookies.AthleteCode);
+  const athleteCodeCookie = searchParams.athlete_code;
 
   let moreSignInOptions = null;
   let preferredSignInOption =
@@ -87,7 +87,7 @@ export default async function LoginPage({
               )}
               {athleteCodeCookie && (
                 <span className="inline-block px-2 py-1 bg-muted rounded-md">
-                  Code: <strong>{athleteCodeCookie.value}</strong>
+                  Code: <strong>{athleteCodeCookie}</strong>
                 </span>
               )}
             </div>
@@ -141,7 +141,7 @@ export default async function LoginPage({
 
       {showTrackingConsent && <ConsentBanner />}
       {athleteCodeCookie && (
-        <AthleteCodeBanner athleteCode={athleteCodeCookie.value} />
+        <AthleteCodeBanner athleteCode={athleteCodeCookie} />
       )}
     </div>
   );
