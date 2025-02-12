@@ -1,9 +1,14 @@
-import { Dumbbell } from "lucide-react";
+import { MdSportsGymnastics } from "react-icons/md";
 
 export const sidebarItems = [
   {
-    icon: Dumbbell,
-    label: "Workouts",
-    path: `/athlete/workouts`,
+    icon: MdSportsGymnastics,
+    label: "Home",
+    path: `/athlete`,
   },
+  // {
+  //   icon: Dumbbell,
+  //   label: "Workouts",
+  //   path: `/athlete/workouts`,
+  // },
 ];
