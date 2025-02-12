@@ -1,19 +1,18 @@
-"use client";
-
-import { useEffect } from "react";
+import { getSubscriberCount } from "@/actions/subscribe-action";
 import { SubscribeInput } from "@/components/ui/subscribe-input";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 
-export default function ComingSoon() {
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, []);
+export default async function ComingSoon() {
+  const subscriberCountResponse = await getSubscriberCount();
+  const subscriberCount = subscriberCountResponse.success ? (
+    subscriberCountResponse.data.count
+  ) : (
+    <Loader2 className="w-4 h-4 animate-spin" />
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
@@ -22,8 +21,14 @@ export default function ComingSoon() {
           Coming Soon
         </h2>
         <p className="text-muted-foreground text-base sm:text-lg">
-          We&apos;re working hard to bring you the best gym tracking experience.
-          Join our waitlist to get early access and exclusive updates.
+          Working hard to bring you the best gym tracking experience.
+          <br />
+          Join our waitlist to get early access and updates.
+        </p>
+
+        <p className="text-primary text-sm sm:text-base">
+          <span className="font-bold">{subscriberCount}</span> members on the
+          waitlist
         </p>
 
         <SubscribeInput />

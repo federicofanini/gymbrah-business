@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import OutlinedButton from "../../ui/outlined-button";
-import { Check } from "lucide-react";
-import { useState } from "react";
+import { Check, Loader2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -11,12 +8,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { getSubscriberCount } from "@/actions/subscribe-action";
 
 function Demo() {
-  const [selectedVideo, setSelectedVideo] = useState<"business" | "athlete">(
-    "business"
-  );
-
   return (
     <div className="flex flex-col items-center gap-4">
       <Carousel className="w-full mx-auto aspect-video sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]">
@@ -46,7 +40,13 @@ function Demo() {
   );
 }
 
-export function Hero() {
+export async function Hero() {
+  const subscriberCountResponse = await getSubscriberCount();
+  const subscriberCount = subscriberCountResponse.success ? (
+    subscriberCountResponse.data.count
+  ) : (
+    <Loader2 className="w-4 h-4 animate-spin" />
+  );
   return (
     <div className="py-12 md:py-28 flex flex-col sm:flex-row gap-12 justify-between items-center mx-4 sm:mx-0">
       <div className="lg:max-w-lg space-y-8 w-full">
@@ -99,7 +99,7 @@ export function Hero() {
                 className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-secondary-foreground text-xl"
                 variant="secondary"
               >
-                Join 50+ members
+                Join {subscriberCount} members
               </OutlinedButton>
             </Link>
           </div>

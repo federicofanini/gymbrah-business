@@ -29,6 +29,7 @@ export const subscribeAction = createSafeActionClient()
         };
       }
 
+      // Create waitlist entry in database
       const waitlistEntry = await prisma.waitlist.create({
         data: {
           id: crypto.randomUUID(),
@@ -37,6 +38,28 @@ export const subscribeAction = createSafeActionClient()
           updated_at: new Date(),
         },
       });
+
+      // Add to Resend audience
+      const resendResponse = await fetch(
+        `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: input.parsedInput.email,
+            first_name: "",
+            last_name: "",
+            unsubscribed: false,
+          }),
+        }
+      );
+
+      if (!resendResponse.ok) {
+        throw new Error("Failed to add contact to Resend audience");
+      }
 
       revalidatePath("/");
 
@@ -52,3 +75,36 @@ export const subscribeAction = createSafeActionClient()
       };
     }
   });
+
+export async function getSubscriberCount(): Promise<ActionResponse> {
+  try {
+    const response = await fetch(
+      `https://api.resend.com/audiences/${process.env.RESEND_AUDIENCE_ID}/contacts`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch subscriber count");
+    }
+
+    const data = await response.json();
+    return {
+      success: true,
+      data: {
+        count: data.data.length,
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching subscriber count:", error);
+    return {
+      success: false,
+      error: appErrors.UNEXPECTED_ERROR,
+    };
+  }
+}
