@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Icons } from "../icons";
 
 function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
   return (
@@ -81,7 +82,9 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
               : "bg-muted text-foreground hover:bg-muted/80"
           )}
         >
-          <Link href="/access">{tier.cta}</Link>
+          <Link href={tier.link} target="_blank">
+            {tier.cta}
+          </Link>
         </Button>
       </div>
     </div>
@@ -90,15 +93,19 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
 
 export function Pricing() {
   return (
-    <Section id="pricing" title="Pricing">
+    <Section
+      id="pricing"
+      title="Private Beta Pricing"
+      description="You’re securing private beta access to GymBrah! 🚀"
+    >
       <div className="border-b-0 grid grid-rows-1">
-        <div className="grid grid-rows-1 gap-y-10 p-10">
+        <div className="grid grid-rows-1 gap-y-10 p-6">
           <div className="text-center">
             <h2 className="text-3xl md:text-5xl font-bold tracking-tighter text-balance">
               Simple, transparent pricing.
             </h2>
 
-            <p className="mt-6 text-balance text-muted-foreground flex items-center gap-2 text-center justify-center">
+            {/* <p className="mt-6 text-balance text-muted-foreground flex items-center gap-2 text-center justify-center">
               Unlock the full potential of{" "}
               <Image
                 src="/logo/logo_black.png"
@@ -107,6 +114,23 @@ export function Pricing() {
                 height={100}
                 className="size-6"
               />
+            </p> */}
+            <p className="mt-4 text-sm text-muted-foreground flex items-center gap-2 text-center justify-center">
+              Join our{" "}
+              <Link
+                href="https://discord.com/invite/f7fSp6vQcK"
+                target="_blank"
+              >
+                <Icons.discord className="size-4" />
+              </Link>{" "}
+              for onboarding, early feature access, and direct feedbacks.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground flex items-center gap-2 text-center justify-center">
+              Let&apos;s build{" "}
+              <strong className="text-primary underline underline-offset-4">
+                GymBrah
+              </strong>{" "}
+              together. See you inside! 🔥
             </p>
           </div>
         </div>

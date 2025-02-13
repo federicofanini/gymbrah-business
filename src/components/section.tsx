@@ -62,7 +62,7 @@ const Section = forwardRef<HTMLElement, SectionProps>(
               {description && (
                 <p
                   className={cn(
-                    "mt-6 text-lg leading-8 text-muted-foreground text-balance max-w-2xl",
+                    "mt-6 text-sm leading-7 text-muted-foreground max-w-2xl mx-auto text-center",
                     align === "center"
                       ? "mx-auto"
                       : align === "right"

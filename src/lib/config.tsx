@@ -162,6 +162,7 @@ export const siteConfig = {
         "24/7 support",
       ],
       cta: "Join now",
+      link: "https://book.stripe.com/00g7vf2SX2GZcRG008",
     },
     {
       name: "For Gyms & Coaches",
@@ -178,6 +179,7 @@ export const siteConfig = {
       ],
       cta: "Become our partner",
       popular: true,
+      link: "https://book.stripe.com/8wM3eZ0KP1CVcRGaEL",
     },
   ],
   footer: {
