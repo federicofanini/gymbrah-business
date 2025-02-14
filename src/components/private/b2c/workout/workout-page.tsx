@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,8 +8,9 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, SkipForward, Timer } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { ChevronLeft, ChevronRight, SkipForward, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface Exercise {
   id: string;
@@ -35,116 +36,129 @@ interface WorkoutPageProps {
 
 export function WorkoutPage({ exercises }: WorkoutPageProps) {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [restTime, setRestTime] = useState(60);
+  const [currentSet, setCurrentSet] = useState(1);
   const [isResting, setIsResting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+
   const currentExercise = exercises[currentExerciseIndex];
+  const totalSets = currentExercise.sets || 1;
   const isLastExercise = currentExerciseIndex === exercises.length - 1;
   const isFirstExercise = currentExerciseIndex === 0;
+  const isLastSet = currentSet === totalSets;
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isResting) {
+      const startTime = Date.now();
+      timer = setInterval(() => {
+        const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+        setTimeLeft(elapsedSeconds);
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [isResting]);
 
   function handleNext() {
-    if (!isLastExercise) {
-      setCurrentExerciseIndex((prev) => prev + 1);
-      setIsResting(false);
+    if (isLastSet) {
+      if (!isLastExercise) {
+        setCurrentExerciseIndex((prev) => prev + 1);
+        setCurrentSet(1);
+      }
+    } else {
+      setCurrentSet((prev) => prev + 1);
     }
+    startTimer();
   }
 
   function handlePrevious() {
-    if (!isFirstExercise) {
-      setCurrentExerciseIndex((prev) => prev - 1);
-      setIsResting(false);
+    if (currentSet === 1) {
+      if (!isFirstExercise) {
+        setCurrentExerciseIndex((prev) => prev - 1);
+        setCurrentSet(exercises[currentExerciseIndex - 1].sets || 1);
+      }
+    } else {
+      setCurrentSet((prev) => prev - 1);
     }
+    setIsResting(false);
   }
 
   function startTimer() {
-    setTimeLeft(restTime);
+    setTimeLeft(0);
     setIsResting(true);
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsResting(false);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
   }
 
   if (!exercises.length) {
     return (
-      <Card className="w-full h-[calc(100vh-130px)] border-none">
-        <CardContent className="p-6 text-center">
-          <p className="text-lg font-medium">No exercises found</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isResting) {
-    return (
-      <div className="h-[calc(100vh-130px)] w-full p-4 flex flex-col">
-        <Card className="flex-1 flex flex-col items-center justify-center border-none">
-          <h2 className="text-6xl font-bold mb-8">Rest Time</h2>
-          <p className="text-8xl font-bold mb-12">{timeLeft}s</p>
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsResting(false)}
-              className="flex gap-2"
-            >
-              <SkipForward className="w-4 h-4" />
-              Skip Rest
-            </Button>
-          </div>
+      <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <Card className="w-full max-w-md m-4">
+          <CardContent className="p-6 text-center">
+            <p className="text-lg font-medium">No exercises found</p>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
-  return (
-    <div className="h-[calc(100vh-130px)] w-full p-4 flex flex-col">
-      <Card className="flex-1 flex flex-col border-none">
-        <CardHeader className="flex-none">
-          <div className="flex justify-between items-center">
-            <h2 className="text-3xl font-bold">
-              {currentExercise.exercise.name}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Exercise {currentExerciseIndex + 1} of {exercises.length}
-            </p>
-          </div>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col lg:flex-row gap-6 overflow-y-auto">
-          <div className="lg:w-1/2 flex flex-col justify-center">
-            <img
-              src={currentExercise.exercise.gif_url}
-              alt={currentExercise.exercise.name}
-              className="w-full max-w-md mx-auto rounded-lg"
-            />
-          </div>
+  if (isResting) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-[100]">
+        <div className="relative z-50 flex flex-col items-center w-full max-w-xl mx-4">
+          <h3 className="text-xl mb-2">{currentExercise.exercise.name}</h3>
+          <p className="text-muted-foreground mb-6">
+            {isLastSet
+              ? "Next exercise coming up!"
+              : `Get ready for set ${currentSet + 1}/${totalSets}`}
+          </p>
+          <p className="text-8xl font-bold mb-8">{timeLeft}s</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsResting(false)}
+            className="flex gap-2"
+          >
+            <SkipForward className="w-4 h-4" />
+            Skip Rest
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
-          <div className="lg:w-1/2 flex flex-col gap-6">
-            <div className="p-6 rounded-xl border border-border">
-              <div className="grid grid-cols-2 gap-y-6 text-lg">
-                {currentExercise.sets && (
-                  <div className="col-span-1">
-                    <p className="font-bold text-primary">Sets</p>
-                    <p className="text-2xl">{currentExercise.sets}</p>
-                  </div>
-                )}
-                {currentExercise.reps && (
-                  <div className="col-span-1">
-                    <p className="font-bold text-primary">Reps</p>
-                    <p className="text-2xl">{currentExercise.reps}</p>
-                  </div>
-                )}
+  return (
+    <div className="fixed inset-0 bg-white z-[100]">
+      <div className="h-full max-h-screen overflow-hidden flex flex-col">
+        <Card className="flex-1 flex flex-col border-none bg-white">
+          <CardHeader className="flex-none">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">
+                {currentExercise.exercise.name}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Exercise {currentExerciseIndex + 1}/{exercises.length}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button variant="destructive" size="sm">
+                  <Link href="/athlete">Exit</Link>
+                </Button>
               </div>
             </div>
+          </CardHeader>
 
-            <div className="p-4 rounded-xl border border-border">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+          <CardContent
+            className={cn("flex-1 grid gap-4", "lg:grid-cols-2 lg:gap-6")}
+          >
+            <div className="flex flex-col justify-center">
+              <img
+                src={currentExercise.exercise.gif_url}
+                alt={currentExercise.exercise.name}
+                className="w-full max-w-md mx-auto rounded-lg"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-4 p-4 rounded-xl border border-border text-sm">
                 <div>
                   <p className="text-xs text-muted-foreground">Equipment</p>
                   <p className="capitalize">
@@ -172,47 +186,63 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col gap-4 mt-auto">
-              <Input
-                type="number"
-                value={restTime}
-                onChange={(e) => setRestTime(Number(e.target.value))}
-                className="text-8xl h-20 text-center font-bold"
-                placeholder="Rest time in seconds"
-              />
-              <Button
-                onClick={startTimer}
-                className="h-20 text-4xl font-bold"
-                size="lg"
-              >
-                <Timer className="size-20 mr-4" />
-                Start Rest
-              </Button>
+              <div className="grid grid-cols-2 gap-4">
+                {currentExercise.sets && (
+                  <div className="text-center p-3 rounded-xl border border-border">
+                    <p className="text-sm text-muted-foreground">Sets</p>
+                    <p className="text-2xl font-bold">
+                      {currentExercise.sets} / {totalSets}
+                    </p>
+                  </div>
+                )}
+                {currentExercise.reps && (
+                  <div className="text-center p-3 rounded-xl border border-border">
+                    <p className="text-sm text-muted-foreground">Reps</p>
+                    <p className="text-2xl font-bold">{currentExercise.reps}</p>
+                  </div>
+                )}
+                {currentExercise.weight && (
+                  <div className="text-center p-3 rounded-xl border border-border">
+                    <p className="text-sm text-muted-foreground">Weight</p>
+                    <p className="text-2xl font-bold">
+                      {currentExercise.weight}
+                    </p>
+                  </div>
+                )}
+                {currentExercise.duration && (
+                  <div className="text-center p-3 rounded-xl border border-border">
+                    <p className="text-sm text-muted-foreground">Duration</p>
+                    <p className="text-2xl font-bold">
+                      {currentExercise.duration}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex-none flex justify-between mt-auto border-t pt-4">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={isFirstExercise}
-            className="w-[160px] h-12 text-lg"
-          >
-            <ChevronLeft className="w-5 h-5 mr-2" />
-            Previous
-          </Button>
-          <Button
-            onClick={handleNext}
-            disabled={isLastExercise}
-            className="w-[160px] h-12 text-lg"
-          >
-            Next
-            <ChevronRight className="w-5 h-5 ml-2" />
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardContent>
+
+          <CardFooter className="flex-none flex justify-between mt-auto pt-4">
+            <Button
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={isFirstExercise && currentSet === 1}
+              className="w-[120px] h-12"
+            >
+              <ChevronLeft className="w-5 h-5 mr-2" />
+              Previous
+            </Button>
+            <Button
+              onClick={handleNext}
+              disabled={isLastExercise && isLastSet}
+              className="w-[120px] h-12"
+            >
+              Next
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
