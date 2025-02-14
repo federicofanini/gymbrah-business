@@ -8,9 +8,17 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, SkipForward, X } from "lucide-react";
+import {
+  CheckCheck,
+  ChevronLeft,
+  ChevronRight,
+  SkipForward,
+  Star,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import confetti from "canvas-confetti";
 
 interface Exercise {
   id: string;
@@ -39,6 +47,7 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
   const [currentSet, setCurrentSet] = useState(1);
   const [isResting, setIsResting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [isWorkoutComplete, setIsWorkoutComplete] = useState(false);
 
   const currentExercise = exercises[currentExerciseIndex];
   const totalSets = currentExercise.sets || 1;
@@ -60,11 +69,22 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
     };
   }, [isResting]);
 
+  function triggerConfetti() {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
+
   function handleNext() {
     if (isLastSet) {
       if (!isLastExercise) {
         setCurrentExerciseIndex((prev) => prev + 1);
         setCurrentSet(1);
+      } else {
+        setIsWorkoutComplete(true);
+        triggerConfetti();
       }
     } else {
       setCurrentSet((prev) => prev + 1);
@@ -95,6 +115,45 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
         <Card className="w-full max-w-md m-4">
           <CardContent className="p-6 text-center">
             <p className="text-lg font-medium">No exercises found</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (isWorkoutComplete) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white z-[100]">
+        <Card className="w-full max-w-xl mx-4">
+          <CardHeader>
+            <h2 className="text-3xl font-bold text-center flex flex-col items-center justify-center">
+              <CheckCheck className="size-10 mr-2 bg-green-100 rounded-full p-1 text-green-500" />
+              Workout completed!
+            </h2>
+          </CardHeader>
+          <CardContent className="text-center space-y-6">
+            <p className="text-xl text-muted-foreground">
+              Congratulations! You&apos;ve completed all {exercises.length}{" "}
+              exercises.
+            </p>
+            <div className="grid gap-4 p-4 rounded-xl border border-border">
+              <div>
+                <p className="text-sm text-muted-foreground">Total Exercises</p>
+                <p className="text-2xl font-bold">{exercises.length}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Sets</p>
+                <p className="text-2xl font-bold">
+                  {exercises.reduce((acc, ex) => acc + (ex.sets || 1), 0)}
+                </p>
+              </div>
+            </div>
+            <Button className="w-full" asChild>
+              <Link href="/athlete" className="flex items-center">
+                <Star className="size-4 mr-2" />
+                Save progress
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -192,7 +251,7 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
                   <div className="text-center p-3 rounded-xl border border-border">
                     <p className="text-sm text-muted-foreground">Sets</p>
                     <p className="text-2xl font-bold">
-                      {currentExercise.sets} / {totalSets}
+                      {currentSet} / {totalSets}
                     </p>
                   </div>
                 )}
@@ -232,13 +291,18 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
               <ChevronLeft className="w-5 h-5 mr-2" />
               Previous
             </Button>
-            <Button
-              onClick={handleNext}
-              disabled={isLastExercise && isLastSet}
-              className="w-[120px] h-12"
-            >
-              Next
-              <ChevronRight className="w-5 h-5 ml-2" />
+            <Button onClick={handleNext} className="w-[120px] h-12">
+              {isLastExercise && isLastSet ? (
+                <>
+                  Finish
+                  <SkipForward className="w-5 h-5 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next
+                  <ChevronRight className="w-5 h-5 ml-2" />
+                </>
+              )}
             </Button>
           </CardFooter>
         </Card>
