@@ -15,6 +15,7 @@ interface GamificationData {
   badges: string[];
   lastWorkoutDate: Date | null;
   currentXP: number;
+  next_level_xp: number;
 }
 
 /**
@@ -66,6 +67,7 @@ export async function getUserGamificationData(): Promise<GamificationData> {
       badges: true,
       last_workout_date: true,
       current_xp: true,
+      next_level_xp: true,
     },
   });
 
@@ -80,5 +82,6 @@ export async function getUserGamificationData(): Promise<GamificationData> {
     badges: data.badges,
     lastWorkoutDate: data.last_workout_date,
     currentXP: data.current_xp,
+    next_level_xp: data.next_level_xp,
   };
 }

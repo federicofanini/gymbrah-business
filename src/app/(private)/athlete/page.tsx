@@ -4,6 +4,11 @@ import { WorkoutCarousel } from "@/components/private/b2c/athlete/workout";
 import { getWorkoutsFromBusiness } from "@/actions/workout/athlete/workouts-from-business";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Achievements from "./achievements/page";
+import { AchievementsPage } from "@/components/private/b2c/achievements/ach-page";
+import { getUserGamificationData } from "@/actions/achievements/get-user-data";
+import { getUserMetadata } from "@/utils/supabase/database/cached-queries";
+import { Loader2 } from "lucide-react";
 
 async function BlackboardWrapper() {
   const workoutsResponse = await getWorkoutsFromBusiness();
@@ -39,9 +44,21 @@ function LoadingSkeleton() {
   );
 }
 
-export default function Blackboard() {
+export default async function Blackboard() {
+  const data = await getUserGamificationData();
+  const profile = await getUserMetadata();
+
+  if (!profile) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="size-4 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={<LoadingSkeleton />}>
+      <AchievementsPage data={data} profile={profile} />
       <BlackboardWrapper />
     </Suspense>
   );

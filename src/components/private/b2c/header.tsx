@@ -3,7 +3,7 @@ import { MobileMenu } from "@/components/private/b2b/mobile-menu";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { UserMenu } from "@/components/private/b2b/user-menu";
-import { SettingsButton } from "@/components/private/b2b/settings-button";
+import { AchievementsButton } from "../b2b/achievements-button";
 import { AthleteCodeDisplay } from "./athlete-code";
 
 export function Header() {
@@ -21,7 +21,7 @@ export function Header() {
 
       <div className="flex justify-end items-center">
         <div className="flex space-x-8 items-center">
-          <SettingsButton />
+          <AchievementsButton />
         </div>
 
         <div className="flex space-x-8 items-center">

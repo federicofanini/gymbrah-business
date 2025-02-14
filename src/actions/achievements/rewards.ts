@@ -6,6 +6,7 @@ import type { ActionResponse } from "../types/action-response";
 import { appErrors } from "../types/errors";
 import { storeGamificationData } from "./assign-rewards";
 import { getUserGamificationData } from "./get-user-data";
+import { ACHIEVEMENTS } from "./thresholds";
 
 const REWARD_POINTS = {
   WORKOUT_COMPLETION: 100,
@@ -26,86 +27,6 @@ const BASE_XP = 100;
 export async function getRequiredXPForLevel(level: number): Promise<number> {
   return Math.floor(BASE_XP * Math.pow(level, 1.2));
 }
-
-// Achievement thresholds
-const ACHIEVEMENTS = {
-  WORKOUT_MILESTONES: {
-    BEGINNER: {
-      count: 5,
-      points: 500,
-      id: "workout-beginner",
-      badge: "beginner-athlete",
-      name: "Workout Beginner",
-    },
-    INTERMEDIATE: {
-      count: 25,
-      points: 1000,
-      id: "workout-intermediate",
-      badge: "dedicated-athlete",
-      name: "Workout Intermediate",
-    },
-    ADVANCED: {
-      count: 100,
-      points: 2500,
-      id: "workout-advanced",
-      badge: "advanced-athlete",
-      name: "Workout Advanced",
-    },
-    ELITE: {
-      count: 500,
-      points: 5000,
-      id: "workout-elite",
-      badge: "elite-athlete",
-      name: "Workout Elite",
-    },
-  },
-  STREAK_MILESTONES: {
-    CONSISTENT: {
-      days: 7,
-      points: 700,
-      id: "streak-week",
-      badge: "weekly-warrior",
-      name: "Streak Week",
-    },
-    DEDICATED: {
-      days: 30,
-      points: 3000,
-      id: "streak-month",
-      badge: "monthly-master",
-      name: "Streak Month",
-    },
-    UNSTOPPABLE: {
-      days: 100,
-      points: 10000,
-      id: "streak-century",
-      badge: "unstoppable-force",
-      name: "Streak Century",
-    },
-  },
-  LEVEL_MILESTONES: {
-    NOVICE: {
-      level: 5,
-      points: 1000,
-      id: "level-novice",
-      badge: "rising-star",
-      name: "Level Novice",
-    },
-    INTERMEDIATE: {
-      level: 10,
-      points: 2000,
-      id: "level-intermediate",
-      badge: "power-player",
-      name: "Level Intermediate",
-    },
-    EXPERT: {
-      level: 25,
-      points: 5000,
-      id: "level-expert",
-      badge: "grandmaster",
-      name: "Level Expert",
-    },
-  },
-} as const;
 
 const schema = z.object({
   workoutId: z.string(),
