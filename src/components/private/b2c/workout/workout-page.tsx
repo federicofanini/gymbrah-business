@@ -19,6 +19,9 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import confetti from "canvas-confetti";
+import { calculateWorkoutRewards } from "@/actions/achievements/rewards";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Exercise {
   id: string;
@@ -43,11 +46,13 @@ interface WorkoutPageProps {
 }
 
 export function WorkoutPage({ exercises }: WorkoutPageProps) {
+  const router = useRouter();
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [currentSet, setCurrentSet] = useState(1);
   const [isResting, setIsResting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const currentExercise = exercises[currentExerciseIndex];
   const totalSets = currentExercise.sets || 1;
@@ -109,6 +114,51 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
     setIsResting(true);
   }
 
+  async function handleSaveProgress() {
+    try {
+      setIsSaving(true);
+      const totalCompletedSets = exercises.reduce(
+        (acc, ex) => acc + (ex.sets || 1),
+        0
+      );
+
+      const result = await calculateWorkoutRewards({
+        workoutId: exercises[0].id, // Using first exercise ID as workout ID
+        completedSets: totalCompletedSets,
+      });
+
+      if (!result?.data?.success) {
+        throw new Error(result?.data?.error || "Failed to save progress");
+      }
+
+      const { pointsGained, newLevel, newAchievements, newBadges } =
+        result.data.data;
+
+      // Format achievements and badges for display
+      const achievementMessages = newAchievements.length
+        ? `\nNew Achievements: ${newAchievements.join(", ")}`
+        : "";
+
+      const badgeMessages = newBadges.length
+        ? `\nNew Badges: ${newBadges.join(", ")}`
+        : "";
+
+      const levelUpMessage = newLevel > 1 ? `\nLeveled up to ${newLevel}!` : "";
+
+      toast.success("Workout Complete!", {
+        description: `You earned ${pointsGained} points!${levelUpMessage}${achievementMessages}${badgeMessages}`,
+        duration: 5000,
+      });
+
+      await router.push("/athlete");
+    } catch (error) {
+      toast.error("Failed to save progress");
+      console.error("Error saving workout progress:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   if (!exercises.length) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm">
@@ -148,11 +198,13 @@ export function WorkoutPage({ exercises }: WorkoutPageProps) {
                 </p>
               </div>
             </div>
-            <Button className="w-full" asChild>
-              <Link href="/athlete" className="flex items-center">
-                <Star className="size-4 mr-2" />
-                Save progress
-              </Link>
+            <Button
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleSaveProgress}
+              disabled={isSaving}
+            >
+              <Star className="size-4" />
+              {isSaving ? "Saving..." : "Save progress"}
             </Button>
           </CardContent>
         </Card>

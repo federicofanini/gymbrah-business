@@ -1,0 +1,80 @@
+===== REWARD SYSTEM RULES =====
+
+Points & XP System:
+- Base workout completion: 100 points + 100 XP
+- Per set completed: 10 points + 10 XP per set
+- Active streak bonus: 50 points + 50 XP per streak day
+- Level up bonus: 200 points
+- Achievement bonuses: Points and XP awarded per milestone
+
+Experience & Leveling:
+- Base XP: 100 points
+- Level XP formula: 100 * (level ^ 1.2)
+- XP requirements increase with each level
+- Automatic level up when XP threshold reached
+- Level up grants 200 bonus points
+
+Workout Milestones:
+- Beginner (5 workouts): 500 points + beginner-athlete badge
+- Intermediate (25 workouts): 1000 points + dedicated-athlete badge  
+- Advanced (100 workouts): 2500 points + advanced-athlete badge
+- Elite (500 workouts): 5000 points + elite-athlete badge
+
+Streak Milestones:
+- Consistent (7 days): 700 points + weekly-warrior badge
+- Dedicated (30 days): 3000 points + monthly-master badge
+- Unstoppable (100 days): 10000 points + unstoppable-force badge
+
+Level Milestones:
+- Novice (Level 5): 1000 points + rising-star badge
+- Intermediate (Level 10): 2000 points + power-player badge
+- Expert (Level 25): 5000 points + grandmaster badge
+
+Notes:
+- Points and XP are tracked separately but earned together
+- Achievements and badges are permanent once unlocked
+- Streaks reset if you miss a day
+- Multiple achievements can be earned in one workout
+
+==== EXAMPLE REWARD CALCULATION ====
+
+Let's say you complete a workout with 5 sets while on a 3-day streak:
+
+1. Base workout completion: +100 points/XP
+2. Set completion (5 sets × 10): +50 points/XP
+3. Streak bonus (3 days × 50): +150 points/XP
+Total for workout: 300 points and 300 XP
+
+If this was your 5th workout, you'd also earn:
+- Beginner achievement: +500 points/XP
+- Beginner-athlete badge
+Total including achievement: 800 points and 800 XP
+
+If this XP pushes you past your current level's threshold:
+- Level up: +200 bonus points
+- Possible level milestone rewards
+
+The system continuously tracks your progress and awards achievements as you hit milestones across workouts completed, streak days maintained, and levels gained. Each achievement comes with both point rewards and exclusive badges to showcase your progress.
+
+==== WHY SEPARATE POINTS AND XP? ====
+
+The separation of points and XP serves distinct purposes in the gamification system:
+
+Points:
+- Act as a spendable currency for future features (rewards shop, challenges)
+- Provide immediate gratification and clear progress metrics
+- Allow for competitive leaderboards and rankings
+- Can be adjusted without affecting level progression
+
+XP:
+- Drives the core progression system through levels
+- Creates a steady, predictable growth curve
+- Maintains long-term engagement through level milestones
+- Cannot be spent, ensuring consistent progression tracking
+
+By keeping points and XP separate, we can:
+- Adjust point rewards for new features or changes
+- Preserve the core leveling system for long-term value
+- Provide clear, measurable progress for users
+
+This approach allows us to balance immediate rewards with long-term progression, ensuring a rewarding and engaging experience for all users.

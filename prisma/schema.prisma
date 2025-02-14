@@ -230,11 +230,20 @@ model gamification {
   streak_days        Int       @default(0)
   longest_streak     Int       @default(0)
   workouts_completed Int       @default(0)
-  achievements       String[]  @default([])
-  badges             String[]  @default([])
-  last_workout_date  DateTime?
+  total_sets         Int       @default(0) // Track total sets for SET_COMPLETION points
+  achievements       String[]  @default([]) // Achievement IDs from ACHIEVEMENTS constant
+  badges             String[]  @default([]) // Badge IDs from ACHIEVEMENTS constant
+  last_workout_date  DateTime? // Used for streak calculations
+  current_xp         Int       @default(0) // Current XP towards next level
+  next_level_xp      Int       @default(1000) // XP needed for next level (BASE_XP * level^1.5)
   created_at         DateTime  @default(now())
   updated_at         DateTime  @updatedAt
+
+  // Reward rules and calculations defined in src/actions/achievements/rewards.ts:
+  // - Points system (REWARD_POINTS constant)
+  // - XP/Level progression (BASE_XP, getRequiredXPForLevel())
+  // - Achievement/Badge unlocks (ACHIEVEMENTS constant)
+  // See rewards.ts for full documentation
 
   @@index([user_id])
 }
