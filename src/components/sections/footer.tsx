@@ -4,70 +4,111 @@ import Image from "next/image";
 import Link from "next/link";
 import { SubscribeInput } from "../ui/subscribe-input";
 
+const footerLinks = {
+  product: {
+    title: "Product",
+    links: [
+      { text: "Features", url: "/#features" },
+      { text: "Pricing", url: "/#pricing" },
+      { text: "For Athletes", url: "/#athletes" },
+      { text: "For Business", url: "/#business" },
+    ],
+  },
+  company: {
+    title: "Company",
+    links: [
+      { text: "About", url: "/#" },
+      { text: "Blog", url: "/#" },
+      { text: "Careers", url: "/#" },
+      { text: "Contact", url: "/#" },
+    ],
+  },
+  legal: {
+    title: "Legal",
+    links: [
+      { text: "Privacy", url: "/privacy" },
+      { text: "Terms", url: "/terms" },
+    ],
+  },
+};
+
 export function Footer() {
   return (
-    <footer className="flex flex-col gap-y-5 rounded-lg py-5 max-w-screen-xl px-4 mx-auto border-t">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-x-2">
-          <Image
-            src="/logo/logo_black.png"
-            alt="GymBrah"
-            width={100}
-            height={100}
-            className="size-10"
-          />
-          <p className="text-xl font-extrabold font-mono">GymBrah</p>
+    <footer className="flex flex-col gap-y-8 rounded-lg py-12 max-w-screen-xl px-4 mx-auto border-t">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+        <div className="md:col-span-2">
+          <div className="flex items-center gap-x-2 mb-4">
+            <Image
+              src="/logo/logo_black.png"
+              alt="GymBrah"
+              width={100}
+              height={100}
+              className="size-10"
+            />
+            <p className="text-xl font-extrabold font-mono">GymBrah</p>
+          </div>
+          <SubscribeInput />
         </div>
 
-        <div className="flex gap-x-2">
+        <div className="grid grid-cols-2 md:grid-cols-3 col-span-1 md:col-span-3 gap-8">
+          {Object.values(footerLinks).map((section) => (
+            <div key={section.title}>
+              <h3 className="font-semibold mb-3">{section.title}</h3>
+              <ul className="space-y-2">
+                {section.links.map((link) => (
+                  <li key={link.text}>
+                    <Link
+                      href={link.url}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.text}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t">
+        <div className="flex gap-x-4">
           {siteConfig.footer.socialLinks.map((link, index) => (
             <Link
               key={index}
               href={link.url}
-              className="flex text-xs items-center justify-center text-muted-foreground transition-all duration-100 ease-linear hover:text-foreground hover:underline hover:underline-offset-4"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
               {link.icon}
             </Link>
           ))}
         </div>
-      </div>
-      <div className="flex flex-col justify-between gap-y-5 md:flex-row md:items-center">
-        <ul className="flex flex-col gap-x-5 gap-y-2 text-muted-foreground md:flex-row md:items-center">
-          {siteConfig.footer.links.map((link, index) => (
-            <li
-              key={index}
-              className="text-xs font-medium text-muted-foreground transition-all duration-100 ease-linear hover:text-foreground hover:underline hover:underline-offset-4"
+
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <span className="flex items-center gap-2">
+            Made with ☕️ and 🥐 by
+            <Image
+              src="/ff.jpg"
+              alt="Federico"
+              width={24}
+              height={24}
+              className="rounded-full"
+            />
+            <Link
+              href="https://x.com/FedericoFan"
+              target="_blank"
+              className="font-semibold"
             >
-              <Link href={link.url} target="_blank">
-                {link.text}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center justify-between text-xs font-medium tracking-tight text-muted-foreground">
-          <p>{siteConfig.footer.bottomText}</p>
+              Federico
+            </Link>
+          </span>
         </div>
+
+        <p className="text-sm text-muted-foreground">
+          {siteConfig.footer.bottomText}
+        </p>
       </div>
-      <SubscribeInput />
-      <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <span className="flex items-center gap-2">
-          Made with ☕️ and 🥐 by
-          <Image
-            src="/ff.jpg"
-            alt="Federico"
-            width={24}
-            height={24}
-            className="rounded-full"
-          />
-          <Link
-            href="https://x.com/FedericoFan"
-            target="_blank"
-            className="font-semibold"
-          >
-            Federico
-          </Link>
-        </span>
-      </div>
+
       <BorderText
         text={siteConfig.footer.brandText}
         className="text-[clamp(3rem,15vw,10rem)] overflow-hidden font-mono tracking-tighter font-medium"
