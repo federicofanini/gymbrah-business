@@ -12,7 +12,7 @@ import { getSubscriberCount } from "@/actions/subscribe-action";
 import { WordAnimation } from "./word-animation";
 import AvatarCircles from "@/components/ui/avatar-circles";
 
-const mockAvatars = [
+export const avatars = [
   {
     imageUrl: "ff.jpg",
     profileUrl: "/federicofan",
@@ -132,7 +132,7 @@ export async function Hero() {
                 variant="secondary"
               >
                 Join {subscriberCount} members
-                <AvatarCircles avatarUrls={mockAvatars} />
+                <AvatarCircles avatarUrls={avatars} />
               </OutlinedButton>
             </Link>
           </div>

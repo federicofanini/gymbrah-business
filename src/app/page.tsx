@@ -7,6 +7,8 @@ import { Pricing } from "@/components/sections/pricing";
 
 // new components
 import { Hero } from "@/components/sections/new/hero";
+import { ServicesBusiness } from "@/components/sections/new/services-business";
+import { ServicesAthletes } from "@/components/sections/new/services-athletes";
 
 export const revalidate = 3600; // revalidate every hour
 
@@ -18,6 +20,8 @@ export default function Home() {
       <div className="space-y-16 max-w-screen-xl mx-auto">
         <Hero />
         <Features />
+        <ServicesBusiness />
+        <ServicesAthletes />
         {/* <DemoVideo /> */}
         <Pricing />
         {/* <Testimonials />
