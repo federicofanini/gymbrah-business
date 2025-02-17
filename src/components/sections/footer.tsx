@@ -50,7 +50,7 @@ export function Footer() {
           <div className="mt-4 items-start justify-start">
             <SubscribeInput />
           </div>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col ">
             <a
               href="https://startupfa.me/s/gymbrah?utm_source=gymbrah.com"
               target="_blank"
@@ -60,6 +60,18 @@ export function Footer() {
                 alt="GymBrah - Run Your Fitness Business Without Chaos | Startup Fame"
                 width="224"
                 height="36"
+              />
+            </a>
+            <a
+              href="https://frogdr.com?via=fedef"
+              target="_blank"
+              className="mt-4"
+            >
+              <img
+                src="https://frogdr.com/gymbrah.com/badge-white-tiny.svg"
+                alt="Monitor&#0032;your&#0032;Domain&#0032;Rating&#0032;with&#0032;FrogDR"
+                width="224"
+                height="20"
               />
             </a>
           </div>
