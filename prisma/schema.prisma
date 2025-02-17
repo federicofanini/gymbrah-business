@@ -262,3 +262,12 @@ model completed_set {
   @@index([workout_exercise_id])
   @@index([user_id])
 }
+
+model testimonials {
+  id         String   @id @default(uuid())
+  name       String
+  x_username String
+  role       String
+  content    String
+  created_at DateTime @default(now())
+}

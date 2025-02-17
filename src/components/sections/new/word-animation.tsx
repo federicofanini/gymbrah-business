@@ -30,7 +30,7 @@ export function WordAnimation() {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div key={word} className="text-cyan-600 inline-block">
+      <motion.div key={word} className="text-cyan-600 inline-block font-bold">
         {word?.split("").map((char, index) => (
           <motion.span
             key={`${word}-${char}-${index.toString()}`}

@@ -10,6 +10,7 @@ const nextConfig = {
       { hostname: "avatars.githubusercontent.com" },
       { hostname: "lh3.googleusercontent.com" },
       { hostname: "v2.exercisedb.io" },
+      { hostname: "pbs.twimg.com" },
     ],
   },
   transpilePackages: ["geist"],

@@ -13,6 +13,8 @@ import { Community } from "@/components/sections/new/community";
 import { UseCases } from "@/components/sections/new/use-cases";
 import { getSubscriberCount } from "@/actions/subscribe-action";
 import { Loader2 } from "lucide-react";
+import { FAQ } from "@/components/sections/new/faq";
+import { Testimonials } from "@/components/sections/new/testimonials";
 
 export const revalidate = 3600; // revalidate every hour
 
@@ -33,12 +35,12 @@ export default async function Home() {
         <Features />
         <ServicesBusiness subscriberCount={subscriberCount} />
         <ServicesAthletes subscriberCount={subscriberCount} />
-        {/* <DemoVideo /> */}
         <UseCases subscriberCount={subscriberCount} />
+        <Testimonials />
         <Pricing />
+        <FAQ />
         <Community />
-        {/* <Testimonials />
-      <Statistics /> */}
+
         <CTA subscriberCount={subscriberCount} />
         <Footer />
       </div>

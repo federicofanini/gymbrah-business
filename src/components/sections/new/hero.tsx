@@ -122,7 +122,7 @@ export async function Hero({ subscriberCount }: { subscriberCount: number }) {
           <div className="flex justify-center">
             <Link href="/access">
               <OutlinedButton
-                className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-secondary-foreground text-xl"
+                className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white text-xl"
                 variant="secondary"
               >
                 Join {subscriberCount} members
