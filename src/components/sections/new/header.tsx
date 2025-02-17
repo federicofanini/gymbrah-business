@@ -40,7 +40,7 @@ export function Header() {
 
   return (
     <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="flex items-center justify-between sm:mx-auto py-4 max-w-screen-xl mx-4">
+      <div className="flex items-center justify-between sm:mx-auto py-4 px-4 md:px-6 lg:px-8 max-w-screen-xl">
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/logo/logo_black.svg"
@@ -49,11 +49,16 @@ export function Header() {
             height={50}
             className="h-[40px] w-auto"
           />
-          <span className="text-3xl font-extrabold font-mono">GymBrah</span>
+          <span className="text-2xl sm:text-3xl font-extrabold font-mono">
+            GymBrah
+          </span>
         </Link>
 
-        <div className="flex items-center gap-6 text-sm">
-          <Link href="https://github.com/federicofanini/gymbrah.com">
+        <div className="flex items-center gap-4 sm:gap-6 md:gap-8 text-sm">
+          <Link
+            href="https://github.com/federicofanini/gymbrah.com"
+            className="hidden sm:block"
+          >
             <Suspense fallback={<GithubStars />}>
               <GithubStars />
             </Suspense>
@@ -74,7 +79,7 @@ export function Header() {
               <Link
                 href={link.href!}
                 className={cn(
-                  "text-primary hover:underline underline-offset-4 transition-colors hidden md:block",
+                  "text-primary hover:underline underline-offset-4 transition-colors hidden sm:block",
                   link.className,
                   pathname?.endsWith(link.href) && "text-primary"
                 )}
