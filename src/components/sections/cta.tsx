@@ -4,14 +4,7 @@ import Link from "next/link";
 import { getSubscriberCount } from "@/actions/subscribe-action";
 import { Loader2 } from "lucide-react";
 
-export async function CTA() {
-  const subscriberCountResponse = await getSubscriberCount();
-  const subscriberCount = subscriberCountResponse.success ? (
-    subscriberCountResponse.data.count
-  ) : (
-    <Loader2 className="w-4 h-4 animate-spin" />
-  );
-
+export async function CTA({ subscriberCount }: { subscriberCount: number }) {
   return (
     <Section id="cta">
       <div className="overflow-hidden relative text-center py-32 mx-auto">

@@ -161,7 +161,7 @@ export const siteConfig = {
         "Community access",
         "24/7 support",
       ],
-      cta: "Join now",
+      cta: "Reserve your spot",
       link: "https://book.stripe.com/00g7vf2SX2GZcRG008",
     },
     {

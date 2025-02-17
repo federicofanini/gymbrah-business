@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import { Icons } from "../icons";
+import Image from "next/image";
 
 function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
   return (
@@ -18,7 +19,7 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
           {tier.popular && (
             <Badge
               variant="secondary"
-              className="bg-purple-500/10 text-purple-600 hover:bg-purple-500/20"
+              className="bg-violet-500/10 text-violet-600 hover:bg-violet-500/20"
             >
               🔥 Best value
             </Badge>
@@ -49,8 +50,8 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
         <ul className="space-y-3">
           {tier.features.map((feature, index) => (
             <li key={index} className="flex items-center gap-2">
-              <div className="flex items-center gap-2 bg-green-500/10 rounded-full p-1">
-                <Check className="h-4 w-4 rounded-full text-green-600" />
+              <div className="flex items-center gap-2 bg-violet-500/10 rounded-full p-1">
+                <Check className="h-4 w-4 rounded-full text-violet-600" />
               </div>
               <span className="text-sm">{feature}</span>
             </li>
@@ -63,12 +64,20 @@ function PricingTier({ tier }: { tier: (typeof siteConfig.pricing)[0] }) {
           <Button
             size="lg"
             className={cn(
-              "w-full",
+              "w-full font-mono relative transition-all hover:translate-x-0.5 hover:translate-y-0.5",
               tier.popular
-                ? "bg-primary text-primary-foreground hover:bg-secondary-foreground"
-                : ""
+                ? "bg-violet-600 hover:bg-violet-700 text-white border border-violet-600"
+                : "bg-white text-black hover:bg-white/90 border border-black"
             )}
           >
+            <Image
+              src={
+                tier.popular ? "/logo/logo_white.png" : "/logo/logo_black.png"
+              }
+              alt="GymBrah Logo"
+              width={20}
+              height={20}
+            />
             {tier.cta}
           </Button>
         </Link>
@@ -84,14 +93,14 @@ export function Pricing() {
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.2] text-balance mb-4">
           <span className="relative inline-block px-1">
             Simple, transparent pricing.
-            <span className="hidden md:block absolute -bottom-1 left-0 w-full h-2 md:h-3 bg-purple-400 -rotate-1 -z-10" />
+            <span className="hidden md:block absolute -bottom-1 left-0 w-full h-2 md:h-3 bg-violet-400 -rotate-1 -z-10" />
           </span>
           <br />
           <span className="text-sm md:text-md text-muted-foreground font-medium tracking-normal">
             You&apos;re securing private beta access to GymBrah! 🚀
           </span>
         </h2>
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-purple-500/20 via-transparent to-transparent opacity-30" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-violet-500/20 via-transparent to-transparent opacity-30" />
       </div>
 
       <div className="w-full max-w-6xl mx-auto px-4">
@@ -99,7 +108,7 @@ export function Pricing() {
           <Link
             href="https://discord.com/invite/f7fSp6vQcK"
             target="_blank"
-            className="text-sm text-primary flex flex-wrap items-center gap-2 text-center justify-center px-4 md:px-0 border border-dashed border-purple-400 rounded-md py-2 bg-purple-500/10 hover:bg-purple-500/20 transition-colors font-medium"
+            className="text-sm text-primary flex flex-wrap items-center gap-2 text-center justify-center px-4 md:px-0 border border-dashed border-violet-400 rounded-md py-2 bg-violet-500/10 hover:bg-violet-500/20 transition-colors font-medium"
           >
             Join our <Icons.discord className="size-4 md:size-5" /> for
             onboarding, early feature access, and direct feedbacks.

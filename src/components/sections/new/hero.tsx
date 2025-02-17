@@ -64,13 +64,7 @@ function Demo() {
   );
 }
 
-export async function Hero() {
-  const subscriberCountResponse = await getSubscriberCount();
-  const subscriberCount = subscriberCountResponse.success ? (
-    subscriberCountResponse.data.count
-  ) : (
-    <Loader2 className="w-4 h-4 animate-spin" />
-  );
+export async function Hero({ subscriberCount }: { subscriberCount: number }) {
   return (
     <div className="py-12 md:py-28 flex flex-col sm:flex-row gap-12 justify-between items-center mx-4 sm:mx-0">
       <div className="lg:max-w-lg space-y-8 w-full">

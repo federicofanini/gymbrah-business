@@ -85,21 +85,12 @@ const features = [
   },
 ];
 
-export function ServicesAthletes() {
+export function ServicesAthletes({
+  subscriberCount,
+}: {
+  subscriberCount: number;
+}) {
   const [selectedFeature, setSelectedFeature] = useState(features[0]);
-  const [subscriberCount, setSubscriberCount] = useStateEffect<React.ReactNode>(
-    <Loader2 className="w-4 h-4 animate-spin" />
-  );
-
-  useEffect(() => {
-    async function fetchSubscriberCount() {
-      const response = await getSubscriberCount();
-      if (response.success) {
-        setSubscriberCount(response.data.count);
-      }
-    }
-    fetchSubscriberCount();
-  }, [subscriberCount, setSubscriberCount]);
 
   return (
     <div className="relative mx-auto max-w-screen-xl px-4 py-16" id="athletes">
