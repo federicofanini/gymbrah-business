@@ -5,8 +5,16 @@ import { Footer } from "@/components/sections/footer";
 import Image from "next/image";
 import { Icons } from "@/components/icons";
 import { Smartphone, Chrome, Download, CheckCircle, Phone } from "lucide-react";
+import { getSubscriberCount } from "@/actions/subscribe-action";
+import { Loader2 } from "lucide-react";
 
-export default function MobileApp() {
+export default async function MobileApp() {
+  const subscriberCountResponse = await getSubscriberCount();
+  const subscriberCount = subscriberCountResponse.success ? (
+    subscriberCountResponse.data.count
+  ) : (
+    <Loader2 className="w-4 h-4 animate-spin" />
+  );
   return (
     <div className="flex flex-col gap-4">
       <Header />
@@ -125,7 +133,7 @@ export default function MobileApp() {
           </div>
         </div>
       </Section>
-      <CTA />
+      <CTA subscriberCount={subscriberCount} />
       <Footer />
     </div>
   );

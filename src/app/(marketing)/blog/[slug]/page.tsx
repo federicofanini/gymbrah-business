@@ -1,8 +1,10 @@
+import { getSubscriberCount } from "@/actions/subscribe-action";
 import Author from "@/components/blog-author";
 import { CTA } from "@/components/sections/cta";
 import { getPost } from "@/lib/blog";
 import { siteConfig } from "@/lib/config";
 import { formatDate } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -53,6 +55,12 @@ export default async function Page(props: {
   if (!post) {
     notFound();
   }
+  const subscriberCountResponse = await getSubscriberCount();
+  const subscriberCount = subscriberCountResponse.success ? (
+    subscriberCountResponse.data.count
+  ) : (
+    <Loader2 className="w-4 h-4 animate-spin" />
+  );
   return (
     <section id="blog">
       <script
@@ -121,7 +129,7 @@ export default async function Page(props: {
           dangerouslySetInnerHTML={{ __html: post.source }}
         ></article>
       </div>
-      <CTA />
+      <CTA subscriberCount={subscriberCount} />
     </section>
   );
 }
