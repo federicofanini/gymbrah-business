@@ -32,7 +32,7 @@ export function SubscribeInput() {
 
   return (
     <div>
-      <div className="flex justify-center">
+      <div className="flex">
         {isSubmitted ? (
           <div className="border border-[#2C2C2C] font-sm text-primary h-11 w-[330px] flex items-center py-1 px-3 justify-between">
             <p>Subscribed</p>

@@ -47,7 +47,22 @@ export function Footer() {
             />
             <p className="text-xl font-extrabold font-mono">GymBrah</p>
           </div>
-          <SubscribeInput />
+          <div className="mt-4 items-start justify-start">
+            <SubscribeInput />
+          </div>
+          <div className="mt-4">
+            <a
+              href="https://startupfa.me/s/gymbrah?utm_source=gymbrah.com"
+              target="_blank"
+            >
+              <img
+                src="https://startupfa.me/badges/featured-badge-small-light.webp"
+                alt="GymBrah - Run Your Fitness Business Without Chaos | Startup Fame"
+                width="224"
+                height="36"
+              />
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 col-span-1 md:col-span-3 gap-8">
