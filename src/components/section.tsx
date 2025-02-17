@@ -12,11 +12,12 @@ interface SectionProps {
   children?: React.ReactNode;
   className?: string;
   align?: "left" | "center" | "right";
+  color?: string;
 }
 
 const Section = forwardRef<HTMLElement, SectionProps>(
   (
-    { id, title, subtitle, description, children, className, align },
+    { id, title, subtitle, description, children, className, align, color },
     forwardedRef
   ) => {
     const internalRef = useRef<HTMLElement>(null);
@@ -77,7 +78,7 @@ const Section = forwardRef<HTMLElement, SectionProps>(
               <FlickeringGrid
                 squareSize={4}
                 gridGap={4}
-                color="#06b6d4"
+                color={color}
                 maxOpacity={0.3}
                 flickerChance={0.1}
                 className="-z-20 absolute inset-0 size-full"

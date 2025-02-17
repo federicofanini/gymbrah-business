@@ -8,46 +8,101 @@ import {
   Trophy,
   Flame,
 } from "lucide-react";
-import { MdAnalytics, MdBarChart, MdSportsGymnastics } from "react-icons/md";
+import {
+  MdAccessAlarm,
+  MdAccessTime,
+  MdAnalytics,
+  MdApps,
+  MdAttachMoney,
+  MdBarChart,
+  MdContentCopy,
+  MdDashboard,
+  MdOutlineContentCopy,
+  MdOutlineEventBusy,
+  MdPeople,
+  MdPersonOff,
+  MdSportsGymnastics,
+  MdSync,
+  MdTrendingDown,
+  MdTrendingUp,
+  MdVerified,
+} from "react-icons/md";
 
-const businessFeatures = [
+const businessQuestions = [
   {
-    name: "Member Management",
+    name: "Hours Wasted",
     description:
-      "Track and manage your gym members with ease. Monitor attendance, progress and engagement.",
-    icon: <MdSportsGymnastics className="w-8 h-8 text-cyan-600" />,
+      "Likely 15-20 hours per week switching between apps to manage your fitness business.",
+    icon: <MdAccessTime className="w-8 h-8 text-red-600" />,
   },
   {
-    name: "Performance Analytics",
+    name: "Missed Opportunities",
     description:
-      "Get detailed insights into your gym's performance with comprehensive analytics and reporting.",
-    icon: <MdBarChart className="w-8 h-8 text-cyan-600" />,
+      "Lost sponsorships and content ideas from untracked workout data.",
+    icon: <MdOutlineEventBusy className="w-8 h-8 text-red-600" />,
   },
   {
-    name: "Workouts & Routines",
-    description: "Create and manage your athletes workouts and routines.",
-    icon: <Dumbbell className="w-8 h-8 text-cyan-600" />,
+    name: "Turning Away Clients",
+    description:
+      "Manual admin limits you to around 15-20 clients, making it hard to scale.",
+    icon: <MdPersonOff className="w-8 h-8 text-red-600" />,
+  },
+  {
+    name: "Lost Revenue",
+    description:
+      "Without clear performance data, you're missing out on high-paying clients and sponsor deals.",
+    icon: <MdAttachMoney className="w-8 h-8 text-red-600" />,
+  },
+  {
+    name: "Stop Copying Data",
+    description:
+      "Automate everything—no more manual transfers between spreadsheets.",
+    icon: <MdSync className="w-8 h-8 text-red-600" />,
+  },
+  {
+    name: "Inconsistent Client Results",
+    description:
+      "Without a system to track and adjust workouts, delivering consistent client results is harder.",
+    icon: <MdTrendingDown className="w-8 h-8 text-red-600" />,
   },
 ];
 
-const athleteFeatures = [
+const businessFeatures = [
   {
-    name: "No more workout notes",
+    name: "Save Time",
     description:
-      "No more workout notes on your phone. Just log your workouts and get started.",
-    icon: <Target className="w-8 h-8 text-cyan-600" />,
+      "Automate admin tasks and focus on coaching, saving hours every week.",
+    icon: <MdAccessTime className="w-8 h-8 text-green-600" />,
   },
   {
-    name: "Achievement Tracking",
+    name: "Professional Brand",
     description:
-      "Track your achievements and milestones. Celebrate your progress along the way.",
-    icon: <Trophy className="w-8 h-8 text-cyan-600" />,
+      "Deliver a seamless client experience that strengthens your fitness brand.",
+    icon: <MdVerified className="w-8 h-8 text-green-600" />,
   },
   {
-    name: "Workout Tracking",
+    name: "Extra Hours",
     description:
-      "Log and monitor your workouts. Track sets, reps, weights and personal records.",
-    icon: <Flame className="w-8 h-8 text-cyan-600" />,
+      "20 extra hours means more clients, better content, and faster business growth.",
+    icon: <MdAccessAlarm className="w-8 h-8 text-green-600" />,
+  },
+  {
+    name: "Sponsor Proof",
+    description:
+      "Sponsors need real, trackable data—GymBrah delivers it instantly.",
+    icon: <MdVerified className="w-8 h-8 text-green-600" />,
+  },
+  {
+    name: "Double Capacity",
+    description:
+      "Automation lets you manage more clients without adding more work.",
+    icon: <MdPeople className="w-8 h-8 text-green-600" />,
+  },
+  {
+    name: "One System",
+    description:
+      "Why manage five apps when you could use just one? GymBrah is your all-in-one solution.",
+    icon: <MdApps className="w-8 h-8 text-green-600" />,
   },
 ];
 
@@ -56,7 +111,8 @@ const FeatureCard = ({
   description,
   icon: Icon,
   index,
-}: (typeof businessFeatures)[0] & { index: number }) => {
+  color,
+}: (typeof businessQuestions)[0] & { index: number; color: string }) => {
   return (
     <div
       key={index}
@@ -64,7 +120,12 @@ const FeatureCard = ({
     >
       {/* Content */}
       <div className="flex flex-col items-center gap-6 relative z-10 px-6">
-        <div className="rounded-xl bg-cyan-500/10 p-4 w-fit ring-1 ring-cyan-500 shadow-sm transition-transform duration-300 group-hover:scale-110">
+        <div
+          className={cn(
+            "rounded-xl  p-4 w-fit ring-1 shadow-sm transition-transform duration-300 group-hover:scale-110",
+            color
+          )}
+        >
           {Icon}
         </div>
 
@@ -83,11 +144,31 @@ export function Features() {
   return (
     <>
       <Section
-        id="business"
-        title="For Gyms"
-        subtitle="Same business, smarter gym"
+        id="business-questions"
+        subtitle="Why manage five apps when you could use just one?"
+        color="#d40606"
       >
         <div className="gap-4 mx-auto p-6  grid sm:grid-cols-3">
+          {businessQuestions.map(({ name, description, icon: Icon }, index) => (
+            <FeatureCard
+              key={index}
+              name={name}
+              description={description}
+              icon={Icon}
+              index={index}
+              color="ring-red-500 bg-red-500/10"
+            />
+          ))}
+        </div>
+      </Section>
+
+      <Section
+        id="business-features"
+        title="Made for Fitness Creators, Gyms and Coaches"
+        subtitle="Same fitness business, smarter"
+        color="#0aec19"
+      >
+        <div className="gap-4 mx-auto p-6 grid sm:grid-cols-3">
           {businessFeatures.map(({ name, description, icon: Icon }, index) => (
             <FeatureCard
               key={index}
@@ -95,24 +176,7 @@ export function Features() {
               description={description}
               icon={Icon}
               index={index}
-            />
-          ))}
-        </div>
-      </Section>
-
-      <Section
-        id="athletes"
-        title="For Athletes"
-        subtitle="Best workouts, better results"
-      >
-        <div className="gap-4 mx-auto p-6 grid sm:grid-cols-3">
-          {athleteFeatures.map(({ name, description, icon: Icon }, index) => (
-            <FeatureCard
-              key={index}
-              name={name}
-              description={description}
-              icon={Icon}
-              index={index}
+              color="ring-green-500 bg-green-500/10"
             />
           ))}
         </div>
