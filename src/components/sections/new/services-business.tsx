@@ -29,7 +29,7 @@ const features = [
     title: "Fitness Business Stats",
     description:
       "Track key performance metrics to understand and grow your fitness business.",
-    videoUrl: "/videos/fitness-business-stats-demo.mp4",
+    videoUrl: "/video/demo-business.mp4",
     benefits: [
       "Real-Time Analytics",
       "Revenue Tracking",
@@ -44,7 +44,7 @@ const features = [
     title: "Client Management",
     description:
       "Organize and manage all your clients in one place with smart automation.",
-    videoUrl: "/videos/client-management-demo.mp4",
+    videoUrl: "/video/demo-business.mp4",
     benefits: [
       "Client Profiles",
       "Progress Tracking",
@@ -59,7 +59,7 @@ const features = [
     title: "Workout Builder",
     description:
       "Design, customize, and deliver professional training programs with ease.",
-    videoUrl: "/videos/workout-builder-demo.mp4",
+    videoUrl: "/video/demo-business.mp4",
     benefits: [
       "Custom Workout Plans",
       "Template Library",
@@ -74,7 +74,7 @@ const features = [
     title: "Athlete Schedule Manager",
     description:
       "Manage athlete schedules, training sessions, and performance seamlessly.",
-    videoUrl: "/videos/athlete-schedule-manager-demo.mp4",
+    videoUrl: "/video/demo-business.mp4",
     benefits: [
       "Automated Scheduling",
       "Session reminders",
@@ -171,7 +171,7 @@ export function ServicesBusiness({
           <div className="bg-muted rounded-lg aspect-video flex items-center justify-center">
             <video
               className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg"
-              src="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
+              src="/video/demo-business.mp4"
               autoPlay
               loop
               muted

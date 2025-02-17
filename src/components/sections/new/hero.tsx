@@ -8,7 +8,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getSubscriberCount } from "@/actions/subscribe-action";
 import { WordAnimation } from "./word-animation";
 import AvatarCircles from "@/components/ui/avatar-circles";
 
@@ -42,7 +41,7 @@ function Demo() {
           <CarouselItem>
             <video
               className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg"
-              src="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
+              src="/video/demo-business.mp4"
               autoPlay
               loop
               muted
