@@ -170,7 +170,7 @@ export function ServicesAthletes({
           <div className="bg-muted rounded-lg aspect-video flex items-center justify-center">
             <video
               className="size-full overflow-hidden object-cover border border-primary border-t-2 border-b-2 rounded-t-[10px] rounded-b-[10px] shadow-lg"
-              src="/video/demo-business.mp4"
+              src="https://fuchsia-eldest-koi-370.mypinata.cloud/ipfs/bafybeidpq35tzzurokqwm2wtivng2i7h4b27ohbupflyqawpjn7v2vvody"
               autoPlay
               loop
               muted
