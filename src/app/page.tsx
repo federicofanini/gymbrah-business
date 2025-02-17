@@ -9,6 +9,7 @@ import { Pricing } from "@/components/sections/pricing";
 import { Hero } from "@/components/sections/new/hero";
 import { ServicesBusiness } from "@/components/sections/new/services-business";
 import { ServicesAthletes } from "@/components/sections/new/services-athletes";
+import { Community } from "@/components/sections/new/community";
 
 export const revalidate = 3600; // revalidate every hour
 
@@ -24,6 +25,7 @@ export default function Home() {
         <ServicesAthletes />
         {/* <DemoVideo /> */}
         <Pricing />
+        <Community />
         {/* <Testimonials />
       <Statistics /> */}
         <CTA />

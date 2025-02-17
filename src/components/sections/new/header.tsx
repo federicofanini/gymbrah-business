@@ -26,6 +26,8 @@ export function Header() {
   const pathname = usePathname();
 
   const links = [
+    { href: "#business", label: "Business" },
+    { href: "#athletes", label: "Athletes" },
     { href: "#pricing", label: "Pricing" },
     {
       component: <SignInButton />,
@@ -72,7 +74,7 @@ export function Header() {
               <Link
                 href={link.href!}
                 className={cn(
-                  "text-primary hover:text-primary transition-colors hidden md:block",
+                  "text-primary hover:underline underline-offset-4 transition-colors hidden md:block",
                   link.className,
                   pathname?.endsWith(link.href) && "text-primary"
                 )}
