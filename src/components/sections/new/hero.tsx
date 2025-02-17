@@ -9,10 +9,34 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { getSubscriberCount } from "@/actions/subscribe-action";
+import { WordAnimation } from "./word-animation";
+import AvatarCircles from "@/components/ui/avatar-circles";
+
+const mockAvatars = [
+  {
+    imageUrl: "ff.jpg",
+    profileUrl: "/federicofan",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/6417038",
+    profileUrl: "/profile/2",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/383994",
+    profileUrl: "/profile/3",
+  },
+  {
+    imageUrl: "https://avatars.githubusercontent.com/u/1500684",
+    profileUrl: "/profile/4",
+  },
+];
 
 function Demo() {
   return (
     <div className="flex flex-col items-center gap-4">
+      <div className="mt-6 md:mt-10 max-w-[580px] text-primary leading-tight text-lg md:text-xl font-medium">
+        Made for <WordAnimation />{" "}
+      </div>
       <Carousel className="w-full mx-auto aspect-video sm:max-w-[400px] md:max-w-[500px] lg:max-w-[700px]">
         <CarouselContent>
           <CarouselItem>
@@ -50,48 +74,56 @@ export async function Hero() {
   return (
     <div className="py-12 md:py-28 flex flex-col sm:flex-row gap-12 justify-between items-center mx-4 sm:mx-0">
       <div className="lg:max-w-lg space-y-8 w-full">
-        <h1 className="text-4xl mb-8 font-mono text-balance font-bold">
-          Build small habits to make a big difference.
+        <h1 className="text-5xl mb-8 text-balance font-bold">
+          Run your fitness business without{" "}
+          <span className="relative inline-block">
+            chaos
+            <span className="absolute -bottom-1 left-0 w-full h-3 bg-red-400 -rotate-2 -z-10" />
+          </span>
         </h1>
-        <span className="text-center justify-center mt-4">
-          The best solution for{" "}
-          <span className="font-semibold text-cyan-600">gyms</span> and{" "}
-          <span className="font-semibold text-cyan-600">athletes 🏆</span>
-        </span>
+        <h2 className="text-primary font-medium">
+          Simple workout tracking, client management, fitness blueprints, and
+          nutrition tips. <br />
+        </h2>
+
         <ul className="flex flex-col gap-2 text-muted-foreground max-w-lg mx-auto sm:text-lg sm:leading-normal text-balance">
           <li className="flex items-center gap-2">
             <Check className="h-5 w-5 text-primary" />
             <span>
-              Every{" "}
+              Saved <span className="font-semibold text-primary">20 hours</span>{" "}
+              per week without switching apps
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="h-5 w-5 text-primary" />
+            <span>
+              A system built for{" "}
               <span className="font-semibold text-primary">
-                achievement counts
+                fitness creators first
               </span>
             </span>
           </li>
           <li className="flex items-center gap-2">
             <Check className="h-5 w-5 text-primary" />
             <span>
-              Keep yourself{" "}
-              <span className="font-semibold text-primary">accountable</span>
-            </span>
-          </li>
-          <li className="flex items-center gap-2">
-            <Check className="h-5 w-5 text-primary" />
-            <span>
-              Stay <span className="font-semibold text-primary">motivated</span>{" "}
-              every step of the way
-            </span>
-          </li>
-          <li className="flex items-center gap-2">
-            <Check className="h-5 w-5 text-primary" />
-            <span>
-              Build{" "}
+              Bring{" "}
               <span className="font-semibold text-primary">
-                habits that last
-              </span>
+                organized power
+              </span>{" "}
+              to your fitness business
+            </span>
+          </li>
+          <li className="flex items-center gap-2">
+            <Check className="h-5 w-5 text-primary" />
+            <span>
+              Set up GymBrah in{" "}
+              <span className="font-semibold text-primary">
+                less than an hour
+              </span>{" "}
             </span>
           </li>
         </ul>
+
         <div className="flex items-center gap-8">
           <div className="flex justify-center">
             <Link href="/access">
@@ -100,6 +132,7 @@ export async function Hero() {
                 variant="secondary"
               >
                 Join {subscriberCount} members
+                <AvatarCircles avatarUrls={mockAvatars} />
               </OutlinedButton>
             </Link>
           </div>
