@@ -9,7 +9,6 @@ import { Provider as Analytics } from "@/utils/events/client";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { Header } from "@/components/sections/new/header";
 
 export const metadata: Metadata = constructMetadata({
   title: `${siteConfig.name} | ${siteConfig.description}`,
