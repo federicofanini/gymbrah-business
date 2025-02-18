@@ -57,10 +57,7 @@ export async function GET(req: NextRequest) {
 
         let redirectPath = "/onboarding";
         if (userData?.full_name) {
-          const businessCheck = await checkBusiness({ user_id: userId });
-          redirectPath = businessCheck?.data?.success
-            ? "/business"
-            : "/athlete";
+          redirectPath = "/business";
         }
 
         const forwardedHost = req.headers.get("x-forwarded-host");
@@ -70,10 +67,12 @@ export async function GET(req: NextRequest) {
           return NextResponse.redirect(`${origin}${redirectPath}`);
         } else if (forwardedHost) {
           return NextResponse.redirect(
-            `https://${forwardedHost}${redirectPath}`
+            `https://coach.gymbrah.com${redirectPath}`
           );
         } else {
-          return NextResponse.redirect(`${origin}${redirectPath}`);
+          return NextResponse.redirect(
+            `https://coach.gymbrah.com${redirectPath}`
+          );
         }
       }
     }
