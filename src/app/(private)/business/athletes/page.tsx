@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { AthletesTable } from "@/components/private/b2b/athletes/athletes-table";
+import { AthletesTable } from "@/components/private/athletes/athletes-table";
 import { getAthletes } from "@/actions/business/athletes/get-athletes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

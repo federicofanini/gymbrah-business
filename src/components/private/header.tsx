@@ -1,9 +1,9 @@
 import { LogoIcon } from "@/components/logo";
-import { MobileMenu } from "@/components/private/b2b/mobile-menu";
+import { MobileMenu } from "@/components/private/mobile-menu";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { UserMenu } from "@/components/private/b2b/user-menu";
-import { AchievementsButton } from "@/components/private/b2b/achievements-button";
+import { UserMenu } from "@/components/private/user-menu";
+import { SettingsButton } from "@/components/private/settings-button";
 import { BusinessCodeDisplay } from "./business-code";
 
 export function Header() {
@@ -21,7 +21,7 @@ export function Header() {
 
       <div className="flex justify-end items-center">
         <div className="flex space-x-8 items-center">
-          <AchievementsButton />
+          <SettingsButton />
         </div>
 
         <div className="flex space-x-8 items-center">

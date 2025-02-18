@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { BusinessPage } from "@/components/private/b2b/business";
+import { BusinessPage } from "@/components/private/business";
 import {
   getClientStats,
   getClients,

@@ -8,7 +8,7 @@ import { appErrors } from "@/actions/types/errors";
 import { generateCode } from "@/lib/user-code";
 import { createClient } from "@/utils/supabase/server";
 import { getBusinessCode } from "../onboarding/get-business-code";
-import { sendWelcomeAthleteEmail } from "@/components/private/b2b/email/welcome-athlete";
+import { sendWelcomeAthleteEmail } from "@/components/private/email/welcome-athlete";
 
 // onboarding steps to add athlete
 

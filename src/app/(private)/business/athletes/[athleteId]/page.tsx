@@ -1,5 +1,5 @@
 import { getAthleteById } from "@/actions/business/athletes/get-athlete-by-id";
-import { AthletePage } from "@/components/private/b2b/athletes/athlete-page";
+import { AthletePage } from "@/components/private/athletes/athlete-page";
 import {
   AssignedWorkout,
   getAssignedWorkouts,

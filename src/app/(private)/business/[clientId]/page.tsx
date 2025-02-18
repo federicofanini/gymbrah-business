@@ -1,5 +1,5 @@
 import { getClientById } from "@/actions/business/client/get-clients";
-import { ClientPage } from "@/components/private/b2b/business/client-page/client-page";
+import { ClientPage } from "@/components/private/business/client-page/client-page";
 
 // Define the type for the dynamic route params
 type PageParams = { clientId: string } & Promise<any>;
