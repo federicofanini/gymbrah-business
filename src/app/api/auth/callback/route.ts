@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get("code");
   const provider = searchParams.get("provider");
-  const returnTo = searchParams.get("return_to") ?? "/";
+  const returnTo = "https://coach.gymbrah.com/";
 
   console.log("returnTo", returnTo);
 
