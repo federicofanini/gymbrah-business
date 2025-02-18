@@ -1,6 +1,5 @@
 "use server";
 
-import { checkBusiness } from "@/actions/business/onboarding/check-business";
 import { prisma } from "@/lib/db";
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
@@ -14,12 +13,10 @@ import type { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
-  const { searchParams, origin } = new URL(req.url);
+  const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
   const provider = searchParams.get("provider");
-  const returnTo = "https://coach.gymbrah.com/";
-
-  console.log("returnTo", returnTo);
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (provider) {
     cookieStore.set(Cookies.PreferredSignInProvider, provider, {
@@ -55,28 +52,11 @@ export async function GET(req: NextRequest) {
           select: { full_name: true },
         });
 
-        let redirectPath = "/onboarding";
-        if (userData?.full_name) {
-          redirectPath = "/business";
-        }
-
-        const forwardedHost = req.headers.get("x-forwarded-host");
-        const isLocalEnv = process.env.NODE_ENV === "development";
-
-        if (isLocalEnv) {
-          return NextResponse.redirect(`${origin}${redirectPath}`);
-        } else if (forwardedHost) {
-          return NextResponse.redirect(
-            `https://coach.gymbrah.com${redirectPath}`
-          );
-        } else {
-          return NextResponse.redirect(
-            `https://coach.gymbrah.com${redirectPath}`
-          );
-        }
+        const redirectPath = userData?.full_name ? "/business" : "/onboarding";
+        return NextResponse.redirect(`${baseUrl}${redirectPath}`);
       }
     }
   }
 
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`);
+  return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
 }

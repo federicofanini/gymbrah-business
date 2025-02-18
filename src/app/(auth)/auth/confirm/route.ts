@@ -1,11 +1,13 @@
 import { type EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   if (token_hash && type) {
     const supabase = await createClient();
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
 
         if (checkError && checkError.code !== "PGRST116") {
           console.error("Error checking user:", checkError);
-          return Response.redirect(new URL("/error", request.url));
+          return NextResponse.redirect(`${baseUrl}/error`);
         }
 
         // Skip if user already exists
@@ -45,19 +47,19 @@ export async function GET(request: NextRequest) {
 
           if (insertError) {
             console.error("Error creating user:", insertError);
-            return Response.redirect(new URL("/error", request.url));
+            return NextResponse.redirect(`${baseUrl}/error`);
           }
         }
 
         // redirect user to onboarding to complete profile
-        return Response.redirect(new URL("/onboarding", request.url));
+        return NextResponse.redirect(`${baseUrl}/onboarding`);
       } catch (err) {
         console.error("Error creating user:", err);
-        return Response.redirect(new URL("/error", request.url));
+        return NextResponse.redirect(`${baseUrl}/error`);
       }
     }
   }
 
   // redirect the user to an error page with some instructions
-  return Response.redirect(new URL("/error", request.url));
+  return NextResponse.redirect(`${baseUrl}/error`);
 }
