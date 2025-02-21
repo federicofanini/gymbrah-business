@@ -53,6 +53,7 @@ export const getFeedbacks = createSafeActionClient()
             },
           },
         },
+        cacheStrategy: { ttl: 300, swr: 60 },
       });
 
       return {
