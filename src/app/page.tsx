@@ -7,6 +7,8 @@ import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
 import Link from "next/link";
 import { userAgent } from "next/server";
+import { redirect } from "next/navigation";
+import { createClient } from "@/utils/supabase/server";
 import {
   Accordion,
   AccordionItem,
@@ -18,21 +20,21 @@ export const metadata: Metadata = {
   title: "Coach Login",
 };
 
-type SearchParams = {
-  athlete_code?: string;
-} & Promise<any>;
-// Example URL: /login?athlete_code=ABC123
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function LoginPage() {
+  const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (session) {
+    redirect("/business");
+  }
+
   const cookieStore = await cookies();
   const preferred = cookieStore.get(Cookies.PreferredSignInProvider);
   const showTrackingConsent =
     (await isEU()) && !cookieStore.has(Cookies.TrackingConsent);
   const { device } = userAgent({ headers: await headers() });
-  const athleteCodeCookie = searchParams.athlete_code;
 
   let moreSignInOptions = null;
   let preferredSignInOption =
@@ -77,19 +79,6 @@ export default async function LoginPage({
       <div className="flex min-h-screen justify-center items-center overflow-hidden p-6 md:p-0">
         <div className="relative z-20 m-auto flex w-full max-w-[380px] flex-col py-8">
           <div className="flex w-full flex-col relative">
-            <div className="text-xs text-muted-foreground text-center mt-2 mb-4">
-              {athleteCodeCookie && (
-                <p className="mb-2">
-                  You&apos;ve been invited to join GymBrah. Please login to
-                  continue.
-                </p>
-              )}
-              {athleteCodeCookie && (
-                <span className="inline-block px-2 py-1 bg-muted rounded-md">
-                  Code: <strong>{athleteCodeCookie}</strong>
-                </span>
-              )}
-            </div>
             <div className="pb-4 bg-gradient-to-r from-primary dark:via-primary dark:to-muted-foreground to-[#000] inline-block text-transparent bg-clip-text">
               <h1 className="font-medium pb-1 text-3xl">Login to GymBrah.</h1>
             </div>
