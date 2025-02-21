@@ -7,8 +7,12 @@ import { Sidebar } from "@/components/private/sidebar";
 import { Header } from "@/components/private/header";
 import { Toaster } from "@/components/ui/sonner";
 import { checkBusiness } from "@/actions/business/onboarding/check-business";
-import { Tester } from "@/components/private/tester";
-import { getTesters } from "@/components/private/settings/admin/tester";
+import { Tester } from "@/components/private/tester/tester";
+import { TesterEnd } from "@/components/private/tester/tester-end";
+import {
+  getTesters,
+  getTesterCounts,
+} from "@/components/private/settings/admin/tester";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -30,8 +34,6 @@ export default async function DashboardLayout({
   }
 
   const businessResponse = await checkBusiness({ user_id: data.user.id });
-
-  console.log("business exists", businessResponse?.data?.data?.exists);
 
   if (
     businessResponse?.data?.success &&
@@ -60,6 +62,11 @@ export default async function DashboardLayout({
       : [];
   const testerEmails = testers.map((tester: any) => tester.email);
 
+  // Check available tester spots
+  const countsResponse = await getTesterCounts();
+  const hasAvailableSpots =
+    countsResponse.success && countsResponse.data?.business?.spotsLeft > 0;
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -71,9 +78,9 @@ export default async function DashboardLayout({
           <main className="pt-4">
             {children}
 
-            {data?.user?.email && !testerEmails.includes(data.user.email) && (
-              <Tester />
-            )}
+            {data?.user?.email &&
+              !testerEmails.includes(data.user.email) &&
+              (hasAvailableSpots ? <Tester /> : <TesterEnd />)}
             <Toaster />
           </main>
         </SidebarInset>

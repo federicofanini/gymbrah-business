@@ -8,6 +8,7 @@ import { SeedExercises } from "./seed-exercises";
 interface Tester {
   id: string;
   email: string;
+  role: string;
   created_at: Date;
 }
 

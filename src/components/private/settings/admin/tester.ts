@@ -5,6 +5,10 @@ import { createSafeActionClient } from "next-safe-action";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { prisma } from "@/lib/db";
 
+// Maximum number of testers allowed for each role
+const MAX_BUSINESS_TESTERS = 5;
+const MAX_ATHLETE_TESTERS = 20;
+
 const testerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   role: z.string().optional(),
@@ -21,10 +25,27 @@ export const addTesterAction = createSafeActionClient()
   .schema(testerSchema)
   .action(async (input): Promise<ActionResponse> => {
     try {
+      const role = input.parsedInput.role || "athlete";
+
+      // Check if maximum testers reached for role
+      const count = await prisma.tester.count({
+        where: { role },
+      });
+
+      const maxAllowed =
+        role === "business" ? MAX_BUSINESS_TESTERS : MAX_ATHLETE_TESTERS;
+
+      if (count >= maxAllowed) {
+        return {
+          success: false,
+          error: `Maximum number of ${role} testers (${maxAllowed}) reached`,
+        };
+      }
+
       const tester = await prisma.tester.create({
         data: {
           email: input.parsedInput.email,
-          role: input.parsedInput.role || "athlete",
+          role,
         },
       });
       return { success: true, data: tester };
@@ -64,5 +85,35 @@ export async function getTesters(): Promise<ActionResponse> {
     return { success: true, data: testers };
   } catch (error) {
     return { success: false, error: "Failed to fetch testers" };
+  }
+}
+
+export async function getTesterCounts(): Promise<ActionResponse> {
+  try {
+    const businessCount = await prisma.tester.count({
+      where: { role: "business" },
+    });
+
+    const athleteCount = await prisma.tester.count({
+      where: { role: "athlete" },
+    });
+
+    return {
+      success: true,
+      data: {
+        business: {
+          current: businessCount,
+          maximum: MAX_BUSINESS_TESTERS,
+          spotsLeft: MAX_BUSINESS_TESTERS - businessCount,
+        },
+        athlete: {
+          current: athleteCount,
+          maximum: MAX_ATHLETE_TESTERS,
+          spotsLeft: MAX_ATHLETE_TESTERS - athleteCount,
+        },
+      },
+    };
+  } catch (error) {
+    return { success: false, error: "Failed to fetch tester counts" };
   }
 }

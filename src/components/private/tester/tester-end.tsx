@@ -1,3 +1,5 @@
+"use client";
+
 import { getSubscriberCount } from "@/actions/subscribe-action";
 import { SubscribeInput } from "@/components/ui/subscribe-input";
 import { Icons } from "@/components/icons";
@@ -5,16 +7,28 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-export const revalidate = 3600; // revalidate every hour
+export function TesterEnd() {
+  const [subscriberCount, setSubscriberCount] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-export async function Tester() {
-  const subscriberCountResponse = await getSubscriberCount();
-  const subscriberCount = subscriberCountResponse.success ? (
-    subscriberCountResponse.data.count
-  ) : (
-    <Loader2 className="w-4 h-4 animate-spin" />
-  );
+  useEffect(() => {
+    async function fetchSubscriberCount() {
+      try {
+        const response = await getSubscriberCount();
+        if (response.success) {
+          setSubscriberCount(response.data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch subscriber count:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchSubscriberCount();
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
@@ -29,8 +43,14 @@ export async function Tester() {
         </p>
 
         <p className="text-primary text-sm sm:text-base">
-          <span className="font-bold">{subscriberCount}</span> members on the
-          waitlist
+          <span className="font-bold">
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 animate-spin inline" />
+            ) : (
+              subscriberCount
+            )}
+          </span>{" "}
+          members on the waitlist
         </p>
 
         <SubscribeInput />
@@ -63,7 +83,7 @@ export async function Tester() {
             </Button>
             <Button
               asChild
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-lg bg-primary text-primary-foreground "
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-lg bg-primary text-primary-foreground"
             >
               <Link
                 href="https://book.stripe.com/00g7vf2SX2GZcRG008"
@@ -89,7 +109,7 @@ export async function Tester() {
               build the app together!
             </p>
             <p className="text-center mt-6">Need support or have questions?</p>
-            <a
+            <Link
               href="https://twitter.com/FedericoFan"
               target="_blank"
               rel="noopener noreferrer"
@@ -97,7 +117,7 @@ export async function Tester() {
             >
               <Icons.twitter className="size-3 sm:size-4" />
               <span>Reach out on X @FedericoFan</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
