@@ -82,7 +82,10 @@ export function MobileMenu() {
                   duration: 0.3,
                 }}
               >
-                <Link href="/business/settings">
+                <Link
+                  href="/business/settings"
+                  onClick={() => setIsOpen(false)}
+                >
                   <motion.div
                     className="flex items-center gap-4 px-6 py-5"
                     initial={{ opacity: 0, x: -20 }}
