@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 
 export const revalidate = 3600; // revalidate every hour
 
-export async function ComingSoon() {
+export async function Tester() {
   const subscriberCountResponse = await getSubscriberCount();
   const subscriberCount = subscriberCountResponse.success ? (
     subscriberCountResponse.data.count

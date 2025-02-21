@@ -7,7 +7,7 @@ import { Sidebar } from "@/components/private/sidebar";
 import { Header } from "@/components/private/header";
 import { Toaster } from "@/components/ui/sonner";
 import { checkBusiness } from "@/actions/business/onboarding/check-business";
-import { ComingSoon } from "@/components/private/coming-soon";
+import { Tester } from "@/components/private/tester";
 import { getTesters } from "@/components/private/settings/admin/tester";
 
 interface DashboardLayoutProps {
@@ -72,7 +72,7 @@ export default async function DashboardLayout({
             {children}
 
             {data?.user?.email && !testerEmails.includes(data.user.email) && (
-              <ComingSoon />
+              <Tester />
             )}
             <Toaster />
           </main>
