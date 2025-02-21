@@ -3,6 +3,7 @@ import {
   MdDashboard,
   MdSportsGymnastics,
   MdBatchPrediction,
+  MdAppShortcut,
 } from "react-icons/md";
 
 export const sidebarItems = [
@@ -25,5 +26,10 @@ export const sidebarItems = [
     icon: MdBatchPrediction,
     label: "Feedback",
     path: `/business/feedback`,
+  },
+  {
+    icon: MdAppShortcut,
+    label: "Mobile App",
+    path: `/business/mobile-app`,
   },
 ];
