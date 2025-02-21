@@ -8,12 +8,11 @@ import { Header } from "@/components/private/header";
 import { Toaster } from "@/components/ui/sonner";
 import { checkBusiness } from "@/actions/business/onboarding/check-business";
 import { ComingSoon } from "@/components/private/coming-soon";
+import { getTesters } from "@/components/private/settings/admin/tester";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
-
-const admins = ["fedef@gymbrah.com"];
 
 export const metadata: Metadata = {
   title: "Gym Manager",
@@ -54,6 +53,12 @@ export default async function DashboardLayout({
 
   // console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);
 
+  const testersResponse = await getTesters();
+  const testerEmails =
+    testersResponse.success && testersResponse.data
+      ? testersResponse.data.map((tester: any) => tester.email)
+      : [];
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
@@ -65,7 +70,7 @@ export default async function DashboardLayout({
           <main className="pt-4">
             {children}
 
-            {data?.user?.email && !admins.includes(data.user.email) && (
+            {data?.user?.email && !testerEmails.includes(data.user.email) && (
               <ComingSoon />
             )}
             <Toaster />
