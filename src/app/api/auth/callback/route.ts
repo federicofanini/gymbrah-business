@@ -1,5 +1,6 @@
 "use server";
 
+import { checkBusiness } from "@/actions/business/onboarding/check-business";
 import { prisma } from "@/lib/db";
 import { Cookies } from "@/utils/constants";
 import { LogEvents } from "@/utils/events/events";
@@ -13,10 +14,16 @@ import type { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const cookieStore = await cookies();
-  const { searchParams } = new URL(req.url);
-  const code = searchParams.get("code");
-  const provider = searchParams.get("provider");
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+  const requestUrl = new URL(req.url);
+  const code = requestUrl.searchParams.get("code");
+  const returnTo = requestUrl.searchParams.get("return_to");
+  const provider = requestUrl.searchParams.get("provider");
+
+  if (provider) {
+    cookieStore.set(Cookies.PreferredSignInProvider, provider, {
+      expires: addYears(new Date(), 1),
+    });
+  }
 
   if (provider) {
     cookieStore.set(Cookies.PreferredSignInProvider, provider, {
@@ -52,11 +59,19 @@ export async function GET(req: NextRequest) {
           select: { full_name: true },
         });
 
-        const redirectPath = userData?.full_name ? "/business" : "/onboarding";
-        return NextResponse.redirect(`${baseUrl}${redirectPath}`);
+        let redirectPath = "/onboarding";
+        if (userData?.full_name) {
+          redirectPath = "/business";
+        }
+
+        return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
+      }
+
+      if (returnTo) {
+        return NextResponse.redirect(`${requestUrl.origin}/${returnTo}`);
       }
     }
   }
 
-  return NextResponse.redirect(`${baseUrl}/auth/auth-code-error`);
+  return NextResponse.redirect(`${requestUrl.origin}/auth/auth-code-error`);
 }
