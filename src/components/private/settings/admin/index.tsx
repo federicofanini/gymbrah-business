@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQueryState } from "nuqs";
 import { Testers } from "./tester-page";
+import { SeedExercises } from "./seed-exercises";
 
 interface Tester {
   id: string;
@@ -19,6 +20,10 @@ export function SettingsAdminPage({ testers }: { testers: Tester[] }) {
     {
       id: "testers",
       title: "Testers",
+    },
+    {
+      id: "seed-exercises",
+      title: "Seed Exercises",
     },
   ];
 
@@ -39,6 +44,9 @@ export function SettingsAdminPage({ testers }: { testers: Tester[] }) {
 
         <TabsContent value="testers" className="mt-6">
           <Testers testers={testers} />
+        </TabsContent>
+        <TabsContent value="seed-exercises" className="mt-6">
+          <SeedExercises />
         </TabsContent>
       </Tabs>
     </div>
