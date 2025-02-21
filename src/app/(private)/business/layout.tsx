@@ -39,16 +39,18 @@ export default async function DashboardLayout({
     redirect("/onboarding");
   }
 
-  const planResponse = await checkPlan({ user_id: data.user.id });
+  // Remove plan checking
 
-  if (
-    planResponse?.data?.success &&
-    !planResponse?.data?.data?.hasActiveSubscription
-  ) {
-    redirect("/onboarding");
-  }
+  // const planResponse = await checkPlan({ user_id: data.user.id });
 
-  console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);
+  // if (
+  //   planResponse?.data?.success &&
+  //   !planResponse?.data?.data?.hasActiveSubscription
+  // ) {
+  //   redirect("/onboarding");
+  // }
+
+  // console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);
 
   return (
     <SidebarProvider>
