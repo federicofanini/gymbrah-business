@@ -114,11 +114,19 @@ export default async function LoginPage() {
             <p className="text-xs text-muted-foreground">
               By clicking continue, you acknowledge that you have read and agree
               to GymBrah&apos;s{" "}
-              <Link href="/terms" className="underline">
+              <Link
+                href="https://gymbrah.com/terms"
+                className="underline"
+                target="_blank"
+              >
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="underline">
+              <Link
+                href="https://gymbrah.com/privacy"
+                className="underline"
+                target="_blank"
+              >
                 Privacy Policy
               </Link>
               .
