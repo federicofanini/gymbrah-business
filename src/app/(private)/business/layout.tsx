@@ -54,10 +54,11 @@ export default async function DashboardLayout({
   // console.log("paid plan", planResponse?.data?.data?.hasActiveSubscription);
 
   const testersResponse = await getTesters();
-  const testerEmails =
+  const testers =
     testersResponse.success && testersResponse.data
-      ? testersResponse.data.map((tester: any) => tester.email)
+      ? testersResponse.data.filter((tester: any) => tester.role === "business")
       : [];
+  const testerEmails = testers.map((tester: any) => tester.email);
 
   return (
     <SidebarProvider>
