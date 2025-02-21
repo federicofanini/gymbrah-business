@@ -23,7 +23,7 @@ export const sidebarItems = [
   },
   {
     icon: MdBatchPrediction,
-    label: "Website",
-    path: `/business/website`,
+    label: "Feedback",
+    path: `/business/feedback`,
   },
 ];
