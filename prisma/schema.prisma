@@ -271,3 +271,10 @@ model testimonials {
   content    String
   created_at DateTime @default(now())
 }
+
+model tester {
+  id         String   @id @default(uuid())
+  email      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

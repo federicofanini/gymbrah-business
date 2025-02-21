@@ -7,11 +7,13 @@ import { Sidebar } from "@/components/private/sidebar";
 import { Header } from "@/components/private/header";
 import { Toaster } from "@/components/ui/sonner";
 import { checkBusiness } from "@/actions/business/onboarding/check-business";
-import { checkPlan } from "@/actions/business/onboarding/check-plan";
+import { ComingSoon } from "@/components/private/coming-soon";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
+
+const admins = ["fedef@gymbrah.com"];
 
 export const metadata: Metadata = {
   title: "Gym Manager",
@@ -63,7 +65,9 @@ export default async function DashboardLayout({
           <main className="pt-4">
             {children}
 
-            {/* {!admins.includes(userData.email) && <ComingSoon />} */}
+            {data?.user?.email && !admins.includes(data.user.email) && (
+              <ComingSoon />
+            )}
             <Toaster />
           </main>
         </SidebarInset>
