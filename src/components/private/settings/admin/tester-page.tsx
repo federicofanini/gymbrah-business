@@ -16,10 +16,18 @@ import {
 } from "@/components/ui/table";
 import { addTesterAction, deleteTesterAction, getTesters } from "./tester";
 import { Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Tester {
   id: string;
   email: string;
+  role: string;
   created_at: Date;
 }
 
@@ -32,6 +40,7 @@ export function Testers({ testers: initialTesters }: TestersProps) {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("athlete");
   const [testers, setTesters] = useState<Tester[]>(initialTesters || []);
 
   const fetchTesters = async () => {
@@ -60,12 +69,13 @@ export function Testers({ testers: initialTesters }: TestersProps) {
     setIsSaving(true);
 
     try {
-      const result = await addTesterAction({ email });
+      const result = await addTesterAction({ email, role });
       if (!result?.data?.success || !result.data?.data) {
         throw new Error(result?.data?.error || "Failed to add tester");
       }
       setTesters((prev) => [result?.data?.data as Tester, ...prev]);
       setEmail("");
+      setRole("athlete");
       toast.success("Tester added successfully");
     } catch (error) {
       toast.error(
@@ -109,6 +119,18 @@ export function Testers({ testers: initialTesters }: TestersProps) {
               required
             />
           </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Role</label>
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="athlete">Athlete</SelectItem>
+                <SelectItem value="business">Business</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Button type="submit" disabled={isSaving}>
             {isSaving && <Spinner size="sm" className="mr-2" />}
             Add Tester
@@ -122,6 +144,7 @@ export function Testers({ testers: initialTesters }: TestersProps) {
           <TableHeader>
             <TableRow>
               <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
               <TableHead>Added On</TableHead>
               <TableHead className="w-[100px]">Actions</TableHead>
             </TableRow>
@@ -129,7 +152,7 @@ export function Testers({ testers: initialTesters }: TestersProps) {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">
+                <TableCell colSpan={4} className="text-center py-4">
                   <Spinner size="md" />
                 </TableCell>
               </TableRow>
@@ -137,6 +160,7 @@ export function Testers({ testers: initialTesters }: TestersProps) {
               testers.map((tester) => (
                 <TableRow key={tester.id}>
                   <TableCell>{tester.email}</TableCell>
+                  <TableCell className="capitalize">{tester.role}</TableCell>
                   <TableCell>
                     {new Date(tester.created_at).toLocaleDateString("en-GB", {
                       day: "2-digit",
@@ -162,7 +186,7 @@ export function Testers({ testers: initialTesters }: TestersProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-4">
+                <TableCell colSpan={4} className="text-center py-4">
                   No testers added yet
                 </TableCell>
               </TableRow>

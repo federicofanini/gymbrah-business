@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 
 const testerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
+  role: z.string().optional(),
 });
 
 const deleteTesterSchema = z.object({
@@ -23,6 +24,7 @@ export const addTesterAction = createSafeActionClient()
       const tester = await prisma.tester.create({
         data: {
           email: input.parsedInput.email,
+          role: input.parsedInput.role || "athlete",
         },
       });
       return { success: true, data: tester };
@@ -52,6 +54,7 @@ export async function getTesters(): Promise<ActionResponse> {
       select: {
         id: true,
         email: true,
+        role: true,
         created_at: true,
       },
       orderBy: {
